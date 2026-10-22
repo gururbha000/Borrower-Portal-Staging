@@ -1610,7 +1610,7 @@ Use the verification code provided by the borrower’s Primary User. If you do n
 <div class="pair"><span class="lbl">Address - </span><b>1234 Arlington Ave, Los Angeles, CA</b></div>
 </div>
 <div class="loan-card-requests"><div class="loan-card-requests-head"><b>Requests</b><button class="btn primary">Add request</button></div>
-<table class="request-table"><thead><tr><th>Request #</th><th>Type</th><th>Requested On</th><th>Status</th><th>Assigned Staff</th><th class="action">Action</th></tr></thead><tbody><tr><td>REQ-17784556</td><td>Reserve Withdrawal</td><td>10/23/2025</td><td><span class="pill">Open</span></td><td>Rochelle Cox</td><td class="action"><button class="dots">⋮</button></td></tr></tbody></table></div>
+<table class="request-table"><thead><tr><th>Request #</th><th>Type</th><th>Requested On</th><th>Status</th><th>Assigned Staff</th><th class="action">Action</th></tr></thead><tbody><tr><td>REQ-17784556</td><td>Reserve Withdrawal</td><td>10/23/2025</td><td><span class="pill">Open</span></td><td>Rochelle Cox</td><td class="action"><button class="dots">⋮</button></td></tr><tr data-v171-demo="completed"><td>RW-263123</td><td>Reserve Withdrawal</td><td>09/15/2026</td><td><span class="pill" style="background:#e3f4e8;color:#20633a">Completed</span></td><td>Maria H.</td><td class="action"><button class="dots">⋮</button></td></tr></tbody></table></div>
 </div>
 </div>
 </div>
@@ -1936,7 +1936,7 @@ if(route==='staff'){
   const menu=document.createElement('div');
   menu.id='borrowerRequestActionMenu';
   menu.setAttribute('role','menu');
-  menu.innerHTML='<button type="button" data-action="view" role="menuitem">View request</button><div class="menu-separator"></div><button type="button" data-action="cancel" role="menuitem">Cancel Request</button><button type="button" data-action="letter" role="menuitem">Download Determination Letter</button>';
+  menu.innerHTML='<button type="button" data-action="view" role="menuitem">View request</button><div class="menu-separator"></div><button type="button" data-action="additional" role="menuitem" id="v171AdditionalAction" style="display:none">Request Additional Funds / Change</button><button type="button" data-action="cancel" role="menuitem">Cancel Request</button><button type="button" data-action="letter" role="menuitem">Download Determination Letter</button>';
   const modal=document.createElement('div');
   modal.id='borrowerRequestViewModal';
   modal.innerHTML='<div class="request-dialog" role="dialog" aria-modal="true" aria-labelledby="borrowerRequestTitle"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="borrowerRequestTitle" style="margin:0;font-size:20px">Request details</h2><button type="button" data-close="true" aria-label="Close" style="border:0;background:transparent;font-size:25px;cursor:pointer">×</button></div><dl id="borrowerRequestFields"></dl><div style="text-align:right"><button type="button" class="btn primary" data-close="true">Close</button></div></div>';
@@ -1960,6 +1960,7 @@ if(route==='staff'){
       menu.querySelector('[data-action="letter"]').disabled=!complete;
       menu.querySelector('[data-action="letter"]').title=complete?'Download demonstration determination letter':'Available for completed requests only';
       menu.classList.add('open');btn.setAttribute('aria-expanded','true');btn.setAttribute('aria-haspopup','menu');
+      const selectedRow=btn.closest('tr');const eligible=selectedRow && /reserve withdrawal/i.test(details(selectedRow).type) && /completed|approved/i.test(details(selectedRow).status);menu.querySelector('#v171AdditionalAction').style.display=eligible?'block':'none';
       const rect=btn.getBoundingClientRect();const width=menu.offsetWidth,height=menu.offsetHeight;
       menu.style.left=Math.max(8,Math.min(rect.right-width,innerWidth-width-8))+'px';
       menu.style.top=(rect.bottom+height+8>innerHeight?Math.max(8,rect.top-height-5):rect.bottom+5)+'px';
@@ -1968,6 +1969,8 @@ if(route==='staff'){
     const action=e.target.closest('#borrowerRequestActionMenu [data-action]');
     if(action&&row){
       e.preventDefault();e.stopPropagation();const d=details(row),which=action.dataset.action;const currentRow=row;closeMenu();
+      if(which==='additional'){if(!/reserve withdrawal/i.test(d.type)||!/completed|approved/i.test(d.status))return;sessionStorage.setItem('lahdV171Start',JSON.stringify({mode:'additional',parent:d.number,loan:d.loan,project:'Arlington Square',address:'1234 Arlington Ave, Los Angeles, CA',requester:'John Doe',phone:'(123) 456-7890',email:'john.doe@email.com'}));location.assign('reserve-withdrawal-form.html?v171=additional');return;}
+
       if(which==='view'){
         const fields=modal.querySelector('#borrowerRequestFields');fields.replaceChildren();
         [['Request #',d.number],['Request Type',d.type],['Loan #',d.loan],['Requested On',d.date],['Status',d.status],['Assigned Staff',d.staff]].forEach(([k,v])=>{const dt=document.createElement('dt');dt.textContent=k;const dd=document.createElement('dd');dd.textContent=v;fields.append(dt,dd);});
@@ -2049,4 +2052,11 @@ if(route==='staff'){
     if(target) save(activeRole());
   },true);
 })();
-</script></body></html>
+</script><script id="v171-borrower-related">
+(function(){'use strict';
+const KEY='lahdV171Requests';
+function get(){try{return JSON.parse(sessionStorage.getItem(KEY)||'[]')}catch(e){return []}}
+function render(){const target=document.querySelector('.tier1-loans .loan-card-simple:nth-child(3) .request-table tbody');if(!target)return;target.querySelectorAll('[data-v171-child]').forEach(x=>x.remove());get().filter(x=>x.origin==='borrower').forEach(x=>{const tr=document.createElement('tr');tr.dataset.v171Child='true';tr.innerHTML='<td></td><td>Reserve Withdrawal – Additional Funds</td><td></td><td><span class="pill">Submitted</span></td><td>—</td><td class="action"><button class="dots">⋮</button></td>';tr.cells[0].textContent=x.id;tr.cells[2].textContent=x.date;target.append(tr);});}
+document.addEventListener('click',function(e){const b=e.target.closest('#dashboard .request-table .dots');if(!b)return;const row=b.closest('tr');const option=document.getElementById('v171AdditionalAction');if(option){const cells=row.cells;const eligible=/reserve withdrawal/i.test(cells[1]?.textContent||'') && /completed|approved/i.test(cells[3]?.textContent||'');option.style.display=eligible?'block':'none';}},true);
+render();
+})();</script></body></html>
