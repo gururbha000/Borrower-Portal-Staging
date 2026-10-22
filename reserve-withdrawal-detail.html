@@ -2196,7 +2196,12 @@ syncInvoiceTotal();
 <div class="associationAuditNote">Changes to the request-to-loan association are recorded in the Activity Log with staff name, date/time, prior association, and new association.</div>
 </div>
 </section>
-<section class="reviewPanel" id="p3"><h2>Step 3 - Reserve Withdrawal</h2><div class="detailCard"><div class="detailGrid three"><div><span>Reserve Fund:</span><strong>Replacement Reserve</strong></div><div><span>Withdrawal Amount:</span><strong>$78,500</strong></div><div><span>Fiscal Year:</span><strong>2026</strong></div><div><span>Current Reserve Balance:</span><strong>$214,630</strong></div><div><span>Balance As-Of:</span><strong>09/20/2026</strong></div><div><span>Need-By Date:</span><strong>10/15/2026</strong></div><div class="wide"><span>Description:</span><strong>Roof repairs and water-damage remediation affecting occupied units.</strong></div></div></div></section>
+<section class="reviewPanel" id="p3"><h2>Step 3 - Reserve Withdrawal</h2><div class="detailCard"><div class="detailGrid three"><div><span>Reserve Fund:</span><strong>Replacement Reserve</strong></div><div><span>Withdrawal Amount:</span><strong>$78,500</strong></div><div><span>Fiscal Year:</span><strong>2026</strong></div><div><span>Current Reserve Balance:</span><strong>$214,630</strong></div><div><span>Balance As-Of:</span><strong>09/20/2026</strong></div><div><span>Need-By Date:</span><strong>10/15/2026</strong></div><div class="wide"><span>Description:</span><strong>Roof repairs and water-damage remediation affecting occupied units.</strong></div></div></div>
+<div class="reserveLinkPanel" aria-live="polite">
+ <div><strong>Portfolio Management — Reserve Balances</strong><p id="reserveLinkHelp">Select a verified AHIS loan in Step 2 to view its reserve balances.</p></div>
+ <button id="viewReserveBalances" type="button" disabled>View Reserve Balances ↗</button>
+</div>
+</section>
 <section class="reviewPanel" id="p4">
 <h2>Step 4 - Invoice / Bid Information</h2>
 <div class="invoiceReviewHead">
@@ -2561,9 +2566,9 @@ function showLoanMatches(){
  const f=document.getElementById('associationFeedback');if(f){f.className='associationFeedback show '+(v?'info':'error');f.textContent=v?'Matching AHIS records are shown as you type. Select the applicable loan record(s), then save the association.':'No matching AHIS records found in this sample. Try Loan # 23-130489-001, APN 5147-021-018, Peak Plaza, or 310 E Washington.';}
 }
 function saveLoanAssociation(){
- const a=selectedLoans(),f=document.getElementById('associationFeedback');if(!a.length){if(f){f.className='associationFeedback show error';f.textContent='Select at least one AHIS loan before saving the association.';}return;}
- savedAssociations=[...a];renderAssociatedLoans();const s=document.getElementById('associationStatus');if(s){s.textContent='Staff Validated';s.className='associationStatus validated';}
- if(f){f.className='associationFeedback show success';f.innerHTML='✓ Loan association saved: <strong>'+savedAssociations.join(', ')+'</strong>. The change is recorded in the Activity Log.';}
+ const a=selectedLoans(),f=document.getElementById('associationFeedback');if(!a.length){if(f){f.className='associationFeedback show info';f.textContent='No AHIS loan linked. Reserve balance navigation is disabled until a loan is associated.';}}
+ savedAssociations=[...a];renderAssociatedLoans();if(window.updateReserveLink)window.updateReserveLink();const s=document.getElementById('associationStatus');if(s){s.textContent='Staff Validated';s.className='associationStatus validated';}
+ if(f){f.className='associationFeedback show success';f.textContent=savedAssociations.length?'Loan association saved: '+savedAssociations.join(', ')+'. (Prototype)':'Loan association cleared. (Prototype)';}
 
   clearAHISSearch(false);
 }
@@ -3683,6 +3688,46 @@ html body #staffWrap>#ownershipStaffWorkspace{display:none!important}
   });
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize);else initialize();
+})();
+</script>
+
+<style>
+.reserveLinkPanel{margin-top:12px;padding:14px 16px;border:1px solid #d4e0ec;border-radius:8px;background:#f8fbfe;display:flex;align-items:center;justify-content:space-between;gap:18px;font:13px Arial;color:#243d57}
+.reserveLinkPanel p{margin:5px 0 0;font-size:12px;color:#61758d}
+#viewReserveBalances{background:#1261a4;color:white;border:1px solid #1261a4;border-radius:5px;padding:10px 14px;font:700 12px Arial;cursor:pointer;white-space:nowrap}
+#viewReserveBalances:disabled{background:#e9edf2;color:#7b8794;border-color:#d3dce5;cursor:not-allowed}
+#reserveBalancePreview{position:fixed;inset:0;background:rgba(18,36,58,.55);z-index:99999;display:none;align-items:center;justify-content:center;padding:20px}
+#reserveBalancePreview.open{display:flex}
+#reserveBalancePreview .rbDialog{background:white;border-radius:10px;padding:24px;width:min(540px,95vw);box-shadow:0 12px 38px #0003;font:14px Arial;color:#20384f}
+#reserveBalancePreview .rbHeader{display:flex;justify-content:space-between;align-items:center;gap:10px}
+#reserveBalancePreview .rbHeader button{border:1px solid #bdcbd8;background:white;border-radius:5px;padding:7px 11px;cursor:pointer}
+</style>
+<div id="reserveBalancePreview" role="dialog" aria-modal="true" aria-label="Reserve balances navigation preview">
+ <div class="rbDialog"><div class="rbHeader"><strong>Portfolio Management → Reserve Balances</strong><button id="closeReserveBalancePreview" type="button">Close ✕</button></div>
+ <p id="reserveBalancePreviewContext"></p><p><b>Prototype navigation preview.</b> In AHIS, this link will open the Reserve Balances tab for the verified project/loan, with the appropriate Operating or Replacement sub-tab selected.</p>
+ <p>Live Portfolio Management navigation and reserve data are not connected to this standalone HTML mock-up.</p></div>
+</div>
+<script>
+(function(){
+ function verifiedLoans(){return typeof savedAssociations!=='undefined'?savedAssociations:[];}
+ function updateReserveLink(){
+  var loans=verifiedLoans(),btn=document.getElementById('viewReserveBalances'),help=document.getElementById('reserveLinkHelp');
+  if(!btn||!help)return;
+  btn.disabled=!loans.length;
+  help.textContent=loans.length?'Verified AHIS loan'+(loans.length>1?'s':'')+': '+loans.join(', ')+'. Opens the selected reserve type for the linked project.':'No linked loan. Associate and save an AHIS loan in Step 2 to view reserve balances.';
+ }
+ document.addEventListener('DOMContentLoaded',function(){
+  updateReserveLink();
+  document.getElementById('viewReserveBalances')?.addEventListener('click',function(){
+   if(!verifiedLoans().length)return;
+   var type=document.querySelector('#p3 .detailGrid strong')?.textContent.trim()||'Replacement Reserve';
+   document.getElementById('reserveBalancePreviewContext').textContent='Loan: '+verifiedLoans().join(', ')+' | Reserve sub-tab: '+type;
+   document.getElementById('reserveBalancePreview').classList.add('open');
+  });
+  document.getElementById('closeReserveBalancePreview')?.addEventListener('click',function(){document.getElementById('reserveBalancePreview').classList.remove('open');});
+  document.getElementById('reserveBalancePreview')?.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+ });
+ window.updateReserveLink=updateReserveLink;
 })();
 </script>
 </body></html>
