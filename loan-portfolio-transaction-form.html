@@ -1514,14 +1514,6 @@ html[data-v96-route="reserve"] .demoSwitch {display:none!important}
 @media(max-width:700px){#v107ChangeBorrower .compare,#v107ChangeBorrower .grid3{grid-template-columns:1fr}#v107ChangeDocs .docline{grid-template-columns:1fr}#v107ChangeDocs .invitebar{flex-direction:column;align-items:flex-start}}
 </style></head>
 <body><nav class="v96-nav"><a href="index.html">Sign In</a><a href="borrower-portal.html">Borrower Dashboard</a><a href="staff-dashboard.html">Staff Dashboard</a><a href="loan-portfolio-transaction-form.html">LP Transaction Form</a><a href="reserve-withdrawal-form.html">Reserve Withdrawal Form</a></nav>
-
-
-
-
-
-
-
-
 <div id="integratedRequestView" style="display:block;min-height:100vh;background:#f5f7fa"><div class="page" id="borrowerView">
 <div class="topbar">
 <button class="btn btn-primary" onclick="window.location.href='borrower-portal.html';return false;" type="button">← Back to Dashboard</button>
@@ -1615,20 +1607,7 @@ html[data-v96-route="reserve"] .demoSwitch {display:none!important}
 <div class="chips" id="recordChips"><span class="chip loan required">Loan # 14-12345678</span></div>
 <div class="field" style="margin-top:18px"><label>Property Address</label><input readonly="" value="1234 Peak Avenue, Los Angeles, CA"/></div>
 </div>
-<div class="hidden" id="reserveBorrowerContext" style="display:none!important">
-<div class="reserve-project-note">Enter project name, property address and City loan number</div>
-<div class="grid3 reserve-project-grid">
-<div class="field">
-<label><span class="req">*</span> Project / Property Name</label>
-<input placeholder="Enter project or property name" value="Peak Plaza"/>
-</div>
-<div class="field">
-<label><span class="req">*</span> Property Address</label>
-<input placeholder="Enter property address" value="1234 Peak Avenue, Los Angeles, CA"/>
-</div>
-<div class="field"><label><span class="req">*</span> Loan #</label><input placeholder="Enter City loan number" required="" type="text"/></div>
-</div>
-</div>
+
 </div>
 </div>
 <div class="section" id="requestor">
@@ -1653,156 +1632,7 @@ html[data-v96-route="reserve"] .demoSwitch {display:none!important}
 </div>
 </div>
 </div>
-<div class="reserve-only" id="reserveSections">
-<div class="section" id="reserveInfo">
-<div class="section-head" onclick="toggleSection('reserveInfo')"><span>3. Reserve Withdrawal Request Information</span><span>⌃</span></div>
-<div class="section-body">
-<div class="section-kicker">Complete this section for a Multifamily - Reserve Withdrawal request.</div>
-<div class="grid3">
-<div class="field">
-<label><span class="req">*</span> Reserve Fund</label>
-<select id="fundType"><option value="">Select reserve fund</option><option selected="">Replacement Reserve</option><option>Operating Reserve</option><option>Transition Reserve</option><option>Other Reserve</option></select>
-</div>
-<div class="field"><label><span class="req">*</span> Withdrawal Amount</label><input id="withdrawalAmount" value="$27,500.00"/></div>
-<div class="field"><label><span class="req">*</span> Current Reserve Balance</label><input id="currentReserveBalance" placeholder="Enter current reserve balance"/><div class="small">Enter the current balance shown on your most recent supporting statement or ledger.</div></div>
-</div>
-<div class="grid3" style="margin-top:14px">
-<div class="field"><label><span class="req">*</span> Balance As-Of Date</label><input id="balanceAsOfDate" type="date"/></div>
-<div class="field"><label><span class="req">*</span> Fiscal Year</label><select><option>2026</option><option>2025</option><option>2024</option></select></div>
-<div class="field"><label>Requested Payment / Need-By Date</label><input type="date" value="2026-09-30"/></div>
-</div>
-<div class="field" style="margin-top:14px"><label><span class="req">*</span> Description of Work / Reason for Withdrawal</label><textarea>Replacement of three HVAC units serving occupied residential units and related installation work.</textarea></div>
-<div class="info" style="margin-top:14px"><strong>Note:</strong> Supporting documentation is required in Section 5 for the current reserve balance (e.g., most recent statement).</div>
-</div>
-</div>
-<div class="section" id="invoiceSection">
-<div class="section-head" onclick="toggleSection('invoiceSection')"><span>4. Invoice / Work Detail and Bid Information</span><span>⌃</span></div>
-<div class="section-body">
-<div class="section-kicker">Provide the invoice/work detail manually or import it from the standardized LAHD Excel template.</div>
-<div class="work-entry-card">
-<div class="work-entry-card-head">
-<div>
-<div class="work-entry-card-title">Invoice / Work Detail</div>
-<div class="work-entry-card-subtitle">Choose how you want to provide the line-item information for this request.</div>
-</div>
-</div>
-<div class="entry-method-block">
-<div class="entry-method-label"><span class="req">*</span> Invoice / Work Detail Entry Method</div>
-<div aria-label="Invoice / Work Detail Entry Method" class="entry-method-options" role="radiogroup">
-<label class="entry-method-option">
-<input checked="" name="detailEntryMethod" type="radio" value="manual"/>
-<span aria-hidden="true" class="entry-method-radio"></span>
-<span class="entry-method-copy">
-<span class="entry-method-title">Enter details manually</span>
-<span class="entry-method-help">Add invoice or work items directly in the table below.</span>
-</span>
-</label>
-<label class="entry-method-option">
-<input name="detailEntryMethod" type="radio" value="excel"/>
-<span aria-hidden="true" class="entry-method-radio"></span>
-<span class="entry-method-copy">
-<span class="entry-method-title">Import from LAHD Excel Template</span>
-<span class="entry-method-help">Upload the completed template to populate and validate the table.</span>
-</span>
-</label>
-</div>
-</div>
-<div class="excel-import-panel hidden" id="excelImportPanel">
-<div class="excel-template-row">
-<div>
-<div class="excel-template-title">LAHD Reserve Withdrawal Detail Template</div>
-<div class="small">Download the standardized template, complete the line items offline, then upload it below.</div>
-</div>
-<button class="btn btn-light excel-download-btn" id="downloadExcelTemplate" type="button">↓ Download Excel Template</button>
-</div>
-<div class="excel-upload-row">
-<div class="field excel-file-field">
-<label>Completed Excel Template</label>
-<input accept=".xlsx,.xls" id="excelUpload" type="file"/>
-</div>
-<button class="btn btn-primary excel-import-btn" id="importExcelBtn" type="button">Import &amp; Validate</button>
-</div>
-<div class="small excel-import-status" id="excelImportStatus"></div>
-</div>
-<div class="table-wrap">
-<table id="invoiceTable">
-<thead><tr>
-<th style="width:105px">Invoice Date</th><th style="width:105px">Invoice #</th><th style="width:78px">Unit</th><th style="width:260px;min-width:260px">Item / Work Description</th><th style="width:155px">Contractor / Vendor</th><th style="width:120px">Requested Amount</th><th style="width:120px">Check Paid Date <span class="small">(Optional)</span></th><th style="width:135px">Invoice / Estimate</th><th style="width:125px">Notes</th><th style="width:50px"></th>
-</tr></thead>
-<tbody id="invoiceBody">
-<tr><td><input type="date" value="2026-08-20"/></td><td><input value="INV-2841"/></td><td><input value="101-103"/></td><td><input class="workDescription" maxlength="60" value="Replace three HVAC units serving occupied residential units"/></td><td><input value="ABC Mechanical"/></td><td><input class="lineAmount" value="27500.00"/></td><td><input type="date"/></td><td><select><option>Invoice</option><option>Estimate</option></select></td><td><input value="Occupied units"/></td><td class="row-actions"><button class="btn btn-light btn-small removeRow" type="button">×</button></td></tr>
-</tbody>
-<tfoot><tr class="total-row"><td class="total-label" colspan="5">Total Requested Amount</td><td class="amount" id="invoiceTotal">$27,500.00</td><td colspan="4"></td></tr></tfoot>
-</table>
-</div>
-<button class="btn btn-light btn-small" id="addInvoice" style="margin-top:10px" type="button">+ Add Invoice / Work Item</button>
-</div>
-<div class="bid-section-divider"><span>Bid Requirement</span></div>
-<div class="bid-panel hidden" id="bidRulePanel" style="margin-top:0">
-<div class="bid-head">Bid Requirement Review</div>
-<div class="bid-body">
-<div class="small" style="margin:0 0 12px">
-              The total requested amount is $20,000 or more. Please answer the question below so AHIS can determine what additional information is needed.
-            </div>
-<div class="field">
-<label><span class="req">*</span> Does the work involve an urgent or emergency condition affecting resident safety or livability?</label>
-<div class="bid-choice" style="margin-top:8px">
-<label><input name="urgentEmergency" type="radio" value="yes"/><span>Yes</span></label>
-<label><input name="urgentEmergency" type="radio" value="no"/><span>No</span></label>
-</div>
-</div>
-<div class="hidden" id="urgencyPanel" style="margin-top:16px">
-<div class="field" style="margin-top:12px">
-<label><span class="req">*</span> Explain the urgent or emergency condition and why immediate action was required</label>
-<textarea id="urgencyJustification" placeholder="Describe the condition, how it affected resident safety or livability, and why the work could not reasonably be delayed. Examples may include a broken boiler, loss of heating or cooling in occupied units, or another condition requiring immediate action to protect resident safety or livability."></textarea>
-</div>
-<div class="field" style="margin-top:12px">
-<label>Urgency Supporting Documentation <span class="small">(Optional)</span></label>
-<div class="upload-box"><input multiple="" type="file"/></div>
-<div class="small" style="margin-top:6px">Examples: photos, notices, inspection reports, contractor assessments, or other supporting documentation.</div>
-</div>
-</div>
-<div class="hidden" id="additionalBidsPanel" style="margin-top:16px">
-<div class="info">
-<strong>2 Additional Bids Required</strong><br/>
-                Because the applicable work is $20,000 or more and is not identified as urgent/emergency work affecting resident safety or livability, please upload two additional bids or estimates.
-              </div>
-<div class="upload-grid" style="margin-top:12px">
-<div class="field"><label><span class="req">*</span> Bid / Estimate 1</label><div class="upload-box"><input type="file"/></div></div>
-<div class="field"><label><span class="req">*</span> Contractor / Vendor</label><input placeholder="Vendor name"/></div>
-<div class="field"><label><span class="req">*</span> Bid Amount</label><input placeholder="$0.00"/></div>
-<div class="field"><label><span class="req">*</span> Bid Date</label><input type="date"/></div>
-</div>
-<div class="upload-grid" style="margin-top:10px">
-<div class="field"><label><span class="req">*</span> Bid / Estimate 2</label><div class="upload-box"><input type="file"/></div></div>
-<div class="field"><label><span class="req">*</span> Contractor / Vendor</label><input placeholder="Vendor name"/></div>
-<div class="field"><label><span class="req">*</span> Bid Amount</label><input placeholder="$0.00"/></div>
-<div class="field"><label><span class="req">*</span> Bid Date</label><input type="date"/></div>
-</div>
-</div>
-<div class="small" style="margin-top:14px">
-              LAHD will review the information submitted and make the final determination regarding whether the additional bid requirement applies.
-            </div>
-</div>
-</div>
-<div class="info" id="belowThresholdMessage" style="margin-top:14px">
-          The current total requested amount is below $20,000. No additional bid information is required based on the amount entered.
-        </div>
-</div>
-</div>
-<div class="section" id="reserveDocuments">
-<div class="section-head" onclick="toggleSection('reserveDocuments')"><span>5. Documents</span><span>⌃</span></div>
-<div class="section-body">
-<div class="section-kicker">Upload documents that support the Reserve Withdrawal request.</div>
-<div class="doc-upload-list">
-<div class="doc-upload-row"><div class="doc-upload-name"><strong>Signed Reserve Withdrawal Request Letter on Company Letterhead</strong><div class="small">Required. Summarize the requested amount, purpose, property/project, and authorized signer.</div></div><div class="doc-actions"><button class="btn btn-light btn-small" type="button">↓ Download Sample / Template</button><input accept=".pdf,.doc,.docx" type="file"/></div></div>
-<div class="doc-upload-row"><div class="doc-upload-name"><strong>Current Reserve Balance Supporting Document</strong><div class="small">Required. Most recent reserve bank statement, loan statement showing the balance, or reserve ledger if a statement is unavailable.</div></div><div class="doc-actions"><select><option>Bank Statement</option><option>Loan Statement</option><option>Reserve Ledger</option><option>Other</option></select><input accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls" type="file"/></div></div>
-<div class="doc-upload-row"><div class="doc-upload-name"><strong>Invoices / Estimates</strong><div class="small">Required as applicable. Upload supporting invoices or estimates not already attached to individual work-detail rows.</div></div><div class="doc-actions"><input multiple="" type="file"/></div></div>
-<div class="doc-upload-row"><div class="doc-upload-name"><strong>Other Supporting Documents</strong><div class="small">Optional.</div></div><div class="doc-actions"><input multiple="" type="file"/></div></div>
-</div>
-</div>
-</div>
-</div>
+
 <div class="transaction-only" id="transactionSections">
 <div class="section" id="v107ChangeBorrower"><div class="section-head" onclick="toggleSection('v107ChangeBorrower')"><span>3. Borrower / Ownership Change</span><span>⌃</span></div><div class="section-body"><div class="v107-info">Illustrative current borrower values are sample data. In production, prepopulate from the selected LAHD loan and verify against the record.</div><div class="section-kicker">Provide information about the existing seller and proposed buyer for Change of Ownership (Sale).</div><div class="compare"><div><h3>Current Borrower / Seller</h3><label>Legal Entity Name<input data-v107-example="true" readonly="" value="Riverview Housing LLC"/></label><label>Entity Type<input data-v107-example="true" readonly="" value="LLC"/></label><label>FEIN<input data-v107-example="true" readonly="" value="••-•••4821"/></label><label>Authorized Representative<input data-v107-example="true" readonly="" value="Maria Hernandez"/></label><label>Contact Email<input data-v107-example="true" readonly="" value="maria@example.org"/></label></div><div><h3 id="proposedTitle">Proposed Borrower / Buyer</h3><label>Legal Entity Name<input class="entry" placeholder="Enter legal entity name"/></label><label>Entity Type<select class="entry"><option value="">Select</option><option>LLC</option><option>LP</option><option>Corporation</option><option>Other</option></select></label><label>FEIN<input class="entry" placeholder="Enter securely"/></label><label>Authorized Representative<input class="entry" placeholder="Name"/></label><label>Contact Email<input class="entry" placeholder="Email" type="email"/></label></div></div><label>Describe the proposed change<textarea class="entry" placeholder="Transaction purpose and effect on LAHD obligations" rows="3"></textarea></label></div></div><div class="section" id="lenderWorksheet">
 <div class="section-head" onclick="toggleSection('lenderWorksheet')"><span>3. Borrower - Lender Worksheet</span><span>⌃</span></div>
@@ -1860,23 +1690,19 @@ html[data-v96-route="reserve"] .demoSwitch {display:none!important}
 </div><div class="section" id="v107ChangeDocs"><div class="section-head" onclick="toggleSection('v107ChangeDocs')"><span>5. Document Upload</span><span>⌃</span></div><div class="section-body"><p class="helper">Upload required applicant documents before submitting. Buyer documents can be provided now or later by an invited contributor; missing buyer documents will not block submission. LAHD may request additional items during review.</p><div class="v108-summary" id="v108Summary">Required for submission: 0 of 10 received · Buyer documents: 0 of 12 received</div><h3>General Transaction Documents</h3><div class="docline" data-doc-number="1" data-requirement="required"><span>1. Signed statement on official letterhead stating why the City should consider the request; include Project/Loan number(s), circumstances, requested changes to existing loan terms, and signature.<span class="v108-requirement required">Required</span></span><input aria-label="Signed statement on official letterhead stating why the City should consider the request; include Project/Loan number(s), circumstances, requested changes to existing loan terms, and signature." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="2" data-requirement="required"><span>2. Resolution Authority &amp; Authorized Signatory(s).<span class="v108-requirement required">Required</span></span><input aria-label="Resolution Authority &amp; Authorized Signatory(s)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="3" data-requirement="required"><span>3. Organization Formation Documents and all Amendments (including organizational chart).<span class="v108-requirement required">Required</span></span><input aria-label="Organization Formation Documents and all Amendments (including organizational chart)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="4" data-requirement="required"><span>4. Certificate of Good Standing issued by the State of California (current within 6 months of application date).<span class="v108-requirement required">Required</span></span><input aria-label="Certificate of Good Standing issued by the State of California (current within 6 months of application date)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="5" data-requirement="required"><span>5. Estimated Closing Statement.<span class="v108-requirement required">Required</span></span><input aria-label="Estimated Closing Statement." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="6" data-requirement="conditional"><span>6. Purchase and Sale Agreement (for purchases only).<span class="v108-requirement conditional">If Applicable</span></span><input aria-label="Purchase and Sale Agreement (for purchases only)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="7" data-requirement="required"><span>7. Asset Management Questionnaire.<span class="v108-requirement required">Required</span></span><input aria-label="Asset Management Questionnaire." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="8" data-requirement="optional"><span>8. Other items as needed.<span class="v108-requirement optional">Optional</span></span><input aria-label="Other items as needed." data-v107-doc="true" type="file"/><small>Pending</small></div><h3>Seller / Current Borrower Documents</h3><p class="v108-note">Seller documents are required for initial submission in this demonstration.</p><div class="docline" data-doc-number="9" data-requirement="required"><span>9. Signed Certification and Authorization to Release Information (attached form).<span class="v108-requirement required">Required</span></span><input aria-label="Signed Certification and Authorization to Release Information (attached form)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="10" data-requirement="required"><span>10. Waiver of Notice to Inspect Form (attached form).<span class="v108-requirement required">Required</span></span><input aria-label="Waiver of Notice to Inspect Form (attached form)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="11" data-requirement="required"><span>11. Two months of current Mortgage Statements.<span class="v108-requirement required">Required</span></span><input aria-label="Two months of current Mortgage Statements." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="12" data-requirement="required"><span>12. Two months of current Reserve Account Statements.<span class="v108-requirement required">Required</span></span><input aria-label="Two months of current Reserve Account Statements." data-v107-doc="true" type="file"/><small>Pending</small></div><h3>Buyer / Proposed Borrower Documents</h3><p class="v108-note">Buyer documents are optional at initial submission, but may be required before LAHD completes its review. The seller can upload available files or invite the buyer to contribute.</p><div class="docline" data-doc-number="13" data-requirement="buyer"><span>13. Sponsor / Owner / Borrower signature blocks for proposed new Borrower (MS Word format).<span class="v108-requirement buyer">Buyer to Provide</span></span><input accept=".doc,.docx" aria-label="Sponsor / Owner / Borrower signature blocks for proposed new Borrower (MS Word format)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="14" data-requirement="buyer"><span>14. Property Title Report (with hyperlinks to recorded documents).<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Property Title Report (with hyperlinks to recorded documents)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="15" data-requirement="buyer"><span>15. Broker / Lender Worksheet.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Broker / Lender Worksheet." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-condition="true" data-doc-number="16" data-requirement="buyer"><span>16. IRS Form W-9 — only for new General Partner or Managing General Partner.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="IRS Form W-9 — only for new General Partner or Managing General Partner." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-condition="true" data-doc-number="17" data-requirement="buyer"><span>17. Business Tax Certificate — new Borrower only.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Business Tax Certificate — new Borrower only." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="18" data-requirement="buyer"><span>18. Project Proforma, including before- and after-term-change 15-year cash flow projections.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Project Proforma, including before- and after-term-change 15-year cash flow projections." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="19" data-requirement="buyer"><span>19. Appraisal (current within 6 months of application date).<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Appraisal (current within 6 months of application date)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="20" data-requirement="buyer"><span>20. Commitment Letter.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Commitment Letter." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-condition="true" data-doc-number="21" data-requirement="buyer"><span>21. List of Properties in LAHD Multifamily Loan Portfolio Form — new General Partner(s) only.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="List of Properties in LAHD Multifamily Loan Portfolio Form — new General Partner(s) only." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="22" data-requirement="buyer"><span>22. Resume of Multifamily Affordable Housing Experience — buyer only.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Resume of Multifamily Affordable Housing Experience — buyer only." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-condition="true" data-doc-number="23" data-requirement="buyer"><span>23. List of managed properties in LAHD portfolio — new property manager only.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="List of managed properties in LAHD portfolio — new property manager only." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="24" data-requirement="buyer"><span>24. Buyer's Self-Certification of Financial Capacity — existing and/or new Borrower.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Buyer's Self-Certification of Financial Capacity — existing and/or new Borrower." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="invitebar"><div><strong>Additional Document Contributor</strong><p id="v107InviteStatus">No invitation prepared.</p></div><button class="btn btn-primary" id="v107Invite" type="button">+ Invite Buyer / Contributor</button></div></div></div>
 <div class="disclaimer"><strong>Disclaimer</strong><p>I, THE UNDERSIGNED, CERTIFY THAT THE INFORMATION PROVIDED IN THIS APPLICATION IS TRUE AND CORRECT AS OF THE DATE SET FORTH OPPOSITE MY SIGNATURE ON THIS APPLICATION. I ACKNOWLEDGE THAT ANY MISREPRESENTATION(S) OF THE INFORMATION CONTAINED HEREIN WHICH RESULTS IN CIVIL LIABILITY AND/OR A LOSS TO THE CITY OF LOS ANGELES HOUSING AND COMMUNITY INVESTMENT DEPARTMENT (HCIDLA), ITS AGENTS, SUCCESSORS, ASSIGNS, INSURERS AND ANY OTHER PARTY WHO MAY SUFFER A LOSS DUE TO RELIANCE UPON ANY INFORMATION CONTAINED HEREIN MAY RESULT IN CIVIL RECOURSE AGAINST THE UNDERSIGNED. I FURTHER ACKNOWLEDGE THAT HCIDLA AT ITS SOLE DISCRETION SHALL HAVE THE RIGHT TO USE THE INFORMATION CONTAINED HEREIN TO REFER THE APPLICANT TO AN ALTERNATE LENDER FOR ANALYSIS AND POTENTIAL OFFERS OF COMPETITIVE FINANCING IN ORDER FOR HCIDLA TO PROTECT ITS SECURITY INTEREST AS A SUBORDINATED LENDER.</p><label class="ack"><input type="checkbox"/> <span>I acknowledge and agree to the terms stated in the disclaimer above</span></label></div><div class="transaction-footer" id="transactionFooter"><button class="btn btn-light" type="button">Cancel</button><button class="btn btn-primary" type="button">Submit Form</button></div>
 <div hidden="" id="v107StatusBar"><div><strong id="v107StatusLabel">Submitted request</strong><div style="font-size:12px;color:#526b80;margin-top:4px">Original form is read-only. Authorized supplemental documents and contributor invitations remain available.</div></div><button class="btn btn-light btn-small" id="v107ReturnEdit" type="button">Return to New Request</button></div></div>
-<div class="footer" id="reserveFooter">
-<button class="btn btn-light" type="button">Save Draft</button>
-<button class="btn btn-primary" type="button">Continue</button>
-</div>
+
 </div><script>
 const md=document.getElementById('multiDisplay'),
       mm=document.getElementById('multiMenu'),
       mt=document.getElementById('multiText'),
       tc=document.getElementById('typeCount'),
       tchips=document.getElementById('typechips'),
-      reserveSections=document.getElementById('reserveSections'),
       transactionTypeBlock=document.getElementById('transactionTypeBlock'),
       transactionCategoryCard=document.getElementById('transactionCategoryCard'),
       reserveCategoryCard=document.getElementById('reserveCategoryCard'),
       transactionSections=document.getElementById('transactionSections'),
       transactionFooter=document.getElementById('transactionFooter'),
-      reserveFooter=document.getElementById('reserveFooter');
+      reserveFooter=null;
 
 function syncTypes(){
   const c=[...mm.querySelectorAll('input:checked')];
@@ -1900,25 +1726,16 @@ function syncTypes(){
 }
 
 function syncRequestCategory(){
-  const selected=document.querySelector('input[name="requestCategory"]:checked')?.value || 'reserve';
-  const isReserve=selected==='reserve';
-
-  reserveSections.style.display=isReserve?'block':'none';
-  transactionSections.style.display=isReserve?'none':'block';
-  const reserveBorrowerContext=document.getElementById('reserveBorrowerContext');
-  const transactionBorrowerContext=document.getElementById('transactionBorrowerContext');
-  if(reserveBorrowerContext) reserveBorrowerContext.classList.toggle('hidden', !isReserve);
-  if(transactionBorrowerContext) transactionBorrowerContext.classList.toggle('hidden', isReserve);
-  transactionFooter.style.display=isReserve?'none':'flex';
-  reserveFooter.style.display=isReserve?'flex':'none';
-  transactionTypeBlock.classList.toggle('hidden',isReserve);
-
-  reserveCategoryCard.classList.toggle('selected',isReserve);
-  transactionCategoryCard.classList.toggle('selected',!isReserve);
-
-  if(isReserve){
-    mm.classList.remove('open');
-  }
+  // This standalone page always owns Loan Portfolio Transactions.
+  const transactionRadio=document.querySelector('input[name="requestCategory"][value="transaction"]');
+  if(transactionRadio) transactionRadio.checked=true;
+  transactionSections.style.display='block';
+  transactionFooter.style.display='flex';
+  transactionTypeBlock.classList.remove('hidden');
+  const context=document.getElementById('transactionBorrowerContext');
+  if(context) context.classList.remove('hidden');
+  transactionCategoryCard.classList.add('selected');
+  reserveCategoryCard.classList.remove('selected');
 }
 
 document.querySelectorAll('input[name="requestCategory"]').forEach(r=>r.addEventListener('change',syncRequestCategory));
@@ -1946,85 +1763,10 @@ document.querySelectorAll('.relatedCheck').forEach(cb=>cb.onchange=syncRecords);
 
 
 function money(n){return n.toLocaleString('en-US',{style:'currency',currency:'USD'});}
-function syncInvoiceTotal(){
-  let total=0;
-  document.querySelectorAll('.lineAmount').forEach(i=>{
-    const v=parseFloat(String(i.value).replace(/[$,]/g,'')); if(!isNaN(v)) total+=v;
-  });
-  document.getElementById('invoiceTotal').textContent=money(total);
-  syncBidRequirement(total);
-}
 
-function syncBidRequirement(total){
-  const overThreshold = total >= 20000;
-  const rulePanel = document.getElementById('bidRulePanel');
-  const belowMsg = document.getElementById('belowThresholdMessage');
-  const urgencyPanel = document.getElementById('urgencyPanel');
-  const bidsPanel = document.getElementById('additionalBidsPanel');
-
-  if(rulePanel) rulePanel.classList.toggle('hidden', !overThreshold);
-  if(belowMsg) belowMsg.classList.toggle('hidden', overThreshold);
-
-  if(!overThreshold){
-    document.querySelectorAll('input[name="urgentEmergency"]').forEach(r=>r.checked=false);
-    if(urgencyPanel) urgencyPanel.classList.add('hidden');
-    if(bidsPanel) bidsPanel.classList.add('hidden');
-  } else {
-    syncUrgencyChoice();
-  }
-}
-
-function syncUrgencyChoice(){
-  const selected = document.querySelector('input[name="urgentEmergency"]:checked')?.value;
-  const urgencyPanel = document.getElementById('urgencyPanel');
-  const bidsPanel = document.getElementById('additionalBidsPanel');
-
-  if(urgencyPanel) urgencyPanel.classList.toggle('hidden', selected !== 'yes');
-  if(bidsPanel) bidsPanel.classList.toggle('hidden', selected !== 'no');
-}
-document.getElementById('invoiceBody').addEventListener('input',e=>{if(e.target.classList.contains('lineAmount'))syncInvoiceTotal()});
-document.getElementById('invoiceBody').addEventListener('click',e=>{
-  if(e.target.classList.contains('removeRow')){
-    const rows=document.querySelectorAll('#invoiceBody tr');
-    if(rows.length>1){e.target.closest('tr').remove();syncInvoiceTotal();}
-  }
-});
-document.getElementById('addInvoice').onclick=()=>{
-  const tr=document.createElement('tr');
-  tr.innerHTML='<td><input type="date"></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input class="lineAmount" placeholder="0.00"></td><td><input type="date"></td><td><select><option>Invoice</option><option>Estimate</option></select></td><td><input></td><td class="row-actions"><button class="btn btn-light btn-small removeRow" type="button">×</button></td>';
-  document.getElementById('invoiceBody').appendChild(tr);
-};
-
-
-
-document.querySelectorAll('input[name="detailEntryMethod"]').forEach(r=>r.addEventListener('change',()=>{
-  const excel=document.querySelector('input[name="detailEntryMethod"]:checked')?.value==='excel';
-  const p=document.getElementById('excelImportPanel');
-  if(p) p.classList.toggle('hidden',!excel);
-}));
-const templateBtn=document.getElementById('downloadExcelTemplate');
-if(templateBtn) templateBtn.onclick=()=>alert('Mock-up: LAHD Reserve Withdrawal Detail Excel template would download here.');
-const importBtn=document.getElementById('importExcelBtn');
-if(importBtn) importBtn.onclick=()=>{
-  const f=document.getElementById('excelUpload')?.files?.[0];
-  const st=document.getElementById('excelImportStatus');
-  if(!f){st.textContent='Select a completed LAHD Excel template before importing.';st.style.color='#b42318';return;}
-  st.textContent='Validation successful — imported rows are shown below for borrower review before submission.';st.style.color='#246a35';
-};
-
-document.querySelectorAll('input[name="urgentEmergency"]').forEach(r=>{
-  r.addEventListener('change', syncUrgencyChoice);
-});
-
-
-
-// Initialize the UI from the radio button that is already selected on first load.
-// This ensures Reserve Withdrawal shows all reserve-only sections immediately,
-// the same way it does after switching categories.
 syncRequestCategory();
 syncTypes();
 syncRecords();
-syncInvoiceTotal();
 </script><script>
 (function(){
   const radios=document.querySelectorAll('input[name="behalf"]');
@@ -2098,7 +1840,6 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.querySelectorAll('#loanMatches .loanMatch').forEach(r=>r.style.display='none');renderAssociatedLoans();refreshLoanAssociation();
 });
 </script></div>
-
 <script id="v165-role-bootstrap">(function(){
   var role='tier1';
   try { role=sessionStorage.getItem('lahdBorrowerRole')||sessionStorage.getItem('borrowerRole')||sessionStorage.getItem('portalRole')||'tier1'; } catch(e) {}
@@ -2129,7 +1870,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         err=document.getElementById("v82AssocError");
 
   function category(){
-    return document.querySelector('input[name="requestCategory"]:checked')?.value || "reserve";
+    return "transaction";
   }
   function isTransaction(){return category()==="transaction";}
   function detectRole(){
@@ -2263,7 +2004,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   openFor(detectRole());
 })();
 </script>
-
 <div class="overlay" id="v107Overlay"><div class="dialog"><h2>Invite Document Contributor</h2><p class="muted">Restricted access to selected document uploads only.</p><label>Contributor role<select><option>Proposed Buyer</option><option>Buyer Representative</option><option>Seller Representative</option></select></label><label>Recipient name<input id="v107Person" placeholder="Full name"/></label><label>Recipient email<input id="v107Email" placeholder="name@example.com" type="email"/></label><h3>Documents requested</h3><label><input checked="" class="requested-doc" type="checkbox"/> Sponsor / Owner / Borrower signature blocks for proposed new Borrower (MS Word format).</label><label><input checked="" class="requested-doc" type="checkbox"/> Property Title Report (with hyperlinks to recorded documents).</label><label><input checked="" class="requested-doc" type="checkbox"/> Broker / Lender Worksheet.</label><label><input checked="" class="requested-doc" type="checkbox"/> IRS Form W-9 — only for new General Partner or Managing General Partner.</label><label><input checked="" class="requested-doc" type="checkbox"/> Business Tax Certificate — new Borrower only.</label><label><input checked="" class="requested-doc" type="checkbox"/> Project Proforma, including before- and after-term-change 15-year cash flow projections.</label><label><input checked="" class="requested-doc" type="checkbox"/> Appraisal (current within 6 months of application date).</label><label><input checked="" class="requested-doc" type="checkbox"/> Commitment Letter.</label><label><input checked="" class="requested-doc" type="checkbox"/> List of Properties in LAHD Multifamily Loan Portfolio Form — new General Partner(s) only.</label><label><input checked="" class="requested-doc" type="checkbox"/> Resume of Multifamily Affordable Housing Experience — buyer only.</label><label><input checked="" class="requested-doc" type="checkbox"/> List of managed properties in LAHD portfolio — new property manager only.</label><label><input checked="" class="requested-doc" type="checkbox"/> Buyer's Self-Certification of Financial Capacity — existing and/or new Borrower.</label><button class="btn btn-light" id="v107Cancel">Cancel</button><button class="btn btn-primary" id="v107Send">Send Invitation (Demo)</button></div></div><script id="v107-integration-script">
 (function(){
 'use strict';
