@@ -2025,4 +2025,28 @@ if(route==='staff'){
   }
   document.addEventListener('click',openPage,true);
 })();
+</script><script id="v166-1-role-handoff">
+/* Keep the active demo access tier when opening standalone borrower forms. */
+(function(){
+  function activeRole(){
+    var basic=document.getElementById('basicUserView');
+    if(basic && getComputedStyle(basic).display!=='none' && !basic.hidden) return 'basic';
+    var b=document.getElementById('basicUserDemo');
+    if(b && b.classList.contains('active')) return 'basic';
+    var affiliated=document.getElementById('tier2Btn');
+    return affiliated && affiliated.classList.contains('active') ? 'tier2' : 'tier1';
+  }
+  function save(role){
+    try {sessionStorage.setItem('lahdBorrowerRole',role);sessionStorage.setItem('lahdDemoRole',role);} catch(e){}
+  }
+  document.addEventListener('click',function(e){
+    var switcher=e.target.closest('#tier1Btn,#tier2Btn,#basicUserDemo');
+    if(switcher){
+      save(switcher.id==='tier2Btn'?'tier2':switcher.id==='basicUserDemo'?'basic':'tier1');
+      return;
+    }
+    var target=e.target.closest('a[href*="loan-portfolio-transaction-form.html"],a[href*="reserve-withdrawal-form.html"],#universalAddRequest,#basicSubmitRequest,#basicAddRequest,[data-open-integrated-request]');
+    if(target) save(activeRole());
+  },true);
+})();
 </script></body></html>
