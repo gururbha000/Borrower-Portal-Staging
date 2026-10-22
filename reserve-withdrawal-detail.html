@@ -3639,4 +3639,50 @@ html body #staffWrap>#ownershipStaffWorkspace{display:none!important}
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
-</script><style id="v154-final-grid-guard">html body #staffWrap > .staffGrid{display:grid!important;grid-template-columns:260px minmax(0,1fr)!important;gap:20px!important;align-items:start!important}html body #staffWrap > .staffGrid > .reviewMain{min-width:0!important}@media(max-width:750px){html body #staffWrap > .staffGrid{grid-template-columns:1fr!important}}</style></body></html>
+</script><style id="v154-final-grid-guard">html body #staffWrap > .staffGrid{display:grid!important;grid-template-columns:260px minmax(0,1fr)!important;gap:20px!important;align-items:start!important}html body #staffWrap > .staffGrid > .reviewMain{min-width:0!important}@media(max-width:750px){html body #staffWrap > .staffGrid{grid-template-columns:1fr!important}}</style>
+<style id="v169InlineEditStyles">
+.v169-editbar{display:flex;justify-content:flex-end;gap:8px;margin:0 0 12px}.v169-editbar button{padding:7px 13px;border:1px solid #9bb1c8;background:#fff;color:#174b78;border-radius:6px;cursor:pointer;font-weight:600}.v169-editbar button.v169-save{background:#155d99;color:#fff;border-color:#155d99}.v169-editbar button[hidden]{display:none!important}.v169-editfield{box-sizing:border-box;width:100%;max-width:440px;min-height:34px;border:1px solid #7d9ab8;border-radius:5px;padding:6px 9px;font:inherit;color:#24384c;background:white}.v169-editfield.v169-multiline{min-height:80px;resize:vertical}.v169-editfield:focus{outline:2px solid #80b9e8;outline-offset:1px}
+</style>
+<script id="v169InlineEditLogic">
+(function(){
+ 'use strict';
+ var settings={p1:{labels:['Needed By:','Phone:','Email:','On Behalf Of:'], title:'Request Information'},p3:{labels:['Reserve Fund:','Withdrawal Amount:','Fiscal Year:','Need-By Date:','Description:'],title:'Reserve Withdrawal'}};
+ function initialize(){
+  Object.keys(settings).forEach(function(id){
+   var panel=document.getElementById(id); if(!panel||panel.querySelector('.v169-editbar'))return;
+   var config=settings[id],targets=[];
+   panel.querySelectorAll('.detailGrid > div').forEach(function(cell){
+    var span=cell.querySelector('span'),value=cell.querySelector('strong');
+    if(span&&value&&config.labels.indexOf(span.textContent.trim())!==-1)targets.push({label:span.textContent.trim(),node:value});
+   });
+   if(!targets.length)return;
+   var bar=document.createElement('div');bar.className='v169-editbar';
+   bar.innerHTML='<button type="button" data-action="edit">Edit</button><button type="button" class="v169-save" data-action="save" hidden>Save</button><button type="button" data-action="cancel" hidden>Cancel</button>';
+   var h=panel.querySelector('h2'); if(h)h.insertAdjacentElement('afterend',bar);
+   var edit=bar.querySelector('[data-action="edit"]'),save=bar.querySelector('[data-action="save"]'),cancel=bar.querySelector('[data-action="cancel"]');
+   function buttons(active){edit.hidden=active;save.hidden=!active;cancel.hidden=!active;}
+   edit.addEventListener('click',function(){
+    targets.forEach(function(t){
+     var value=t.node.textContent.trim(),input;
+     if(t.label==='Reserve Fund:'){
+      input=document.createElement('select');['Operating Reserve','Replacement Reserve'].forEach(function(x){var o=document.createElement('option');o.value=x;o.textContent=x;input.appendChild(o)});input.value=value;
+     }else if(t.label==='Description:') {input=document.createElement('textarea');input.value=value;input.classList.add('v169-multiline');}
+     else {input=document.createElement('input');input.type='text';input.value=value;}
+     input.classList.add('v169-editfield');input.setAttribute('aria-label',t.label.replace(':',''));t.node.hidden=true;t.node.insertAdjacentElement('afterend',input);t.input=input;
+    });buttons(true);
+   });
+   cancel.addEventListener('click',function(){targets.forEach(function(t){if(t.input){t.input.remove();t.input=null;t.node.hidden=false;}});buttons(false);});
+   save.addEventListener('click',function(){
+    for(var i=0;i<targets.length;i++){
+     var t=targets[i],value=t.input.value.trim();if(!value){alert(t.label+' is required.');t.input.focus();return;}
+     if(t.label==='Email:'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)){alert('Enter a valid email address.');t.input.focus();return;}
+     if(t.label==='Withdrawal Amount:'&&!/^\$?[\d,]+(?:\.\d{1,2})?$/.test(value)){alert('Enter a valid withdrawal amount.');t.input.focus();return;}
+    }
+    targets.forEach(function(t){t.node.textContent=t.input.value.trim();t.input.remove();t.input=null;t.node.hidden=false;});buttons(false);
+   });
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize);else initialize();
+})();
+</script>
+</body></html>
