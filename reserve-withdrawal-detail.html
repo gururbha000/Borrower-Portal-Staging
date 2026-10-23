@@ -3587,7 +3587,8 @@ html body #staffWrap>#ownershipStaffWorkspace{display:none!important}
   wrap.classList.remove('queueMode','ow-mode');view.classList.remove('queue-mode');
   document.getElementById('staffQueue')?.style.setProperty('display','none','important');
   // Restore the original Step 1 layout, review controls and all workflow panels.
-  const row=[...document.querySelectorAll('#reserveQueue tbody tr')].find(r=>r.querySelector('td')?.textContent.trim()===id);
+  const parentId=id.match(/^(RW-\d+)-(?:SL|CH)-\d+$/)?.[1]||id;
+  const row=[...document.querySelectorAll('#reserveQueue tbody tr')].find(r=>r.querySelector('td')?.textContent.trim()===parentId);
   const c=row?[...row.cells].map(x=>x.textContent.trim().replace(/\s+/g,' ')):[];
   const data={id,submitted:c[1]||'Not supplied',project:c[2]||'Not supplied',loan:c[3]||'Not supplied',reserve:c[4]||'Not supplied',amount:c[5]||'Not supplied',name:c[6]||'Not supplied',email:c[7]||'Not supplied',comments:c[8]||'Not supplied',status:c[9]||'Not supplied'};
   const banner=wrap.querySelector('.staffBanner');
@@ -3600,10 +3601,6 @@ html body #staffWrap>#ownershipStaffWorkspace{display:none!important}
   }
   document.getElementById('v152DemoNotice')?.remove();
   if(id===SAMPLE)return;
-  const notice=document.createElement('div');notice.id='v152DemoNotice';notice.setAttribute('role','status');
-  notice.style.cssText='margin:14px 24px;padding:12px 16px;background:#fff5dc;border:1px solid #d8b96a;border-radius:6px;color:#513c10;font:13px Arial';
-  notice.textContent='Demo request '+id+': staff review functions are shown using the original Reserve Withdrawal workspace. Request-level details below come from the sample queue; invoice/bid entries, prior requests, documents, activity and supervisor history are example workflow data, not verified records for this request.';
-  banner?.after(notice);
   // Update only the original request summary and requester cards, keeping their two-column layout.
   function field(root,label,value){
    const card=document.querySelector(root);if(!card)return;
@@ -3730,4 +3727,36 @@ html body #staffWrap>#ownershipStaffWorkspace{display:none!important}
  window.updateReserveLink=updateReserveLink;
 })();
 </script>
-</body></html>
+<style id="v1711-relationship-style">
+.v1711-relationship{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 13px;margin:0 0 15px;border:1px solid #d5e1ed;background:#f7fafd;border-radius:6px;font:13px Arial;color:#526a82}
+.v1711-relationship button{border:0;background:none;color:#115eaa;text-decoration:underline;font:700 13px Arial;cursor:pointer;padding:0}
+</style>
+<script id="v1711-relationship-fix">
+(function(){'use strict';
+ const ORIGINAL='RW-260298', CHILD='RW-260298-SL-01';
+ function init(){
+  const id=new URLSearchParams(location.search).get('requestId')||'001250301';
+  const related=(id===ORIGINAL||id===CHILD);
+  document.getElementById('v152DemoNotice')?.remove();
+  if(!related)return;
+  const parent=id===ORIGINAL;
+  const cards=document.querySelectorAll('#p1 .detailCards > .detailCard');
+  const values={submitted:'09/24/2026',property:'Harbor View Apts',name:'Lisa Chen',email:'lisa.chen@example.com',loan:'23-130505-002',reserve:'Operating',amount:'$12,750'};
+  function fill(card, entries){if(!card)return;card.querySelectorAll('.detailGrid > div').forEach(cell=>{const label=cell.querySelector('span')?.textContent.trim().replace(/:$/,'').toLowerCase();const target=cell.querySelector('strong');if(target&&Object.prototype.hasOwnProperty.call(entries,label))target.textContent=entries[label]})}
+  fill(cards[0],{'request #':id,'type':'Reserve Withdrawal','submitted':values.submitted,'property':values.property});
+  fill(cards[1],{'name':values.name,'email':values.email});
+  fill(document.getElementById('p2'),{'project / property':values.property,'loan #':values.loan});
+  fill(document.getElementById('p3'),{'reserve fund':values.reserve,'withdrawal amount':values.amount});
+  const banner=document.querySelector('#staffWrap .staffBanner');
+  if(banner){const fields=banner.querySelectorAll(':scope > div strong');if(fields[0])fields[0].textContent=id;if(fields[1])fields[1].textContent='Reserve Withdrawal';if(fields[2])fields[2].textContent=values.property;if(fields[3])fields[3].textContent=values.loan;const badge=banner.querySelector('.reviewStatus');if(badge)badge.textContent='● Submitted'}
+  const description=document.querySelector('#p1 .desc .readBox');if(description&&description.textContent.includes('not supplied'))description.textContent='Roof repairs and water-damage remediation affecting occupied units.';
+  const old=document.getElementById('v1711Relationship');old?.remove();
+  const panel=document.getElementById('p1');const heading=panel?.querySelector('h2');
+  if(panel&&heading){const rel=document.createElement('div');rel.id='v1711Relationship';rel.className='v1711-relationship';const label=document.createElement('span');label.textContent=parent?'Related Request:':'Original Request:';const link=document.createElement('button');link.type='button';link.textContent=parent?CHILD:ORIGINAL;link.title='Open '+(parent?'related':'original')+' request';link.addEventListener('click',()=>location.assign('reserve-withdrawal-detail.html?requestId='+encodeURIComponent(parent?CHILD:ORIGINAL)));rel.append(label,link);heading.before(rel)}
+  // Existing related-request widget is tied to older sample data; avoid showing a contradictory relationship.
+  const legacy=document.getElementById('relatedRequestInline');if(legacy)legacy.style.display='none';
+  const legacyButton=document.getElementById('relatedRequestControl');if(legacyButton)legacyButton.style.display='none';
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script></body></html>
