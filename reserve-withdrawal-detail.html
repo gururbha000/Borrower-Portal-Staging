@@ -2046,7 +2046,7 @@ syncInvoiceTotal();
 <span class="relatedFundingStatus">Related Request In Review</span>
 </div>
 <div class="supervisorFundingNoticeDetails">
-<div><small>Related Request</small><button class="relatedRequestLink" onclick="goToRelatedRequests()" type="button">RW-260315 ↗</button></div>
+<div><small>Related Request</small><button class="relatedRequestLink" onclick="goToRelatedRequests()" type="button">RW-260298-SL-01 ↗</button></div>
 <div><small>Funding Reserve</small><strong>Replacement Reserve</strong></div>
 <div><small>Related Request Amount</small><strong>$25,000</strong></div>
 </div>
@@ -2124,7 +2124,7 @@ syncInvoiceTotal();
 </div>
 <div class="connectionCompact related">
 <span class="connectionType">Related Request</span>
-<button class="connectionRequestLink" onclick="showRelatedRequestDemo()" type="button">RW-260315</button>
+<button class="connectionRequestLink" onclick="showRelatedRequestDemo()" type="button">RW-260298-SL-01</button>
 <span>Replacement Reserve</span>
 <span>$25,000</span>
 <span class="connectionStatus">In Review</span>
@@ -2851,7 +2851,7 @@ function confirmRelatedReserveRequest(){
 
   const toast=document.getElementById('relatedReserveSuccess');
   const txt=document.getElementById('relatedReserveSuccessText');
-  if(txt) txt.textContent='RW-260315 was created for '+reserve+' and linked to this request. It is now available for separate staff review.';
+  if(txt) txt.textContent='RW-260298-SL-01 was created for '+reserve+' and linked to this request. It is now available for separate staff review.';
   if(toast){toast.style.display='block';setTimeout(()=>toast.style.display='none',6500);}
 }
 </script><style>
@@ -2890,7 +2890,7 @@ function showRelatedRequestDemo(){
   const d=document.createElement('div');
   d.id='relatedRequestDemo';
   d.className='relatedRequestDemo';
-  d.innerHTML='<strong>RW-260315 · Replacement Reserve</strong><br>Related to <u>RW-260298</u> — Operating Reserve Withdrawal &nbsp;·&nbsp; Relationship: Additional Reserve Funding';
+  d.innerHTML='<strong>RW-260298-SL-01 · Replacement Reserve</strong><br>Related to <u>RW-260298</u> — Operating Reserve Withdrawal &nbsp;·&nbsp; Relationship: Additional Reserve Funding';
   card.insertAdjacentElement('afterend',d);
 }
 </script><style>
@@ -3727,10 +3727,6 @@ html body #staffWrap>#ownershipStaffWorkspace{display:none!important}
  window.updateReserveLink=updateReserveLink;
 })();
 </script>
-<style id="v1711-relationship-style">
-.v1711-relationship{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 13px;margin:0 0 15px;border:1px solid #d5e1ed;background:#f7fafd;border-radius:6px;font:13px Arial;color:#526a82}
-.v1711-relationship button{border:0;background:none;color:#115eaa;text-decoration:underline;font:700 13px Arial;cursor:pointer;padding:0}
-</style>
 <script id="v1711-relationship-fix">
 (function(){'use strict';
  const ORIGINAL='RW-260298', CHILD='RW-260298-SL-01';
@@ -3750,12 +3746,28 @@ html body #staffWrap>#ownershipStaffWorkspace{display:none!important}
   const banner=document.querySelector('#staffWrap .staffBanner');
   if(banner){const fields=banner.querySelectorAll(':scope > div strong');if(fields[0])fields[0].textContent=id;if(fields[1])fields[1].textContent='Reserve Withdrawal';if(fields[2])fields[2].textContent=values.property;if(fields[3])fields[3].textContent=values.loan;const badge=banner.querySelector('.reviewStatus');if(badge)badge.textContent='● Submitted'}
   const description=document.querySelector('#p1 .desc .readBox');if(description&&description.textContent.includes('not supplied'))description.textContent='Roof repairs and water-damage remediation affecting occupied units.';
-  const old=document.getElementById('v1711Relationship');old?.remove();
-  const panel=document.getElementById('p1');const heading=panel?.querySelector('h2');
-  if(panel&&heading){const rel=document.createElement('div');rel.id='v1711Relationship';rel.className='v1711-relationship';const label=document.createElement('span');label.textContent=parent?'Related Request:':'Original Request:';const link=document.createElement('button');link.type='button';link.textContent=parent?CHILD:ORIGINAL;link.title='Open '+(parent?'related':'original')+' request';link.addEventListener('click',()=>location.assign('reserve-withdrawal-detail.html?requestId='+encodeURIComponent(parent?CHILD:ORIGINAL)));rel.append(label,link);heading.before(rel)}
-  // Existing related-request widget is tied to older sample data; avoid showing a contradictory relationship.
-  const legacy=document.getElementById('relatedRequestInline');if(legacy)legacy.style.display='none';
-  const legacyButton=document.getElementById('relatedRequestControl');if(legacyButton)legacyButton.style.display='none';
+  // Reuse the original related-request panel and toolbar, without adding another banner.
+  const panel=document.getElementById('relatedRequestInline');
+  const toolbar=document.getElementById('relatedRequestControl');
+  if(panel){
+    panel.style.display='block';
+    const head=panel.querySelector('.relatedRequestInlineHead strong');
+    if(head)head.textContent=parent?'Related Request':'Original Request';
+    const desc=panel.querySelector('.relatedRequestInlineHead span');
+    if(desc)desc.textContent=parent?'Staff-created split request linked to this withdrawal.':'Parent withdrawal request for this split allocation.';
+    const type=panel.querySelector('.connectionType');
+    if(type)type.textContent=parent?'Related Request':'Original Request';
+    const link=panel.querySelector('.connectionRequestLink');
+    if(link){link.textContent=parent?CHILD:ORIGINAL;link.onclick=()=>location.assign('reserve-withdrawal-detail.html?requestId='+encodeURIComponent(parent?CHILD:ORIGINAL));}
+    const reserve=panel.querySelector('.connectionCompact.related > span:nth-of-type(2)');
+    if(reserve)reserve.textContent=parent?'Replacement Reserve':'Operating Reserve';
+    const amount=panel.querySelector('.connectionCompact.related > span:nth-of-type(3)');
+    if(amount)amount.textContent=parent?'Split allocation':'$12,750';
+    const purpose=panel.querySelector('.connectionPurpose');
+    if(purpose)purpose.textContent=parent?'Staff-created split request':'Original withdrawal';
+  }
+  if(toolbar){toolbar.style.display='inline-flex';toolbar.title=parent?'Go to related request information':'Go to original request information';}
+
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
