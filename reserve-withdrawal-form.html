@@ -1516,12 +1516,13 @@ html[data-v96-route="reserve"] .demoSwitch {display:none!important}
 <label class="category-card selected" id="reserveCategoryCard">
 <input checked="" name="requestCategory" type="radio" value="reserve"/>
 <span>
-<div class="category-title">Multifamily - Reserve Withdrawal</div>
-<div class="category-desc">Submit a request to withdraw funds from an Operating Reserve or Replacement Reserve.</div>
+<div class="category-title">Loan Portfolio Requests</div>
+<div class="category-desc">Submit reserve withdrawal requests, residual receipt disputes, and other requests related to existing City loans.</div>
 </span>
 </label>
 </div>
-<div class="category-rule">Reserve Withdrawal is a separate request and cannot be combined with Loan Portfolio Transaction types.</div>
+<div class="category-rule">Loan Portfolio Requests are submitted separately from Loan Portfolio Transactions.</div>
+<div id="lpRequestTypeChooser" style="margin-top:12px;max-width:470px"><label for="lpRequestType" class="label" style="display:block;margin-bottom:6px;font-weight:600">Request Type *</label><select id="lpRequestType" style="width:100%;padding:11px;border:1px solid #bdc9d6;border-radius:6px;background:#fff;font:inherit"><option value="reserve">Reserve Withdrawal</option><option value="rra">Residual Receipt Analysis (RRA) Invoice Dispute</option></select></div>
 
 </div>
 <div class="section" id="borrower">
@@ -2008,4 +2009,4 @@ const submit=document.createElement('button');submit.type='button';submit.classN
 const note=document.createElement('div');note.style.cssText='margin:8px 0;color:#526b83;font-size:12px';note.textContent='Prototype: this action saves a demonstration request in this browser session.';footer.after(note);
 submit.addEventListener('click',()=>{const loan=document.querySelector('input[name="v82AssociatedLoan"]:checked')?.value||document.querySelector('.v82-m-loan')?.value?.trim()||'';if(!loan){alert('Please associate or enter a loan in Section 1.');return;}const inputs=document.querySelectorAll('#requestor .grid3 input');const requester=inputs[0]?.value?.trim()||'';if(!requester){alert('Please enter Requested By in Section 2.');return;}const amount=document.getElementById('withdrawalAmount')?.value||'';const fund=document.getElementById('fundType')?.value||'';if(!amount||!fund){alert('Please enter a reserve fund and amount in Section 3.');return;}
 let items=[];try{items=JSON.parse(sessionStorage.getItem(KEY)||'[]')}catch(e){}const seq=items.filter(x=>x.parent===ctx.parent&&x.origin===ctx.mode).length+1;const id=ctx.mode==='additional'?(ctx.parent+'-CH-'+String(seq).padStart(2,'0')):('RW-DEMO-'+Date.now().toString().slice(-6));const record={id,parent:ctx.parent||'',loan,project:ctx.project||'',date:new Date().toLocaleDateString('en-US'),fund,amount,requester,email:inputs[2]?.value||'',origin:ctx.mode==='additional'?'borrower':'staff'};items.push(record);sessionStorage.setItem(KEY,JSON.stringify(items));sessionStorage.removeItem(START);alert('Demonstration request '+id+' created.');location.assign(ctx.mode==='additional'?'borrower-portal.html':'staff-dashboard.html');});
-})();</script></body></html>
+})();</script><script id="v172-request-type-router">(function(){var select=document.getElementById('lpRequestType');if(select)select.addEventListener('change',function(){if(this.value==='rra')window.location.assign('rra-dispute-form.html');});})();</script></body></html>
