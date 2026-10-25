@@ -3624,4 +3624,48 @@ rows.forEach(tr=>{const key=tr.dataset.requirementKey,review=tr.querySelector('.
 const info=document.createElement('p');info.className='lt-doc-guidance';info.textContent='Availability shows whether a file was submitted; Staff Review records its acceptability. Conditional documents require applicability review. Shared documents may be reused from the original request.';
 const h=section.querySelector('.ow-panel-head');if(h)h.after(info);
 if(related){const invite=document.getElementById('owInvite');if(invite)invite.textContent='+ Request Missing Documents';const save=document.getElementById('owSaveDocs');if(save)save.addEventListener('click',()=>{rows.forEach(tr=>{const key=tr.dataset.requirementKey;saved[key]={review:tr.querySelector('.ow-review')?.value,comment:tr.querySelector('.ow-comment')?.value||''}});sessionStorage.setItem(reviewKey,JSON.stringify(saved));});}
-})();</script><style id="v1753-doc-style">.lt-doc-guidance{margin:10px 0 14px;color:#51657c;font-size:13px}.lt-doc-view{border:0;background:none;color:#075c9c;text-decoration:underline;cursor:pointer;font-size:12px}.ow-table-scroll{overflow-x:auto}.ow-table th,.ow-table td{vertical-align:top}</style></body></html>
+})();</script><style id="v1753-doc-style">.lt-doc-guidance{margin:10px 0 14px;color:#51657c;font-size:13px}.lt-doc-view{border:0;background:none;color:#075c9c;text-decoration:underline;cursor:pointer;font-size:12px}.ow-table-scroll{overflow-x:auto}.ow-table th,.ow-table td{vertical-align:top}</style><style id="v1754-doc-ux">
+/* Step 4 only: compact table without losing underlying data or event handlers */
+#owDocuments .ow-table-scroll{overflow-x:auto;max-width:100%}
+#owDocuments .ow-table{width:100%;min-width:0;table-layout:fixed}
+#owDocuments .ow-table thead th:nth-child(2),#owDocuments .ow-table tbody td:nth-child(2),
+#owDocuments .ow-table thead th:nth-child(3),#owDocuments .ow-table tbody td:nth-child(3),
+#owDocuments .ow-table thead th:nth-child(4),#owDocuments .ow-table tbody td:nth-child(4),
+#owDocuments .ow-table thead th:nth-child(6),#owDocuments .ow-table tbody td:nth-child(6),
+#owDocuments .ow-table thead th:nth-child(7),#owDocuments .ow-table tbody td:nth-child(7){display:none!important}
+#owDocuments .ow-table thead th:nth-child(1),#owDocuments .ow-table tbody td:nth-child(1){width:48%;overflow-wrap:anywhere}
+#owDocuments .ow-table thead th:nth-child(5),#owDocuments .ow-table tbody td:nth-child(5){width:16%;display:table-cell!important}
+#owDocuments .ow-table thead th:nth-child(8),#owDocuments .ow-table tbody td:nth-child(8){width:17%;display:table-cell!important}
+#owDocuments .ow-table thead th:nth-child(9),#owDocuments .ow-table tbody td:nth-child(9){width:19%;display:table-cell!important}
+#owDocuments .ow-table td{vertical-align:middle;padding:10px 12px}
+#owDocuments .ow-table .ow-review,#owDocuments .ow-table .ow-comment{max-width:100%;width:100%;box-sizing:border-box;font-size:12px}
+#owDocuments .lt-doc-title{font-weight:600;line-height:1.35}
+#owDocuments .lt-doc-sub{margin-top:5px;font-size:11px;line-height:1.4;color:#536a82}
+#owDocuments .lt-doc-requirement{font-weight:700;color:#315779}
+#owDocuments .lt-doc-group-row td{display:table-cell!important;width:auto!important;background:#eaf2fa!important;padding:0!important;border-top:1px solid #c7d8e8}
+#owDocuments .lt-doc-group-toggle{width:100%;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;text-align:left;background:transparent;border:0;color:#163e65;cursor:pointer;font-weight:700;font-size:14px}
+#owDocuments .lt-doc-group-toggle small{font-weight:400;color:#546e87;font-size:12px}
+#owDocuments tr.lt-doc-collapsed{display:none!important}
+#owDocuments .lt-doc-group-toggle:focus-visible{outline:2px solid #1768bd;outline-offset:-3px}
+@media(max-width:850px){#owDocuments .ow-table{min-width:730px}}
+</style>
+<script id="v1754-doc-ux-script">(function(){'use strict';
+const section=document.getElementById('owDocuments');const table=section?.querySelector('.ow-table-scroll table');const tbody=table?.querySelector('tbody');if(!tbody||!window.LAHD_LP_DOCS)return;
+const cfg=window.LAHD_LP_DOCS;
+const short={signed:['Signed Request Letter','Official letterhead; include project/loan number, circumstances, requested changes and signature'],resolution:['Resolution Authority & Signatories','Include authorized signatory documentation'],formation:['Organization Formation Documents','Include amendments and organizational chart'],good:['California Certificate of Good Standing','Issued within six months of application'],closing:['Estimated Closing Statement',''],purchase:['Purchase and Sale Agreement','For purchases only'],questionnaire:['Asset Management Questionnaire',''],other:['Other Supporting Documents','As needed'],cert:['Certification & Authorization to Release','Signed form'],waiver:['Waiver of Notice to Inspect','Signed form'],mortgage:['Mortgage Statements','Two current months'],reserve:['Reserve Account Statements','Two current months'], 'sig-new':['Proposed Borrower Signature Blocks','Provide in MS Word format'], 'sig-current':['Existing Borrower Signature Blocks','Provide in MS Word format'],title:['Property Title Report','Include hyperlinks to recorded documents'],worksheet:['Broker / Lender Worksheet',''],w9:['IRS Form W-9','New General Partner or Managing General Partner only'],business:['Business Tax Certificate','New borrower only'],proforma:['Project Proforma','Include before/after term-change 15-year cash flow projections'],appraisal:['Appraisal','Current within six months of application'],commitment:['Commitment Letter',''],portfolio:['LAHD Multifamily Portfolio Properties List','New General Partner only where applicable'],resume:['Affordable Housing Experience Resume','New sponsor or buyer, as applicable'],managed:['List of Managed LAHD Properties','New property manager only'],financial:['Buyer Financial Capacity Self-Certification','Existing and/or new borrower'],casp:['CASp Report','If applicable'],estoppel:['Signed Estoppel Request','Include project/loan number, reason, signature and date needed']};
+const rows=[...tbody.querySelectorAll('tr[data-requirement-key]')];if(!rows.length)return;
+const orig=rows.some(tr=>tr.dataset.doc&&!String(tr.dataset.doc).startsWith('lp-'));
+const groups=new Map();
+rows.forEach(tr=>{const key=tr.dataset.requirementKey;const spec=cfg.documents[key]||[];const first=tr.children[0];if(!first)return;
+const existingLink=first.querySelector('a.ow-docname-link');const originalText=existingLink?.textContent||first.textContent;const label=short[key]?.[0]||spec[0]||originalText;
+const instructions=short[key]?.[1]||'';const req=tr.dataset.requirement||spec[1]||'required';
+if(existingLink){existingLink.textContent=label;existingLink.classList.add('lt-doc-title');}
+else{const title=document.createElement('span');title.className='lt-doc-title';title.textContent=label;first.insertBefore(title,first.firstChild);const nodes=[...first.childNodes];nodes.forEach(n=>{if(n!==title&&n.nodeType===3&&n.textContent.trim())n.remove()});}
+const sub=document.createElement('div');sub.className='lt-doc-sub';const reqLabel=req==='conditional'?'Conditional':req==='optional'?'Optional':'Required';const tag=document.createElement('span');tag.className='lt-doc-requirement';tag.textContent=reqLabel;sub.append(tag);if(instructions){const span=document.createElement('span');span.textContent=' · '+instructions;sub.append(span);}first.append(sub);
+const party=orig?(Number(tr.dataset.doc)<=8?'General':Number(tr.dataset.doc)<=12?'Seller':'Buyer'):'General';
+const group=party==='General'?'General Documents':party==='Seller'?'Seller Documents':'Buyer Documents';if(!groups.has(group))groups.set(group,[]);groups.get(group).push(tr);
+});
+const header=table.querySelector('thead tr');if(header){[...header.children].forEach((th,i)=>{if(i===0)th.textContent='Document';if(i===4)th.textContent='Availability';if(i===7)th.textContent='Staff Review';if(i===8)th.textContent='Comments';});}
+const ordered=orig?['General Documents','Seller Documents','Buyer Documents']:['General Documents'];
+ordered.forEach((name,index)=>{const list=groups.get(name)||[];if(!list.length)return;const groupRow=document.createElement('tr');groupRow.className='lt-doc-group-row';const cell=document.createElement('td');cell.colSpan=9;const btn=document.createElement('button');btn.type='button';btn.className='lt-doc-group-toggle';const received=list.filter(tr=>/Received/i.test(tr.children[4]?.textContent||'')).length;const state={open:index===0};function refresh(){btn.innerHTML='<span>'+(state.open?'▾':'▸')+' '+name+'</span><small>'+received+' of '+list.length+' received</small>';btn.setAttribute('aria-expanded',String(state.open));list.forEach(tr=>tr.classList.toggle('lt-doc-collapsed',!state.open));}btn.onclick=()=>{state.open=!state.open;refresh()};cell.append(btn);groupRow.append(cell);tbody.append(groupRow);list.forEach(tr=>tbody.append(tr));refresh();});
+})();</script></body></html>
