@@ -3538,12 +3538,12 @@ function finish(commit){edits.forEach(({node,input,old})=>{if(commit)node.textCo
 edit.addEventListener('click',()=>{const fields=[...section.querySelectorAll('.ow-fields > div')];fields.forEach(field=>{const label=field.querySelector('small');const node=field.querySelector('strong');if(!label||!node||cfg.exclude.includes(label.textContent.trim()))return;const old=node.textContent;const input=document.createElement('input');input.className='v170-editor';input.value=old;node.replaceWith(input);edits.push({node,input,old})});if(cfg.id==='owInfo'){const area=section.querySelector('textarea');if(area){const old=area.value;area.readOnly=false;edits.push({node:null,input:area,old,textarea:true})}}edit.hidden=true;save.hidden=false;cancel.hidden=false;});
 function complete(commit){edits.forEach(item=>{if(item.textarea){item.input.value=commit?item.input.value:item.old;item.input.readOnly=true}else{if(commit)item.node.textContent=item.input.value.trim()||item.old;item.input.replaceWith(item.node)}});edits=[];edit.hidden=false;save.hidden=true;cancel.hidden=true;}
 save.addEventListener('click',()=>complete(true));cancel.addEventListener('click',()=>complete(false));
-});})();</script><script id="ltRelatedTransactionsFeature">
+});})();</script><script src="lp-document-requirements.js"></script><script id="ltRelatedTransactionsFeature">
 (function(){
 'use strict';
 const root=document.getElementById('ownershipStaffWorkspace');if(!root)return;
 const PARENT='LT-260322',KEY='lahd_lp_related_'+PARENT;
-const TYPES=['Change of Ownership (Sale)','Loan Amendment','Subordination','Change of Borrower','Other'];
+const TYPES=Object.keys(window.LAHD_LP_DOCS?.rules||{});
 const docRules={'Change of Ownership (Sale)':['Signed request and authorization','Organizational documents','Purchase and sale agreement (if applicable)'],'Loan Amendment':['Signed amendment request','Relevant loan agreement provisions','Supporting financial analysis (as applicable)'],'Subordination':['Signed subordination request','Proposed financing terms','Draft subordination agreement (if available)'],'Change of Borrower':['Signed request','Borrower entity documents','Ownership / organizational chart'],'Other':['Signed explanation of requested transaction','Supporting documentation as applicable']};
 const load=()=>{try{return JSON.parse(sessionStorage.getItem(KEY)||'[]')}catch(e){return []}};
 const save=x=>sessionStorage.setItem(KEY,JSON.stringify(x));
@@ -3566,7 +3566,7 @@ body.innerHTML='<div class="lt-related-form"><p class="lt-related-muted">Parent 
 '<div id="ltTypeOptions" class="lt-multiselect-options" hidden>'+TYPES.filter(t=>!current.includes(t)).map(t=>'<label><input type="checkbox" class="lt-type" value="'+safe(t)+'"> '+safe(t)+'</label>').join('')+'</div></div>'+
 '<p class="lt-related-muted">Select one or more types not already included in the original submission.</p>'+
 '<label>Reason for Creating Related Transaction *</label><textarea id="ltReason" placeholder="Describe why separate processing is required"></textarea>'+
-'<label>Document Availability</label><select id="ltDocAvailability"><option value="Pending">Documents pending / to be requested</option><option value="Partial">Partially available</option><option value="Available">Required documents available</option></select>'+
+
 '<p class="lt-related-notice">Related transactions can be created with outstanding documents. The checklist will be generated for each selected type; shared documents may be reused from the parent submission.</p></div>';
 const toggle=body.querySelector('#ltTypeToggle'),options=body.querySelector('#ltTypeOptions');
 toggle.onclick=()=>{options.hidden=!options.hidden;toggle.setAttribute('aria-expanded',String(!options.hidden))};
@@ -3577,7 +3577,20 @@ function close(){shade.hidden=true}shade.querySelector('#ltRelatedCancel').oncli
 const create=document.getElementById('ltCreateRelated');if(create)create.onclick=openCreate;
 panel.addEventListener('click',e=>{const b=e.target.closest('[data-lt-open]');if(b)openView(b.dataset.ltOpen)});
 confirm.onclick=()=>{if(viewId){const rows=load(),r=rows.find(x=>x.id===viewId);if(!r)return;r.status=document.getElementById('ltReviewStatus').value;r.assignee=document.getElementById('ltAssignee').value.trim();r.reviewNote=document.getElementById('ltReviewNote').value.trim();save(rows);render();close();return}
-const types=[...body.querySelectorAll('.lt-type:checked')].map(x=>x.value),reason=document.getElementById('ltReason').value.trim();if(!types.length||!reason){alert('Select at least one transaction type and enter a reason.');return}const rows=load(),next=Math.max(0,...rows.map(x=>Number((x.id.match(/-(\d+)$/)||[])[1])||0))+1,id=PARENT+'-'+String(next).padStart(2,'0');rows.push({id,parent:PARENT,types,reason,availability:document.getElementById('ltDocAvailability').value,docs:[...new Set(types.flatMap(t=>docRules[t]||[]))],status:'Created',assignee:'',reviewNote:'',createdAt:new Date().toISOString()});save(rows);render();close();const log=document.getElementById('owLog');if(log){const e=document.createElement('div');e.className='ow-log';e.textContent=new Date().toLocaleString()+' · Created related transaction '+id+' ('+types.join(', ')+') · Staff (demo)';log.prepend(e)}};
+const types=[...body.querySelectorAll('.lt-type:checked')].map(x=>x.value),reason=document.getElementById('ltReason').value.trim();if(!types.length||!reason){alert('Select at least one transaction type and enter a reason.');return}const rows=load(),next=Math.max(0,...rows.map(x=>Number((x.id.match(/-(\d+)$/)||[])[1])||0))+1,id=PARENT+'-'+String(next).padStart(2,'0');rows.push({id,parent:PARENT,types,reason,availability:'Pending',docs:[...new Set(types.flatMap(t=>(window.LAHD_LP_DOCS?.rules[t]||[])))],status:'Created',assignee:'',reviewNote:'',createdAt:new Date().toISOString()});save(rows);render();close();const log=document.getElementById('owLog');if(log){const e=document.createElement('div');e.className='ow-log';e.textContent=new Date().toLocaleString()+' · Created related transaction '+id+' ('+types.join(', ')+') · Staff (demo)';log.prepend(e)}};
 const requested=new URLSearchParams(location.search).get('requestId');if(requested&&requested!==PARENT&&load().some(r=>r.id===requested)){const show=()=>openView(requested);setTimeout(show,80)}
 })();
-</script></body></html>
+</script><script id="v175StaffDocuments">(function(){
+const cfg=window.LAHD_LP_DOCS,section=document.getElementById('owDocuments');if(!cfg||!section)return;
+const wrap=document.createElement('div');wrap.id='v175StaffChecklist';wrap.style.cssText='margin:14px 0;padding:14px;border:1px solid #cbd5e1;border-radius:8px;background:#fff';
+const head=section.querySelector('.ow-panel-head');(head||section).after(wrap);
+const original=section.querySelector('.ow-table-scroll');const stats=section.querySelector('.ow-docstats');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PARENT='LT-260322';const params=new URLSearchParams(location.search);const requestId=params.get('requestId')||PARENT;
+function getRelated(){try{return JSON.parse(sessionStorage.getItem('lahd_lp_related_'+PARENT)||'[]').find(x=>x.id===requestId)}catch(e){return null}}
+const r=getRelated();const types=r?.types||['Change of Ownership (Sale)'];
+if(!r){wrap.innerHTML='<strong>Document requirements</strong><p style="margin:6px 0;color:#64748b">Change of Ownership (Sale): the existing 24-document review table below is retained, including buyer/seller classifications and review actions.</p>';return;}
+if(original)original.style.display='none';if(stats)stats.style.display='none';
+const used=new Map();types.forEach(t=>(cfg.rules[t]||[]).forEach(id=>{if(!used.has(id))used.set(id,[]);used.get(id).push(t)}));
+wrap.innerHTML='<strong>Required Documents — '+esc(types.join(', '))+'</strong><p style="color:#64748b">Linked to '+esc(PARENT)+'. Review original-request documents, upload supporting files, or request missing items. Document review statuses are demonstration-only.</p><div style="overflow-x:auto"><table class="ow-table" style="width:100%"><thead><tr><th>Document / Applies To</th><th>Requirement</th><th>Availability</th><th>Review</th><th>Action</th></tr></thead><tbody>'+[...used].map(([id,ts])=>{const d=cfg.documents[id];return '<tr><td>'+esc(d[0])+'<small style="display:block;color:#64748b">'+esc(ts.join(', '))+'</small></td><td>'+esc(d[1])+'</td><td><select aria-label="Availability"><option>Missing</option><option>Available from original request</option><option>Staff uploaded</option></select></td><td><select aria-label="Review status"><option>Pending Review</option><option>Accepted</option><option>Returned</option><option>Not Applicable</option></select></td><td><input type="file" style="max-width:160px" aria-label="Upload document"></td></tr>'}).join('')+'</tbody></table></div><p style="font-size:12px;color:#64748b">Use existing staff actions to request outstanding documents. File selections and review changes on this checklist are not persisted.</p>';
+})();</script></body></html>

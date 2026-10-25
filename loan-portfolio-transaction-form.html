@@ -1531,12 +1531,12 @@ html[data-v96-route="reserve"] .demoSwitch {display:none!important}
 <label class="category-card" id="reserveCategoryCard">
 <input name="requestCategory" type="radio" value="reserve"/>
 <span>
-<div class="category-title">Loan Portfolio Requests</div>
-<div class="category-desc">Submit reserve withdrawal requests, residual receipt disputes, and other requests related to existing City loans.</div>
+<div class="category-title">Multifamily - Reserve Withdrawal</div>
+<div class="category-desc">Submit a request to withdraw funds from an Operating Reserve or Replacement Reserve.</div>
 </span>
 </label>
 </div>
-<div class="category-rule">Loan Portfolio Requests are submitted separately from Loan Portfolio Transactions.</div>
+<div class="category-rule">Reserve Withdrawal is a separate request and cannot be combined with Loan Portfolio Transaction types.</div>
 <div class="transaction-type-block hidden" id="transactionTypeBlock">
 <label class="label">Select Transaction Type(s) <span class="helper">(Select one or more applicable)</span></label>
 <div class="multi">
@@ -2084,4 +2084,16 @@ window.v107OpenSubmittedOwnershipRequest=function(){
       }
     }, true);
   });
+})();</script><script src="lp-document-requirements.js"></script><script id="v175BorrowerDocuments">(function(){
+const cfg=window.LAHD_LP_DOCS;if(!cfg)return;
+const menu=document.getElementById('multiMenu'),generic=document.getElementById('transactionDocs'),coo=document.getElementById('v107ChangeDocs');if(!menu||!generic)return;
+const box=document.createElement('div');box.id='v175Documents';box.className='section';box.innerHTML='<div class="section-head" id="v175DocHead"><span>5. Document Upload — Selected Transaction Types</span><span>⌃</span></div><div class="section-body"><p class="helper">Requirements are consolidated across selected types. Conditional items apply only in the specified circumstances. Uploaded files remain in this browser form until submission.</p><div id="v175DocRows"></div></div>';generic.after(box);
+box.querySelector('#v175DocHead').onclick=()=>box.classList.toggle('collapsed');
+const uploaded={};const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function update(){const selected=[...menu.querySelectorAll('input[type=checkbox]:checked')].map(x=>x.value);const cooOnly=selected.length===1&&selected[0]==='Change of Ownership (Sale)';box.style.display=selected.length&&!cooOnly?'block':'none';generic.style.display=selected.length&&!cooOnly?'none':'';if(coo)coo.style.display=selected.length&&!cooOnly?'none':'';
+if(!selected.length||cooOnly)return;
+const used=new Map();selected.forEach(t=>(cfg.rules[t]||[]).forEach(id=>{if(!used.has(id))used.set(id,[]);used.get(id).push(t)}));
+const rows=box.querySelector('#v175DocRows');rows.innerHTML=[...used].map(([id,types])=>{const d=cfg.documents[id];let level=d[1];if(selected.includes('Change of Ownership (Sale)')&&cfg.buyerAtIntake.includes(id))level='buyer / review later';return '<div class="docline" data-v175-id="'+esc(id)+'"><span>'+esc(d[0])+' <small style="display:block;color:#56687b">'+esc(level)+' · '+esc(types.join(', '))+'</small></span><input type="file" aria-label="'+esc(d[0])+'"><small class="v175FileState">'+esc(uploaded[id]||'Pending')+'</small></div>'}).join('');
+rows.querySelectorAll('[data-v175-id]').forEach(r=>r.querySelector('input').onchange=e=>{uploaded[r.dataset.v175Id]=e.target.files[0]?.name||'Pending';r.querySelector('.v175FileState').textContent=uploaded[r.dataset.v175Id]});}
+menu.addEventListener('change',()=>setTimeout(update,0));update();
 })();</script></body></html>
