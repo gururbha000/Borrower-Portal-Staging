@@ -3538,7 +3538,13 @@ function finish(commit){edits.forEach(({node,input,old})=>{if(commit)node.textCo
 edit.addEventListener('click',()=>{const fields=[...section.querySelectorAll('.ow-fields > div')];fields.forEach(field=>{const label=field.querySelector('small');const node=field.querySelector('strong');if(!label||!node||cfg.exclude.includes(label.textContent.trim()))return;const old=node.textContent;const input=document.createElement('input');input.className='v170-editor';input.value=old;node.replaceWith(input);edits.push({node,input,old})});if(cfg.id==='owInfo'){const area=section.querySelector('textarea');if(area){const old=area.value;area.readOnly=false;edits.push({node:null,input:area,old,textarea:true})}}edit.hidden=true;save.hidden=false;cancel.hidden=false;});
 function complete(commit){edits.forEach(item=>{if(item.textarea){item.input.value=commit?item.input.value:item.old;item.input.readOnly=true}else{if(commit)item.node.textContent=item.input.value.trim()||item.old;item.input.replaceWith(item.node)}});edits=[];edit.hidden=false;save.hidden=true;cancel.hidden=true;}
 save.addEventListener('click',()=>complete(true));cancel.addEventListener('click',()=>complete(false));
-});})();</script><script src="lp-document-requirements.js"></script><script id="ltRelatedTransactionsFeature">
+});})();</script><script src="lp-document-requirements.js"></script><style id="v1752-related-created-style">
+.lt-related-created-toast{position:fixed;right:24px;bottom:24px;z-index:10060;background:#f1f8f3;border:1px solid #a9d1b4;border-left:4px solid #247642;border-radius:6px;padding:13px 16px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-width:420px;color:#24452e;font:13px Arial}
+.lt-related-created-toast[hidden]{display:none!important}
+.lt-related-created-toast strong,.lt-related-created-toast span{display:block}.lt-related-created-toast span{margin-top:4px;line-height:1.5}
+.lt-related-created-toast a{font-weight:700;color:#155b8c}
+</style>
+<script id="ltRelatedTransactionsFeature">
 (function(){
 'use strict';
 const root=document.getElementById('ownershipStaffWorkspace');if(!root)return;
@@ -3566,11 +3572,21 @@ if(related){
  const confirm=document.getElementById('owConfirm');confirm?.addEventListener('click',()=>{const actionTitle=document.getElementById('owDialogTitle')?.textContent||'';setTimeout(()=>{const rows=load(),r=rows.find(x=>x.id===requestId);if(!r)return;let status=null;if(/Assign Request/i.test(actionTitle))status='In Review';else if(/Return to Submitter/i.test(actionTitle))status='Returned for Information';else if(/Submit .*Approval/i.test(actionTitle))status='Pending Supervisor Approval';if(!status)return;r.status=status;r.history=r.history||[];r.history.unshift(new Date().toLocaleString()+' · '+status+' · Staff (demo)');save(rows);const badge=summary?.querySelector('.ow-summary-status');if(badge)badge.textContent='● '+status;},0)});
 }else{info.appendChild(panel);render()}
 const shade=document.createElement('div');shade.className='ow-dialog-shade';shade.hidden=true;shade.id='ltRelatedDialog';shade.innerHTML='<div class="ow-dialog" style="max-width:650px"><h3>Create Related Transaction</h3><div id="ltRelatedBody"></div><div class="ow-dialog-actions"><button type="button" id="ltRelatedCancel">Cancel</button><button type="button" class="ow-primary" id="ltRelatedConfirm">Create Related Transaction</button></div></div>';root.appendChild(shade);
+// Match the Reserve Withdrawal related-request flow: stay on the parent and show a confirmation.
+const createdToast=document.createElement('div');
+createdToast.id='ltRelatedCreatedToast';createdToast.className='lt-related-created-toast';
+createdToast.setAttribute('role','status');createdToast.setAttribute('aria-live','polite');
+createdToast.hidden=true;root.appendChild(createdToast);
+function showRelatedCreated(id){
+ createdToast.innerHTML='<strong>Related Transaction Created Successfully</strong><span>Related transaction <a href="lp-transaction-detail.html?requestId='+encodeURIComponent(id)+'">'+safe(id)+'</a> has been created and linked to the original request.</span>';
+ createdToast.hidden=false;
+ createdToast.scrollIntoView?.({block:'nearest',behavior:'smooth'});
+}
 const body=shade.querySelector('#ltRelatedBody');
 function openCreate(){const menu=document.getElementById('owActionMenu');if(menu)menu.hidden=true;shade.hidden=false;const existing=[...new Set([...currentTypes(),...(related?.types||[])])];body.innerHTML='<div class="lt-related-form"><p class="lt-related-muted">Parent Request: '+safe(PARENT)+'</p><label>Current Transaction Type(s)</label><div class="lt-current-types">'+existing.map(t=>'<span>'+safe(t)+'</span>').join('')+'</div><label>Additional Transaction Type(s) *</label><div class="lt-multiselect"><button type="button" id="ltTypeToggle" class="lt-multiselect-toggle" aria-expanded="false">Select additional transaction type(s) ▾</button><div id="ltTypeOptions" class="lt-multiselect-options" hidden>'+TYPES.filter(t=>!existing.includes(t)).map(t=>'<label><input type="checkbox" class="lt-type" value="'+safe(t)+'"> '+safe(t)+'</label>').join('')+'</div></div><label>Reason for Creating Related Transaction *</label><textarea id="ltReason" placeholder="Describe why separate processing is required"></textarea><p class="lt-related-notice">Supporting documents can be reviewed or requested in Step 4 after creation.</p></div>';const toggle=body.querySelector('#ltTypeToggle'),options=body.querySelector('#ltTypeOptions');toggle.onclick=()=>{options.hidden=!options.hidden;toggle.setAttribute('aria-expanded',String(!options.hidden))};options.onchange=()=>{const selected=[...options.querySelectorAll('.lt-type:checked')].map(x=>x.value);toggle.textContent=selected.length?selected.join(', ')+' ▾':'Select additional transaction type(s) ▾'}}
 shade.querySelector('#ltRelatedCancel').onclick=()=>shade.hidden=true;
 const create=document.getElementById('ltCreateRelated');if(create)create.onclick=openCreate;
-shade.querySelector('#ltRelatedConfirm').onclick=()=>{const types=[...body.querySelectorAll('.lt-type:checked')].map(x=>x.value),reason=body.querySelector('#ltReason')?.value.trim();if(!types.length||!reason){alert('Select a transaction type and enter a reason.');return}const rows=load(),next=Math.max(0,...rows.map(r=>Number((r.id.match(/-(\d+)$/)||[])[1])||0))+1,id=PARENT+'-'+String(next).padStart(2,'0');rows.push({id,parent:PARENT,types,reason,status:'Created',assignee:'',reviewNote:'',createdAt:new Date().toISOString(),history:[]});save(rows);location.href='lp-transaction-detail.html?requestId='+encodeURIComponent(id)};
+shade.querySelector('#ltRelatedConfirm').onclick=()=>{const types=[...body.querySelectorAll('.lt-type:checked')].map(x=>x.value),reason=body.querySelector('#ltReason')?.value.trim();if(!types.length||!reason){alert('Select a transaction type and enter a reason.');return}const rows=load(),next=Math.max(0,...rows.map(r=>Number((r.id.match(/-(\d+)$/)||[])[1])||0))+1,id=PARENT+'-'+String(next).padStart(2,'0');rows.push({id,parent:PARENT,types,reason,status:'Created',assignee:'',reviewNote:'',createdAt:new Date().toISOString(),history:[]});save(rows);shade.hidden=true;render();showRelatedCreated(id)};
 })();
 </script><script id="v175StaffDocuments">(function(){
 const cfg=window.LAHD_LP_DOCS,section=document.getElementById('owDocuments');if(!cfg||!section)return;
