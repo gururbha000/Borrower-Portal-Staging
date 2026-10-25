@@ -3588,18 +3588,40 @@ shade.querySelector('#ltRelatedCancel').onclick=()=>shade.hidden=true;
 const create=document.getElementById('ltCreateRelated');if(create)create.onclick=openCreate;
 shade.querySelector('#ltRelatedConfirm').onclick=()=>{const types=[...body.querySelectorAll('.lt-type:checked')].map(x=>x.value),reason=body.querySelector('#ltReason')?.value.trim();if(!types.length||!reason){alert('Select a transaction type and enter a reason.');return}const rows=load(),next=Math.max(0,...rows.map(r=>Number((r.id.match(/-(\d+)$/)||[])[1])||0))+1,id=PARENT+'-'+String(next).padStart(2,'0');rows.push({id,parent:PARENT,types,reason,status:'Created',assignee:'',reviewNote:'',createdAt:new Date().toISOString(),history:[]});save(rows);shade.hidden=true;render();showRelatedCreated(id)};
 })();
-</script><script id="v175StaffDocuments">(function(){
+</script><script id="v175StaffDocuments">(function(){'use strict';
 const cfg=window.LAHD_LP_DOCS,section=document.getElementById('owDocuments');if(!cfg||!section)return;
-const wrap=document.createElement('div');wrap.id='v175StaffChecklist';wrap.style.cssText='margin:14px 0;padding:14px;border:1px solid #cbd5e1;border-radius:8px;background:#fff';
-const head=section.querySelector('.ow-panel-head');(head||section).after(wrap);
-const original=section.querySelector('.ow-table-scroll');const stats=section.querySelector('.ow-docstats');
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const params=new URLSearchParams(location.search);const requestId=params.get('requestId')||'LT-260322';const PARENT=requestId.replace(/-\d{2}$/,'');
-function getRelated(){try{return JSON.parse(sessionStorage.getItem('lahd_lp_related_'+PARENT)||'[]').find(x=>x.id===requestId)}catch(e){return null}}
-const r=getRelated();const types=r?.types||['Change of Ownership (Sale)'];
-if(!r){wrap.innerHTML='<strong>Document requirements</strong><p style="margin:6px 0;color:#64748b">Change of Ownership (Sale): the existing 24-document review table below is retained, including buyer/seller classifications and review actions.</p>';return;}
-if(original)original.style.display='none';if(stats)stats.style.display='none';
-const used=new Map();types.forEach(t=>(cfg.rules[t]||[]).forEach(id=>{if(!used.has(id))used.set(id,[]);used.get(id).push(t)}));
-wrap.innerHTML='<strong>Required Documents — '+esc(types.join(', '))+'</strong><p style="color:#64748b">Linked to '+esc(PARENT)+'. Review original-request documents, upload supporting files, or request missing items. Document review statuses are demonstration-only.</p><div style="overflow-x:auto"><table class="ow-table" style="width:100%"><thead><tr><th>Document / Applies To</th><th>Requirement</th><th>Availability</th><th>Review</th><th>Action</th></tr></thead><tbody>'+[...used].map(([id,ts])=>{const d=cfg.documents[id];return '<tr><td>'+esc(d[0])+'<small style="display:block;color:#64748b">'+esc(ts.join(', '))+'</small></td><td>'+esc(d[1])+'</td><td><select aria-label="Availability"><option>Missing</option><option>Available from original request</option><option>Staff uploaded</option></select></td><td><select aria-label="Review status"><option>Pending Review</option><option>Accepted</option><option>Returned</option><option>Not Applicable</option></select></td><td><input type="file" style="max-width:160px" aria-label="Upload document"></td></tr>'}).join('')+'</tbody></table></div><p style="font-size:12px;color:#64748b">Use existing staff actions to request outstanding documents. Document status selections are stored for this browser session; file uploads remain a demonstration placeholder.</p>';
-const docKey='lahd_lp_doc_reviews_'+requestId;let saved={};try{saved=JSON.parse(sessionStorage.getItem(docKey)||'{}')}catch(e){};wrap.querySelectorAll('tbody tr').forEach((tr,i)=>{const sels=tr.querySelectorAll('select');sels.forEach((el,j)=>{if(saved[i]?.[j])el.value=saved[i][j];el.addEventListener('change',()=>{saved[i]=[...sels].map(x=>x.value);sessionStorage.setItem(docKey,JSON.stringify(saved))})})});
-})();</script></body></html>
+const params=new URLSearchParams(location.search),id=params.get('requestId')||'LT-260322',parent=id.replace(/-\d{2}$/,'');
+let related=null;try{related=(JSON.parse(sessionStorage.getItem('lahd_lp_related_'+parent)||'[]')||[]).find(r=>r.id===id)}catch(e){}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const types=related?.types||(()=>{try{const x=JSON.parse(sessionStorage.getItem('lahd_lp_submission_'+parent)||'null');if(Array.isArray(x?.types)&&x.types.length)return x.types}catch(e){}return ['Change of Ownership (Sale)']})();
+const tableWrap=section.querySelector('.ow-table-scroll'),table=tableWrap?.querySelector('table'),tbody=table?.querySelector('tbody');if(!table||!tbody)return;
+// One review table, with the same preview and review controls for original and related requests.
+const old=section.querySelector('#v175StaffChecklist');if(old)old.remove();
+const existing=Array.from(tbody.querySelectorAll('tr[data-doc]'));
+const ids=new Map();types.forEach(type=>(cfg.rules[type]||[]).forEach(key=>{if(!ids.has(key))ids.set(key,[]);ids.get(key).push(type)}));
+const normalized=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,'');
+const names={signed:1,resolution:2,formation:3,good:4,closing:5,purchase:6,questionnaire:7,other:8,cert:9,waiver:10,mortgage:11,reserve:12,'sig-new':13,title:14,worksheet:15,w9:16,business:17,proforma:18,appraisal:19,commitment:20,portfolio:21,resume:22,managed:23,financial:24};
+const reviewKey='lahd_lp_doc_reviews_'+id;let saved={};try{saved=JSON.parse(sessionStorage.getItem(reviewKey)||'{}')}catch(e){}
+// Add requirement and applicability columns to the existing 24-document review, preserving its original preview links.
+const head=table.querySelector('thead tr');const thReq=document.createElement('th'),thTypes=document.createElement('th');thReq.textContent='Requirement';thTypes.textContent='Applies To';head.insertBefore(thReq,head.children[2]);head.insertBefore(thTypes,head.children[3]);
+if(related){tbody.replaceChildren();const stats=section.querySelector('.ow-docstats');if(stats)stats.style.display='none';}
+const rows=[];
+for(const [key,applies] of ids){const spec=cfg.documents[key];if(!spec)continue;const requirement=spec[1]||'required';let tr;
+if(!related&&names[key]){tr=existing.find(row=>Number(row.dataset.doc)===names[key]);if(!tr)continue;}
+else {tr=document.createElement('tr');tr.dataset.doc='lp-'+key;const doc=document.createElement('td');doc.textContent=spec[0];tr.append(doc);const party=document.createElement('td');party.textContent='Borrower / Staff';tr.append(party);}
+const req=document.createElement('td');req.textContent=requirement.charAt(0).toUpperCase()+requirement.slice(1);if(requirement==='conditional')req.title='Staff must confirm whether the condition applies';
+const app=document.createElement('td');app.textContent=applies.join(', ');tr.insertBefore(req,tr.children[2]);tr.insertBefore(app,tr.children[3]);
+if(related){const availability=document.createElement('td');availability.innerHTML='<span class="ow-pill">Not yet linked</span>';tr.append(availability);const by=document.createElement('td');by.textContent='—';tr.append(by);const date=document.createElement('td');date.textContent='—';tr.append(date);
+const review=document.createElement('td');review.innerHTML='<select class="ow-review" aria-label="Review '+esc(spec[0])+'"><option>Awaiting Document</option><option>Received — Not Reviewed</option><option>Pass</option><option>Fail</option><option>Return</option><option>Not Applicable</option></select>';tr.append(review);
+const comment=document.createElement('td');comment.innerHTML='<input class="ow-comment" placeholder="Review notes" aria-label="Comment for '+esc(spec[0])+'">';tr.append(comment);
+const docCell=tr.children[0];const preview=document.createElement('button');preview.type='button';preview.className='lt-doc-view';preview.textContent='View parent documents';preview.onclick=()=>{location.href='lp-transaction-detail.html?requestId='+encodeURIComponent(parent)+'#owDocuments'};docCell.append(document.createTextNode(' · '),preview);
+tbody.append(tr);}
+tr.dataset.requirementKey=key;tr.dataset.requirement=requirement;tr.dataset.applies=applies.join(', ');rows.push(tr);
+}
+if(!related){existing.forEach(tr=>{if(!rows.includes(tr)){const req=document.createElement('td');req.textContent='Not in selected type(s)';const app=document.createElement('td');app.textContent='—';tr.insertBefore(req,tr.children[2]);tr.insertBefore(app,tr.children[3]);}})}
+// Keep separate availability and review status. Persist staff choices on the active request.
+rows.forEach(tr=>{const key=tr.dataset.requirementKey,review=tr.querySelector('.ow-review'),comment=tr.querySelector('.ow-comment');if(!review||!comment)return;const state=saved[key];if(state){review.value=state.review||review.value;comment.value=state.comment||'';}const store=()=>{saved[key]={review:review.value,comment:comment.value};sessionStorage.setItem(reviewKey,JSON.stringify(saved))};review.addEventListener('change',store);comment.addEventListener('change',store);});
+const info=document.createElement('p');info.className='lt-doc-guidance';info.textContent='Availability shows whether a file was submitted; Staff Review records its acceptability. Conditional documents require applicability review. Shared documents may be reused from the original request.';
+const h=section.querySelector('.ow-panel-head');if(h)h.after(info);
+if(related){const invite=document.getElementById('owInvite');if(invite)invite.textContent='+ Request Missing Documents';const save=document.getElementById('owSaveDocs');if(save)save.addEventListener('click',()=>{rows.forEach(tr=>{const key=tr.dataset.requirementKey;saved[key]={review:tr.querySelector('.ow-review')?.value,comment:tr.querySelector('.ow-comment')?.value||''}});sessionStorage.setItem(reviewKey,JSON.stringify(saved));});}
+})();</script><style id="v1753-doc-style">.lt-doc-guidance{margin:10px 0 14px;color:#51657c;font-size:13px}.lt-doc-view{border:0;background:none;color:#075c9c;text-decoration:underline;cursor:pointer;font-size:12px}.ow-table-scroll{overflow-x:auto}.ow-table th,.ow-table td{vertical-align:top}</style></body></html>
