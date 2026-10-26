@@ -3644,21 +3644,7 @@ if(related){const invite=document.getElementById('owInvite');if(invite)invite.te
 #owDocuments .lt-doc-group-toggle:focus-visible{outline:2px solid #1768bd;outline-offset:-3px}
 @media(max-width:850px){#owDocuments .ow-table{min-width:730px}}
 </style>
-<script id="v1761-build-five-cell-rows">(function(){'use strict';
-const step=document.getElementById('owDocuments');if(!step)return;
-const table=step.querySelector('.ow-table');if(!table)return;
-const head=table.querySelector('thead tr');if(head)head.innerHTML='<th>Document</th><th>Uploaded By</th><th>Uploaded On</th><th>Review Status</th><th>Comments</th>';
-const rows=[...table.querySelectorAll('tbody tr[data-requirement-key]')];
-rows.forEach(tr=>{
-const c=[...tr.children];if(c.length!==7)return;
-const uploaded=!!c[0].querySelector('a[data-preview-doc]');const id=Number(tr.dataset.doc||0);
-const by=uploaded?(id>12?'David Patel':'Jennifer Martinez'):'—';
-const on=uploaded?(id>12?'Oct 15, 2026':'Oct 12, 2026'):'—';
-tr.dataset.uploadedBy=by;tr.dataset.uploadedOn=on;
-const tdBy=document.createElement('td'),tdOn=document.createElement('td');tdBy.textContent=by;tdOn.textContent=on;
-tr.replaceChildren(c[0],tdBy,tdOn,c[5],c[6]);
-});
-})();</script><script id="v1754-doc-ux-script">(function(){'use strict';
+<script id="v1754-doc-ux-script">(function(){'use strict';
 const section=document.getElementById('owDocuments');const table=section?.querySelector('.ow-table-scroll table');const tbody=table?.querySelector('tbody');if(!tbody||!window.LAHD_LP_DOCS)return;
 const cfg=window.LAHD_LP_DOCS;
 const short={signed:['Signed Request Letter','Official letterhead; include project/loan number, circumstances, requested changes and signature'],resolution:['Resolution Authority & Signatories','Include authorized signatory documentation'],formation:['Organization Formation Documents','Include amendments and organizational chart'],good:['California Certificate of Good Standing','Issued within six months of application'],closing:['Estimated Closing Statement',''],purchase:['Purchase and Sale Agreement','For purchases only'],questionnaire:['Asset Management Questionnaire',''],other:['Other Supporting Documents','As needed'],cert:['Certification & Authorization to Release','Signed form'],waiver:['Waiver of Notice to Inspect','Signed form'],mortgage:['Mortgage Statements','Two current months'],reserve:['Reserve Account Statements','Two current months'], 'sig-new':['Proposed Borrower Signature Blocks','Provide in MS Word format'], 'sig-current':['Existing Borrower Signature Blocks','Provide in MS Word format'],title:['Property Title Report','Include hyperlinks to recorded documents'],worksheet:['Broker / Lender Worksheet',''],w9:['IRS Form W-9','New General Partner or Managing General Partner only'],business:['Business Tax Certificate','New borrower only'],proforma:['Project Proforma','Include before/after term-change 15-year cash flow projections'],appraisal:['Appraisal','Current within six months of application'],commitment:['Commitment Letter',''],portfolio:['LAHD Multifamily Portfolio Properties List','New General Partner only where applicable'],resume:['Affordable Housing Experience Resume','New sponsor or buyer, as applicable'],managed:['List of Managed LAHD Properties','New property manager only'],financial:['Buyer Financial Capacity Self-Certification','Existing and/or new borrower'],casp:['CASp Report','If applicable'],estoppel:['Signed Estoppel Request','Include project/loan number, reason, signature and date needed']};
@@ -3748,14 +3734,43 @@ body.lt-review-overlay-open{overflow:hidden}
 #owDocumentLibrary #owDocumentPreview #owPreviewClose{cursor:pointer}
 @media(max-width:850px){#owDocumentLibrary #owDocumentPreview .ow-review-layout{flex-direction:column!important}#owDocumentLibrary #owDocumentPreview .ow-review-side{flex:auto!important}#owDocumentLibrary #owDocumentPreview .ow-preview-dialog{max-height:95vh!important}}
 </style>
-<style id="v1761-step4-authoritative">#owDocuments .ow-table{table-layout:fixed!important;width:100%!important;min-width:800px!important}
-#owDocuments .ow-table thead tr>th,#owDocuments .ow-table tbody tr[data-requirement-key]>td{display:table-cell!important;vertical-align:top!important}
-#owDocuments .ow-table thead tr>th:nth-child(1){width:39%!important}
-#owDocuments .ow-table thead tr>th:nth-child(2){width:16%!important}
-#owDocuments .ow-table thead tr>th:nth-child(3){width:13%!important}
-#owDocuments .ow-table thead tr>th:nth-child(4){width:15%!important}
-#owDocuments .ow-table thead tr>th:nth-child(5){width:17%!important}
-#owDocuments .ow-table .ow-review,#owDocuments .ow-table .ow-comment{display:none!important}
-#owDocuments .ow-table .lt-doc-group-row>td{display:table-cell!important}
-#owDocuments .lt-step4-result,#owDocuments .lt-step4-comment{display:inline!important}
-</style></body></html>
+<style id="v1762-step4-clean">
+#owDocuments .ow-table-scroll > table.ow-table{display:none!important}
+#owDocuments #ltStep4CleanTable{display:table!important;width:100%!important;min-width:740px!important;table-layout:fixed!important;border-collapse:collapse}
+#owDocuments #ltStep4CleanTable th,#owDocuments #ltStep4CleanTable td{display:table-cell!important;box-sizing:border-box!important;padding:12px!important;vertical-align:top!important;border:1px solid #d7e0ea!important;overflow-wrap:break-word!important;font-size:13px!important}
+#owDocuments #ltStep4CleanTable th{background:#f0f4f8!important;text-align:left!important;color:#31516f!important}
+#owDocuments #ltStep4CleanTable th:nth-child(1){width:43%!important}
+#owDocuments #ltStep4CleanTable th:nth-child(2){width:17%!important}
+#owDocuments #ltStep4CleanTable th:nth-child(3){width:14%!important}
+#owDocuments #ltStep4CleanTable th:nth-child(4){width:14%!important}
+#owDocuments #ltStep4CleanTable th:nth-child(5){width:12%!important}
+#owDocuments #ltStep4CleanTable tr.lt-clean-group td{background:#e8f1f9!important;font-weight:700!important;color:#183e64!important}
+#owDocuments #ltStep4CleanTable .lt-doc-sub{font-size:12px!important}
+</style>
+<script id="v1762-step4-clean-script">(function(){'use strict';
+const section=document.getElementById('owDocuments');const original=section?.querySelector('.ow-table-scroll > table.ow-table');if(!original)return;
+const scroll=original.parentElement;const clean=document.createElement('table');clean.id='ltStep4CleanTable';clean.className='lt-clean-doc-table';clean.setAttribute('aria-label','Submitted documents and review results');clean.innerHTML='<thead><tr><th>Document</th><th>Uploaded By</th><th>Uploaded On</th><th>Review Status</th><th>Comments</th></tr></thead><tbody></tbody>';scroll.append(clean);
+const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let updating=false;
+function rebuild(){if(updating)return;updating=true;try{
+const trs=[...original.querySelectorAll('tbody tr[data-requirement-key]')];let html='',lastGroup='';
+for(const tr of trs){const id=Number(tr.dataset.doc||0);const cells=[...tr.children];if(!cells.length)continue;
+const group=id>=13?'Buyer':id>=9?'Seller':'General';if(group!==lastGroup){lastGroup=group;html+='<tr class="lt-clean-group"><td colspan="5">'+group+' Documents</td></tr>';}
+const first=cells[0];const link=first.querySelector('a[data-preview-doc]');const uploaded=!!link;
+const label=first.querySelector('.lt-doc-title')?.textContent?.trim()||link?.textContent?.trim()||first.textContent.trim();
+const instruction=first.querySelector('.lt-doc-sub')?.textContent?.trim()||'';
+const by=uploaded?(id>12?'David Patel':'Jennifer Martinez'):'—';const date=uploaded?(id>12?'Oct 15, 2026':'Oct 12, 2026'):'—';
+const review=tr.querySelector('select.ow-review');const comment=tr.querySelector('input.ow-comment');
+let status=review?.value||'Not Reviewed';if(status==='Received — Not Reviewed')status='Not Reviewed';if(status==='Return')status='Need Info';if(!uploaded&&status==='Awaiting Document')status='Awaiting Document';
+const docTitle=uploaded?'<a href="#" data-clean-preview="'+escapeHtml(tr.dataset.doc)+'">'+escapeHtml(label)+'</a>':escapeHtml(label);
+const missing=!uploaded?'<span style="margin-left:8px;color:#94600d">'+(group==='Buyer'?'Pending from Buyer':'Missing')+'</span>':'';
+html+='<tr><td><strong>'+docTitle+'</strong>'+missing+(instruction?'<div class="lt-doc-sub">'+escapeHtml(instruction)+'</div>':'')+'</td><td>'+escapeHtml(by)+'</td><td>'+escapeHtml(date)+'</td><td>'+escapeHtml(status)+'</td><td>'+escapeHtml(comment?.value||'—')+'</td></tr>';
+}
+clean.tBodies[0].innerHTML=html;
+}finally{updating=false;}}
+clean.addEventListener('click',e=>{const a=e.target.closest('[data-clean-preview]');if(!a)return;e.preventDefault();const originalLink=original.querySelector('tr[data-doc="'+a.dataset.cleanPreview+'"] a[data-preview-doc]');originalLink?.click();});
+const observer=new MutationObserver(()=>{if(!updating)rebuild()});observer.observe(original.tBodies[0],{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['value','class']});
+original.addEventListener('change',rebuild);original.addEventListener('input',rebuild);
+const msg=section.querySelector('.lt-doc-guidance');if(msg)msg.textContent='This checklist shows document requirements, upload details, and review outcomes. Select an uploaded document to review it in the Documents tab.';
+rebuild();
+})();</script></body></html>
