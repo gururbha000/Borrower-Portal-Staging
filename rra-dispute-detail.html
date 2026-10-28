@@ -81,7 +81,7 @@ function paintDocWorkspace(){
    const b=node('button','Review','rraDocBtn');b.type='button';b.onclick=()=>openDocReview(d.key);action.append(b);
    const label=node('label','','rraDocSelect');
    const cb=document.createElement('input');cb.type='checkbox';cb.className='rraDownloadCheck';cb.value=d.key;
-   cb.disabled=!rraActualFiles[d.key];cb.title=cb.disabled?'Sample metadata only; no downloadable file is attached':'Select this uploaded file';
+   cb.disabled=false;cb.title=rraActualFiles[d.key]?'Select uploaded file':'Select sample record (metadata export only)';
    cb.setAttribute('aria-label','Select '+d.name+' for download');cb.addEventListener('change',updateRraDownloadCount);
    label.append(cb);td.insertBefore(label,title);
 
@@ -92,8 +92,12 @@ function updateRraDownloadCount(){const count=document.querySelectorAll('#rraDoc
 function downloadRraSelected(){
  const checks=[...document.querySelectorAll('#rraDocList .rraDownloadCheck:checked')];
  if(!checks.length)return;
- checks.forEach(c=>{const f=rraActualFiles[c.value];if(!f)return;const url=URL.createObjectURL(f);const a=document.createElement('a');a.href=url;a.download=f.name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)});
- if(checks.length>1)alert('Your browser may ask permission to download multiple files.');
+ const metadata=[];
+ checks.forEach(c=>{const k=c.value,f=rraActualFiles[k],info=allDocs()[k],def=rraDocDefs.find(d=>d.key===k);
+  if(f){const url=URL.createObjectURL(f),a=document.createElement('a');a.href=url;a.download=f.name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}
+  else if(info)metadata.push([def?.name||k,info.by||'',info.on||'',docStatus(k),'Sample record — file not attached']);
+ });
+ if(metadata.length){const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const csv=[['Document','Uploaded By','Uploaded On','Review Status','Note'],...metadata].map(row=>row.map(esc).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='RRA-Selected-Document-Metadata.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}
 }
 
 function openDocWorkspace(){ensureDocUi();docReturnStep=step;document.querySelector('.layout').style.display='none';docWorkspace.style.display='block';document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('documentsTab').classList.add('active');paintDocWorkspace()}

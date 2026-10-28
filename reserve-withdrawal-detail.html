@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
-<html data-standalone-page="reserve-withdrawal-detail" lang="en">
-<head><script>document.documentElement.setAttribute("data-v96-route","staff");</script>
+<html lang="en">
+<head><script>document.documentElement.setAttribute("data-v96-route","borrower");</script>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>LAHD Borrower Portal - Onboarding + Tier 1 / Tier 2</title>
 <style>
@@ -1617,26 +1617,190 @@ html body #staffWrap > .staffGrid > .reviewMain {min-width:0 !important;}
  html body #staffWrap > .staffBanner.requestOnlyChrome{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
  html body #staffWrap > .staffGrid{grid-template-columns:1fr !important}
 }
-</style><style id="v154-invoice-scroll-only">
-/* Preserve v152 two-column staff layout; limit horizontal scrolling to Step 4. */
-html body #staffWrap > .staffGrid { display:grid !important; grid-template-columns:260px minmax(0,1fr) !important; gap:20px !important; align-items:start !important; }
-html body #staffWrap > .staffGrid > .reviewMain { min-width:0 !important; }
-@media(max-width:750px){html body #staffWrap > .staffGrid {grid-template-columns:1fr !important;}}
-#staffWrap #p4 .reviewTableWrap { overflow-x:auto !important; overflow-y:hidden; max-width:100%; -webkit-overflow-scrolling:touch; }
-#staffWrap #p4 #staffInvoiceReviewTable { min-width:1320px; }
-#staffWrap #p4 #staffInvoiceReviewTable .commentsHead { min-width:245px; }
-</style>
-</head>
-<body><script id="v145-detail-navigation">(function(){
-   window.addEventListener('click',function(e){
-     const back=e.target.closest?.('#owBack,.staffBanner strong');
-     if(!back)return;
-     if(back.id!=='owBack' && !(back.textContent||'').includes('Back'))return;
-     e.preventDefault();e.stopImmediatePropagation();location.assign('staff-dashboard.html');
-   },true);
-})();</script><nav class="v96-nav"><a href="index.html">Sign In</a><a href="borrower-portal.html">Borrower Dashboard</a><a href="staff-dashboard.html">Staff Dashboard</a><a href="loan-portfolio-transaction-form.html">Transactions</a><a href="reserve-withdrawal-form.html">Reserve Withdrawal</a></nav>
-
-
+</style></head>
+<body><nav class="v96-nav"><a href="index.html">Sign In</a><a href="borrower-portal.html">Borrower Dashboard</a><a href="staff-dashboard.html">Staff Dashboard</a><a href="loan-portfolio-transactions.html">Transactions</a><a href="reserve-withdrawal.html">Reserve Withdrawal</a></nav>
+<div class="onboard-shell active" id="onboarding">
+<header class="top"><div class="brand"><div class="logo"></div><div><h1>Borrower Portal</h1><p>Los Angeles Housing Department</p></div></div><div class="profile"><div><b>Riverview Housing LLC</b><span id="profileRole">Maria Hernandez · Primary User</span></div><div class="avatar" id="avatar">MH</div></div></header>
+<div class="citybar">◉ An Official Website of the City of Los Angeles</div>
+<div class="lahdbar"><div class="lahdmark">LAHD<small>LOS ANGELES HOUSING DEPARTMENT</small></div><div class="lahdnav">Housing    Community Resources    Residents    Rental Property Owners    Partners    Forms    Contact Us</div></div>
+<div class="crumb"><b>Housing Development</b>Home   ›   Housing   ›   Housing Development</div>
+<section class="obpage" id="website">
+<div class="site-landing"><div class="service-row">
+<div class="service-card">
+<h2>▣ Lender Login / Register</h2><p>Access LAHD lender services and manage authorized lender activities.</p><button class="ob-btn">Login / Register</button></div>
+<div class="service-card active"><h2>▦ Borrower Login / Register</h2><p>Access borrower services, register your organization, connect LAHD loans, submit requests, and track progress.</p><button class="ob-btn primary" onclick="showOb('portalEntry')">Login / Register</button></div>
+</div></div></section>
+<div class="onboard-wrap">
+<section class="obpage" id="portalEntry" style="display:none"><div class="ob-card"><h1>LAHD Borrower Portal</h1><div class="info-callout"><b>Angeleno Account Required</b><br/>LAHD services use the City of Los Angeles unified authentication system. Actual Angeleno sign-in/account creation is outside this mock-up.</div><h2>Continue to Borrower Portal</h2><p>After Angeleno authentication, the portal determines whether you are a primary user or an affiliated user based on LAHD records.</p><div class="flow-choice"><button class="ob-btn primary" onclick="startFlow('tier1')">Demo: Sign in as Tier 1</button><button class="ob-btn" onclick="startFlow('tier2')">Demo: Sign in as Tier 2</button><button class="ob-btn" onclick="startBasicFirstTime()">Demo: Sign in as Basic User</button></div>
+<div class="v93-returning-wrap">
+<div class="v93-or"><span>OR</span></div>
+<button class="v93-returning-btn" onclick="returningUserLogin()" type="button">Returning User — Go to Dashboard</button>
+<div class="v93-returning-help">For users who have already completed first-time portal setup.</div>
+</div></div></section>
+<div class="stepper" id="steps" style="display:none"><div class="stepnode">Angeleno Sign-In</div><div class="stepnode">Basic Profile</div><div class="stepnode">Verify Access</div><div class="stepnode">Dashboard</div></div>
+<section class="obpage" id="basicprofile" style="display:none"><div class="ob-card">
+<span class="rolebadge">BASIC USER</span><h1 style="margin-top:12px">Complete Your Basic Profile</h1>
+<p>Enter your basic contact information to continue to the Borrower Portal.</p>
+<div class="ob-grid"><div class="ob-field"><label>Full Name</label><input value="John Doe"/></div>
+<div class="ob-field"><label>Email</label><input readonly="" value="john.doe@yopmail.com"/></div>
+<div class="ob-field"><label>Phone</label><input placeholder="(213) 555-0000"/></div>
+<div class="ob-field"><label>Title / Role</label><input placeholder="Enter title or role"/></div>
+<div class="ob-field"><label>Organization / Company</label><input placeholder="Enter organization or company"/></div></div>
+<div class="ob-actions"><button class="ob-btn primary" onclick="openBasicDashboardFirstTime()">Continue</button></div>
+</div></section>
+<section class="obpage" id="t1profile" style="display:none"><div class="ob-card"><span class="rolebadge">TIER 1 · PRIMARY USER</span><h1 style="margin-top:12px">Complete Your Basic Profile</h1><p>Your Angeleno account matches a primary/notice contact in LAHD records.</p><div class="ob-grid"><div class="ob-field"><label>Full Name</label><input value="Maria Hernandez"/></div><div class="ob-field"><label>Email</label><input readonly="" value="maria@riverviewhousing.com"/></div><div class="ob-field"><label>Phone</label><input placeholder="(213) 555-0000"/></div><div class="ob-field"><label>Title / Role</label><input value="Executive Director"/></div><div class="ob-field"><label>Organization / Company</label><input value="Riverview Housing LLC"/></div></div><div class="ob-actions"><button class="ob-btn primary" onclick="showOb('t1verify')">Continue</button></div></div></section>
+<section class="obpage" id="t1verify" style="display:none"><div class="ob-card"><span class="rolebadge">TIER 1 · PRIMARY USER</span><h1 style="margin-top:12px">Verify Access</h1><p>We found LAHD loan records associated with your primary/notice contact information.</p><div class="foundbox"><div class="foundnum">3</div><b>associated loan records found</b><p>Enter the borrower/EIN-specific verification code once to activate these associated loans.</p></div><div class="ob-field" style="max-width:440px"><label>Borrower Verification Code</label><input placeholder="Enter verification code"/><div class="verification-help" style="margin-top:8px;color:#5f748a;font-size:13px;line-height:1.45">
+<b style="color:#314b67">Where do I find this code?</b><br/>
+Use the verification code provided by the borrower’s Primary User. If you do not have the code, contact the Primary User for the borrower account.
+</div></div><div class="ob-actions"><button class="ob-btn" onclick="showOb('t1profile')">Back</button><button class="ob-btn primary" onclick="openDashboard('tier1',true)">Verify &amp; Go to Dashboard</button></div></div></section>
+<section class="obpage" id="t2profile" style="display:none"><div class="ob-card"><span class="rolebadge">AFFILIATED USER</span><h1 style="margin-top:12px">Complete Your Basic Profile</h1><p>Your Angeleno account has been associated with an LAHD loan by a Tier 1 user.</p><div class="ob-grid"><div class="ob-field"><label>Full Name</label><input value="John Lee"/></div><div class="ob-field"><label>Email</label><input readonly="" value="john.lee@example.com"/></div><div class="ob-field"><label>Phone</label><input placeholder="(213) 555-0000"/></div><div class="ob-field"><label>Title / Role</label><input value="Asset Manager"/></div><div class="ob-field"><label>Organization / Company</label><input value="Riverview Housing LLC"/></div></div><div class="ob-actions"><button class="ob-btn primary" onclick="showOb('t2verify')">Continue</button></div></div></section>
+<section class="obpage" id="t2verify" style="display:none"><div class="ob-card"><span class="rolebadge">AFFILIATED USER</span><h1 style="margin-top:12px">Verify Access</h1><div class="foundbox"><div class="foundnum">1</div><b>associated loan record found</b><p>Enter the Borrower Verification Code provided for this borrower account to verify your access to the associated LAHD loan.</p></div><div class="ob-field" style="max-width:440px"><label>Borrower Verification Code</label><input placeholder="Enter verification code"/></div><div class="info-callout"><b></b><br/></div><div class="ob-actions"><button class="ob-btn" onclick="showOb('t2profile')">Back</button><button class="ob-btn primary" onclick="openDashboard('tier2',true)">Verify &amp; Go to Dashboard</button></div></div></section>
+</div></div>
+<div class="portal-shell hidden-for-onboard" id="portalShell">
+<div class="demo"><b>DEMO — VIEW PORTAL AS:</b><div class="switch"><button class="active" id="tier1Btn">Primary User</button><button id="tier2Btn">Affiliated User</button><button class="" id="basicUserDemo">Basic User</button></div><small>Switch views to compare access.</small></div>
+<main class="page">
+<div class="nav">
+<div class="tabs"><button class="tab active" data-target="dashboard">Dashboard</button><button class="tab financial" data-target="loans">Loan Agreements</button><button class="tab admin-only" data-target="members">Users &amp; Access</button></div>
+<div class="portal-actionbar" id="universalPortalActions" style="margin:0">
+<button class="btn secondary" id="universalLinkLoan">+ Link a Loan</button>
+<button class="btn primary" id="universalAddRequest">+ Add Request</button>
+</div>
+</div>
+<section class="view active" id="dashboard">
+<div class="kpis">
+<div class="card kpi"><span id="k1Label">Active Loans</span><strong id="k1">3</strong></div>
+<div class="card kpi"><span>Projects</span><strong>1</strong></div>
+<div class="card kpi"><span id="k3Label">Requests</span><strong>2</strong></div>
+<div class="card kpi"><span id="k4Label">Total LAHD Loan Amount</span><strong id="k4">$14,050,000</strong></div>
+</div>
+<div class="section-head" style="margin:24px 0 10px"><h3 style="font-size:19px">My LAHD Loans</h3></div>
+<div class="tier1-loans">
+<div class="simple-project">
+<div class="simple-project-head">
+<div><h3>Arlington Square</h3><div class="addr">1234 Arlington Ave, Los Angeles, CA</div><div class="simple-attn"><b>⚠ Attention:</b> Annual Financial Statements overdue</div></div>
+<span class="pill">3 Authorized City Loans</span>
+</div>
+<div class="loan-cards">
+<div class="loan-card-simple">
+<div class="loan-card-top">
+<div class="pair"><span class="lbl">Loan # - </span><b>14-121637-001</b></div>
+<div class="pair"><span class="lbl">Project - </span><b>Arlington Square</b></div>
+<div class="pair"><span class="lbl">Loan Amount - </span><b>$9,000,000</b></div>
+<div class="pair"><span class="lbl">Loan Terms - </span><b>504 months</b></div>
+<div class="pair"><span class="lbl">Address - </span><b>1234 Arlington Ave, Los Angeles, CA</b></div>
+</div><div class="loan-alert" style="margin:14px 22px 0;padding:12px 15px;border:1px solid #b72d3c;background:#fff1f3;border-radius:6px;color:#962738"><b>⚠   Non Compliant</b> <span>( Annual Financial Statements overdue )</span></div>
+<div class="loan-card-requests"><div class="loan-card-requests-head"><b>Requests</b><button class="btn primary">Add request</button></div>
+<table class="request-table"><thead><tr><th>Request #</th><th>Type</th><th>Requested On</th><th>Status</th><th>Assigned Staff</th><th class="action">Action</th></tr></thead><tbody><tr><td>REQ-12345678</td><td>Consent</td><td>10/23/2025</td><td><span class="pill">Open</span></td><td>Robert Crowley</td><td class="action"><button class="dots">⋮</button></td></tr></tbody></table></div>
+</div>
+<div class="loan-card-simple">
+<div class="loan-card-top">
+<div class="pair"><span class="lbl">Loan # - </span><b>14-121637-002</b></div>
+<div class="pair"><span class="lbl">Project - </span><b>Arlington Square</b></div>
+<div class="pair"><span class="lbl">Loan Amount - </span><b>$3,250,000</b></div>
+<div class="pair"><span class="lbl">Loan Terms - </span><b>360 months</b></div>
+<div class="pair"><span class="lbl">Address - </span><b>1234 Arlington Ave, Los Angeles, CA</b></div>
+</div>
+<div class="loan-card-requests"><div class="loan-card-requests-head"><b>Requests</b><button class="btn primary">Add request</button></div><div class="no-request">No requests submitted for this loan.</div></div>
+</div>
+<div class="loan-card-simple">
+<div class="loan-card-top">
+<div class="pair"><span class="lbl">Loan # - </span><b>14-121637-003</b></div>
+<div class="pair"><span class="lbl">Project - </span><b>Arlington Square</b></div>
+<div class="pair"><span class="lbl">Loan Amount - </span><b>$1,800,000</b></div>
+<div class="pair"><span class="lbl">Loan Terms - </span><b>420 months</b></div>
+<div class="pair"><span class="lbl">Address - </span><b>1234 Arlington Ave, Los Angeles, CA</b></div>
+</div>
+<div class="loan-card-requests"><div class="loan-card-requests-head"><b>Requests</b><button class="btn primary">Add request</button></div>
+<table class="request-table"><thead><tr><th>Request #</th><th>Type</th><th>Requested On</th><th>Status</th><th>Assigned Staff</th><th class="action">Action</th></tr></thead><tbody><tr><td>REQ-17784556</td><td>Reserve Withdrawal</td><td>10/23/2025</td><td><span class="pill">Open</span></td><td>Rochelle Cox</td><td class="action"><button class="dots">⋮</button></td></tr></tbody></table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tier2-project simple-project" style="margin-bottom:18px">
+<div class="simple-project-head">
+<div><h3>Arlington Square</h3><div class="addr">1234 Arlington Ave, Los Angeles, CA</div></div>
+<span class="pill">1 Authorized City Loan</span>
+</div>
+<div class="loan-cards">
+<div class="loan-card-simple">
+<div class="loan-card-top">
+<div class="pair"><span class="lbl">Loan # - </span><b>14-121637-001</b></div>
+<div class="pair"><span class="lbl">Project - </span><b>Arlington Square</b></div>
+<div class="pair"><span class="lbl">Loan Amount - </span><b>$9,000,000</b></div>
+<div class="pair"><span class="lbl">Loan Terms - </span><b>504 months</b></div>
+<div class="pair"><span class="lbl">Address - </span><b>1234 Arlington Ave, Los Angeles, CA</b></div>
+</div>
+<div class="loan-alert" style="margin:14px 22px 0;padding:12px 15px;border:1px solid #b72d3c;background:#fff1f3;border-radius:6px;color:#962738">
+<b>⚠   Non Compliant</b> <span>( Annual Financial Statements overdue )</span>
+</div>
+<div class="loan-card-requests">
+<div class="loan-card-requests-head"><b>Requests</b><button class="btn primary">Add request</button></div>
+<table class="request-table">
+<thead><tr><th>Request #</th><th>Type</th><th>Requested On</th><th>Status</th><th>Assigned Staff</th><th class="action">Action</th></tr></thead>
+<tbody><tr><td>REQ-12345678</td><td>Consent</td><td>10/23/2025</td><td><span class="pill">Open</span></td><td>Robert Crowley</td><td class="action"><button class="dots">⋮</button></td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="card project old-global-requests">
+<div class="notice red" id="notice"><div><b id="noticeTitle">⚠ Non Compliant</b><div id="noticeText">Arlington Square · Annual Financial Statements overdue</div></div><button class="btn secondary" id="noticeAction" style="display:none">View Request / Upload Documents</button></div>
+<div class="section"><div class="section-head"><h3>Requests</h3><button class="btn primary">+ Add Request</button></div>
+<table><thead><tr><th>Request #</th><th>Type</th><th class="std-loan" style="display:none">City Loan #</th><th>Requested On</th><th>Status</th><th>Assigned Staff</th><th>Action</th></tr></thead>
+<tbody><tr><td>REQ-12345678</td><td>Consent</td><td class="std-loan" style="display:none">14-121637-001</td><td>10/23/2025</td><td><span class="pill">Open</span></td><td>Robert Crowley</td><td><button class="req-menu">⋮</button></td></tr>
+<tr><td>REQ-17784556</td><td>Reserve Withdrawal</td><td class="std-loan" style="display:none">14-121637-003</td><td>10/23/2025</td><td><span class="pill">Open</span></td><td>Rochelle Cox</td><td><button class="req-menu">⋮</button></td></tr></tbody></table></div></div>
+<div class="restricted-note"><b>Affiliated User access:</b> You can view authorized loan information and submit and manage requests for loans assigned to you.</div>
+</section>
+<section class="view financial" id="loans"><div class="card" style="margin-top:26px;padding:24px"><h2 style="margin-top:0">Loan Agreements</h2><p style="color:#687b90">Authorized Tier 1 users can view applicable City loan information and loan documents here.</p><table><thead><tr><th>Loan #</th><th>Loan Type</th><th>Original Amount</th><th>Term</th><th>Documents</th></tr></thead><tbody><tr><td>14-121637-001</td><td>Residual Receipt</td><td>$9,000,000</td><td>504 months</td><td><button class="link">View Documents</button></td></tr></tbody></table></div></section>
+<section class="view admin-only" id="members">
+<div class="members-head"><div><h2>Users &amp; Access</h2><p>Manage Borrower Portal users and the specific LAHD loan records they can access.</p></div><div class="actions"><button class="btn secondary" id="pendingBtn">Pending Invitations (1)</button><button class="btn primary" id="inviteBtn">+ Add User</button></div></div>
+<div class="card pending" id="pending"><div class="pending-title"><div><b>Pending Invitations</b><span>Users who have not yet activated their authorized loan access.</span></div><button class="close" id="pendingClose">×</button></div><table><thead><tr><th>User</th><th>Access Level</th><th>Authorized Loan(s)</th><th>Invited</th><th>Actions</th></tr></thead><tbody><tr><td><b>Kevin Patel</b><br/><span class="muted">kevin@aspm.com</span></td><td><span class="tier tier2">Affiliated User</span></td><td>14-121637-002</td><td>Sep 13, 2026</td><td><button class="rowbtn resend">Resend</button> <button class="rowbtn">Cancel</button></td></tr></tbody></table></div>
+<div class="card entity"><table><thead><tr><th>User</th><th>Participant Role</th><th>Title</th><th>Access Level</th><th>Authorized Loan(s)</th><th>Status</th><th>Updated By</th><th>Updated On</th><th>Action</th></tr></thead><tbody>
+<tr><td><b>Maria Hernandez</b><br/><span class="muted">maria@riverviewhousing.com</span></td><td><b>MGP</b></td><td>Executive Director</td><td><span class="tier tier1">Primary User</span></td><td><b>All 3 associated loans</b><br/><span class="muted">001 · 002 · 003</span></td><td><span class="pill">Active</span></td><td><span class="muted">LAHD System</span></td><td>09/28/2026</td><td><span class="muted">Current user</span></td></tr>
+<tr><td><b>John Lee</b><br/><span class="muted">john.lee@example.com</span></td><td><b>MGP</b></td><td>Asset Manager</td><td><span class="tier tier2">Affiliated User</span></td><td>14-121637-001</td><td><span class="pill">Active</span></td><td>Maria Hernandez</td><td>10/01/2026</td><td><button class="rowbtn edit-access" data-loans="1" data-user="John Lee">Edit Access</button> </td></tr>
+<tr><td><b>Sarah Kim</b><br/><span class="muted">sarah.kim@example.com</span></td><td><b>AGP</b></td><td>Portfolio Manager</td><td><span class="tier tier2">Affiliated User</span></td><td>14-121637-001<br/>14-121637-003</td><td><span class="pill">Active</span></td><td>Maria Hernandez</td><td>10/03/2026</td><td><button class="rowbtn edit-access" data-loans="1,3" data-user="Sarah Kim">Edit Access</button> </td></tr>
+</tbody></table></div>
+</section>
+<section id="basicUserView" style="display:none">
+<div class="basic-workspace">
+<h2 class="basic-title">Dashboard</h2>
+<div class="basic-subtitle">LAHD Borrower Portal</div>
+<div class="basic-guidance" id="basicGuidance">
+<div class="basic-guidance-head">
+<strong>Getting Started</strong>
+<button class="basic-guidance-toggle" id="basicGuidanceToggle">Hide</button>
+</div>
+<div class="basic-guidance-body" id="basicGuidanceBody">
+<p style="margin-bottom:8px">Get started by linking an LAHD loan to your account or submitting a borrower request. You can submit a request even if a loan is not linked to your account.</p>
+<p style="margin:0"><b>Link a Loan</b> to connect an LAHD loan to your account using borrower verification information, or <b>Add Request</b> and provide the applicable loan/project information in the request. LAHD staff will verify information submitted with an unlinked request.</p>
+</div>
+</div>
+<div class="card" style="padding:24px;color:#647a90">
+   No LAHD loans are currently linked to this account. Use <b style="color:#203d59">+ Link a Loan</b> or <b style="color:#203d59">+ Add Request</b> above to get started.
+  </div>
+</div>
+</section>
+</main>
+<div class="modal" id="inviteModal"><div class="dialog"><div class="dialog-head"><div><b>Add Affiliated User</b><div class="muted">Select the LAHD loan records this user can access.</div></div><button class="close modalClose">×</button></div><div class="dialog-body">
+<div class="field"><label>Email Address</label><input placeholder="user@example.com"/></div><div class="field"><label>Name</label><input placeholder="Full name"/></div><div class="field"><label>Title / Role</label><input placeholder="e.g., Asset Manager, Property Manager"/></div>
+<div class="field"><label>Access Level</label><select><option>Tier 2 — Standard User</option></select></div>
+<div class="field"><label>Authorized Loan Records</label>
+<label style="display:block;margin:9px 0;font-weight:400"><input checked="" style="width:auto" type="checkbox"/> 14-121637-001 — Arlington Square</label>
+<label style="display:block;margin:9px 0;font-weight:400"><input style="width:auto" type="checkbox"/> 14-121637-002 — Arlington Square</label>
+<label style="display:block;margin:9px 0;font-weight:400"><input style="width:auto" type="checkbox"/> 14-121637-003 — Arlington Square</label></div>
+<div class="access-guide"><div><b>Tier 2 — Standard User</b><span>Access is limited to the selected loan record(s). Tier 2 users cannot manage other portal users.</span></div></div></div><div class="dialog-foot"><button class="btn secondary modalClose">Cancel</button><button class="btn primary modalClose">Send Invitation</button></div></div></div>
+<div class="modal" id="editAccessModal"><div class="dialog"><div class="dialog-head"><div><b>Edit Loan Access</b><div class="muted" id="editUserName">Tier 2 affiliated user</div></div><button class="close editClose">×</button></div><div class="dialog-body">
+<div class="context" style="margin-top:0"><b>Access is assigned by LAHD loan record.</b><br/><span class="muted">Select the loans this user should be able to access. Changes affect this user only.</span></div>
+<div class="access-loans">
+<div class="access-loan"><label><input id="loan1" type="checkbox"/> 14-121637-001<small>Arlington Square · Residual Receipt</small></label><span class="pill">Active Loan</span></div>
+<div class="access-loan"><label><input id="loan2" type="checkbox"/> 14-121637-002<small>Arlington Square · Deferred</small></label><span class="pill">Active Loan</span></div>
+<div class="access-loan"><label><input id="loan3" type="checkbox"/> 14-121637-003<small>Arlington Square · Principal Only</small></label><span class="pill">Active Loan</span></div>
+</div>
+<div class="danger-zone"><b>Remove all portal access</b><br/><span class="muted">To remove this user completely, clear all loan selections or use Remove User from the Users &amp; Access table.</span></div>
+</div><div class="dialog-foot"><button class="btn secondary editClose">Cancel</button><button class="btn primary" id="saveAccess">Save Loan Access</button></div></div></div>
+<div class="modal" id="removeModal"><div class="dialog" style="width:500px"><div class="dialog-head"><b>Remove Portal Access</b><button class="close removeClose">×</button></div><div class="dialog-body"><p>Remove <b id="removeName"></b> from Arlington Square?</p><div class="warning">The user will no longer be able to access this project or submit new requests. Existing request and activity history will be retained.</div></div><div class="dialog-foot"><button class="btn secondary removeClose">Cancel</button><button class="btn danger" id="confirmRemove">Remove Access</button></div></div></div>
+<div class="toast" id="toast">Invitation resent.</div>
+</div>
 <script>
 const obStep={portalEntry:0,t1profile:1,t1verify:2,t2profile:1,t2verify:2};
 function showOb(id){document.getElementById('onboarding').classList.add('active');document.getElementById('portalShell').classList.add('hidden-for-onboard');document.querySelectorAll('.obpage').forEach(x=>x.style.display='none');document.getElementById(id).style.display='block';const st=document.getElementById('steps');st.style.display=(id==='website'||id==='portalEntry')?'none':'flex';const n=obStep[id]||0;st.querySelectorAll('.stepnode').forEach((x,i)=>{x.classList.remove('current','done');if(i<n)x.classList.add('done');if(i===n)x.classList.add('current')});}
@@ -1699,7 +1863,16 @@ document.querySelectorAll('.req-link').forEach(function(btn){
    this.textContent=open?'1 Open ▴':'1 Open ▾';
  });
 });
-</script><script>
+</script><div id="basicLoanModal" style="display:none;position:fixed;inset:0;background:rgba(20,38,56,.48);z-index:9999;align-items:center;justify-content:center">
+<div style="width:560px;background:#fff;border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.22);padding:26px">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0;color:#172b43">Connect an LAHD Loan</h2><button id="closeBasicModal" style="border:0;background:none;font-size:24px;cursor:pointer">×</button></div>
+<p style="color:#657b91;font-size:14px">Enter the information provided for your borrower record.</p>
+<label style="display:block;margin:15px 0 5px;font-weight:700">Borrower EIN</label><input placeholder="XX-XXXXXXX" style="width:100%;padding:10px;border:1px solid #bdcad6;border-radius:5px;box-sizing:border-box"/>
+<label style="display:block;margin:15px 0 5px;font-weight:700">LAHD Loan #</label><input placeholder="Enter loan number" style="width:100%;padding:10px;border:1px solid #bdcad6;border-radius:5px;box-sizing:border-box"/>
+<label style="display:block;margin:15px 0 5px;font-weight:700">Borrower Verification Code</label><input placeholder="Enter verification code" style="width:100%;padding:10px;border:1px solid #bdcad6;border-radius:5px;box-sizing:border-box"/>
+<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px"><button class="btn secondary" id="cancelBasicModal">Cancel</button><button class="btn primary">Verify &amp; Connect Loan</button></div>
+</div>
+</div><script>
 (function(){
  const basicBtn=document.getElementById('basicUserDemo');
  const basicView=document.getElementById('basicUserView');
@@ -1730,7 +1903,17 @@ document.querySelectorAll('.req-link').forEach(function(btn){
  ['closeBasicModal','cancelBasicModal'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>modal.style.display='none'));
 })();
 </script>
-
+<div id="basicRequestModal" style="display:none;position:fixed;inset:0;background:rgba(20,38,56,.48);z-index:10000;align-items:center;justify-content:center">
+<div style="width:620px;background:#fff;border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.22);padding:26px">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0;color:#172b43">Start a Borrower Request</h2><button id="closeBasicRequest" style="border:0;background:none;font-size:24px;cursor:pointer">×</button></div>
+<p style="color:#657b91;font-size:14px;line-height:1.5">No linked loan is required. Provide the applicable loan and project information below. LAHD staff will verify this information during review.</p>
+<label style="display:block;margin:14px 0 5px;font-weight:700">Request Type</label>
+<select style="width:100%;padding:10px;border:1px solid #bdcad6;border-radius:5px"><option>Select request type</option><option>Consent</option><option>Reserve Withdrawal</option><option>Loan Amendment</option><option>Refinance / Subordination</option></select>
+<label style="display:block;margin:14px 0 5px;font-weight:700">LAHD Loan #</label><input placeholder="Enter loan number, if known" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #bdcad6;border-radius:5px"/>
+<label style="display:block;margin:14px 0 5px;font-weight:700">Project / Property</label><input placeholder="Project name or property address" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #bdcad6;border-radius:5px"/>
+<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px"><button class="btn secondary" id="cancelBasicRequest">Cancel</button><button class="btn primary">Continue</button></div>
+</div>
+</div>
 <script>
 (function(){
  const toggle=document.getElementById('basicGuidanceToggle');
@@ -1773,7 +1956,350 @@ document.querySelectorAll('.req-link').forEach(function(btn){
  }
 })();
 </script>
-<div id="integratedRequestView" style="display:none;min-height:100vh;background:#f5f7fa"><script>
+<div id="integratedRequestView" style="display:none;min-height:100vh;background:#f5f7fa"><div class="page" id="borrowerView">
+<div class="topbar">
+<button class="btn btn-primary" type="button">← Back to Dashboard</button>
+</div><div id="v120ReadOnlyBanner" style="display:none;background:#eaf3fb;border:1px solid #a7cce9;border-radius:8px;padding:16px 20px;margin:12px 0 18px;font:14px Arial;color:#173c61"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><strong style="font-size:18px">Submitted Application — Read Only</strong><div id="v120RequestMeta" style="margin-top:6px"></div><div style="font-size:12px;margin-top:5px">Submitted information is locked. Authorized supplemental documents and buyer invitations remain available.</div></div><button class="btn btn-primary" id="v120Back" type="button">← Back to Dashboard</button></div></div>
+<div class="panel">
+<span class="request-category-label">What would you like to submit?</span>
+<div class="category-grid">
+<label class="category-card" id="transactionCategoryCard">
+<input name="requestCategory" type="radio" value="transaction"/>
+<span>
+<div class="category-title">Loan Portfolio Transaction</div>
+<div class="category-desc">Submit one or more related transaction types, such as ownership change, refinancing, subordination, or technical correction.</div>
+</span>
+</label>
+<label class="category-card selected" id="reserveCategoryCard">
+<input checked="" name="requestCategory" type="radio" value="reserve"/>
+<span>
+<div class="category-title">Multifamily - Reserve Withdrawal</div>
+<div class="category-desc">Submit a request to withdraw funds from an Operating Reserve or Replacement Reserve.</div>
+</span>
+</label>
+</div>
+<div class="category-rule">Reserve Withdrawal is a separate request and cannot be combined with Loan Portfolio Transaction types.</div>
+<div class="transaction-type-block hidden" id="transactionTypeBlock">
+<label class="label">Select Transaction Type(s) <span class="helper">(Select one or more applicable)</span></label>
+<div class="multi">
+<div class="multi-display" id="multiDisplay">
+<span class="placeholder" id="multiText">Select transaction type(s)</span>
+<span><span class="count" id="typeCount" style="display:none"></span> ▼</span>
+</div>
+<div class="menu" id="multiMenu">
+<label class="opt"><input type="checkbox" value="Change of Ownership (Sale)"/>Multi-Family Transaction Application - Change of Ownership (Sale)</label>
+<label class="opt"><input type="checkbox" value="Change of Sponsor / GP / LP"/>Multi-Family Transaction Application - Change of Sponsor, General Partner or Limited Partner</label>
+<label class="opt"><input type="checkbox" value="Estoppel"/>Multi-Family Transaction Application - Estoppel</label>
+<label class="opt"><input type="checkbox" value="Loan Refinancing / Restructuring"/>Multi-Family Transaction Application - Loan Refinancing or Loan Restructuring</label>
+<label class="opt"><input type="checkbox" value="Subordination Approval"/>Multi-Family Transaction Application - Subordination Approval</label>
+<label class="opt"><input type="checkbox" value="Technical Correction"/>Multi-Family Transaction Application - Technical Corrections to LAHD Loan</label>
+</div>
+<div class="typechips" id="typechips"></div>
+</div>
+</div>
+</div>
+<div class="section" id="borrower">
+<div class="section-head" onclick="toggleSection('borrower')"><span>1. Project / Loan Information</span><span>⌃</span></div>
+<div class="section-body"><div class="v82-association" id="v82LoanAssociation">
+<div class="v82-assoc-head">
+<div>
+<strong>Project / Loan Association</strong>
+<span id="v82AssocInstruction">Select the LAHD loan(s) associated with this request, or enter a loan manually if it is not listed in your profile.</span>
+</div>
+<span class="v82-required">Required</span>
+</div>
+<div id="v82AssociatedArea">
+<label class="label" id="v82AssociatedLabel">Select from your associated loans</label>
+<div class="v82-loan-list" id="v82AssociatedLoans"></div>
+</div>
+<div class="v82-or" id="v82Or"><span>OR</span></div>
+<div id="v82ManualArea">
+<div class="v82-manual-title">
+<div><strong>Loan not listed? Enter manually</strong><span id="v82ManualHelp">Enter the project/property and loan information. LAHD staff will verify the association during review.</span></div>
+<button class="btn btn-light btn-small" id="v82AddManual" type="button">+ Add Loan</button>
+</div>
+<div id="v82ManualRows"></div>
+</div>
+<div class="v82-assoc-error" id="v82AssocError" style="display:none">
+    Select at least one associated loan or complete the required manual project / loan information.
+  </div>
+</div>
+<div id="transactionBorrowerContext" style="display:none!important">
+<div class="context">This request was started from <strong>Loan # 14-12345678</strong>. The initiating loan is automatically included in the request.</div>
+<div class="grid3">
+<div class="field"><label>Borrower Entity Name</label><input readonly="" value="Peak Plaza LLC"/></div>
+<div class="field"><label>Initiating Loan Number</label><input readonly="" value="14-12345678"/><div class="small">Prepopulated from the loan selected in the Borrower Portal.</div></div>
+<div class="field"><label>Project Name</label><input readonly="" value="Peak Plaza"/></div>
+</div>
+<div class="related">
+<button class="related-toggle" id="relatedToggle" type="button">
+<span>! Other loan and ground lease records are associated with this project. Select any additional records that apply to this request.</span>
+<span id="relArrow">⌃</span>
+</button>
+<div class="related-content" id="relatedContent">
+<div class="records">
+<label class="record initiating"><input checked="" disabled="" type="checkbox"/><span><strong>Loan # 14-12345678</strong><small>Initiating loan • Included automatically</small></span></label>
+<label class="record"><input class="relatedCheck" data-type="loan" type="checkbox" value="Loan # 14-123111-002"/><span><strong>Loan # 14-123111-002</strong><small>Related LAHD loan</small></span></label>
+<label class="record"><input class="relatedCheck" data-type="loan" type="checkbox" value="Loan # 14-123111-003"/><span><strong>Loan # 14-123111-003</strong><small>Related LAHD loan</small></span></label>
+<label class="record"><input class="relatedCheck" data-type="ground" type="checkbox" value="Ground Lease # 123456"/><span><strong>Ground Lease # 123456</strong><small>Related ground lease record</small></span></label>
+</div>
+<div class="small">Only select records that are part of this request. Selected records will be associated with the transaction.</div>
+</div>
+</div>
+<div class="chips" id="recordChips"><span class="chip loan required">Loan # 14-12345678</span></div>
+<div class="field" style="margin-top:18px"><label>Property Address</label><input readonly="" value="1234 Peak Avenue, Los Angeles, CA"/></div>
+</div>
+<div class="hidden" id="reserveBorrowerContext" style="display:none!important">
+<div class="reserve-project-note">Enter project name, property address and City loan number</div>
+<div class="grid3 reserve-project-grid">
+<div class="field">
+<label><span class="req">*</span> Project / Property Name</label>
+<input placeholder="Enter project or property name" value="Peak Plaza"/>
+</div>
+<div class="field">
+<label><span class="req">*</span> Property Address</label>
+<input placeholder="Enter property address" value="1234 Peak Avenue, Los Angeles, CA"/>
+</div>
+<div class="field"><label><span class="req">*</span> Loan #</label><input placeholder="Enter City loan number" required="" type="text"/></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="requestor">
+<div class="section-head" onclick="toggleSection('requestor')"><span>2. Requestor Information</span><span>⌃</span></div>
+<div class="section-body">
+<div class="grid3">
+<div class="field"><label>Requested By</label><input value="John Doe"/></div>
+<div class="field"><label>Phone Number</label><input value="(123) 456-7890"/></div>
+<div class="field"><label>Email Address</label><input value="john.doe@email.com"/></div>
+</div>
+<div class="radio">
+<span>Are you submitting on behalf of someone else?</span>
+<label><input checked="" name="behalf" type="radio" value="no"/> No</label>
+<label><input name="behalf" type="radio" value="yes"/> Yes</label>
+</div>
+<div class="hidden" id="onBehalfFields" style="margin-top:14px">
+<div class="grid3">
+<div class="field"><label><span class="req">*</span> On Behalf Of - Name</label><input placeholder="Enter name"/></div>
+<div class="field"><label><span class="req">*</span> Phone Number</label><input placeholder="Enter phone number"/></div>
+<div class="field"><label><span class="req">*</span> Email Address</label><input placeholder="Enter email address" type="email"/></div>
+</div>
+</div>
+</div>
+</div>
+<div class="reserve-only" id="reserveSections">
+<div class="section" id="reserveInfo">
+<div class="section-head" onclick="toggleSection('reserveInfo')"><span>3. Reserve Withdrawal Request Information</span><span>⌃</span></div>
+<div class="section-body">
+<div class="section-kicker">Complete this section for a Multifamily - Reserve Withdrawal request.</div>
+<div class="grid3">
+<div class="field">
+<label><span class="req">*</span> Reserve Fund</label>
+<select id="fundType"><option value="">Select reserve fund</option><option selected="">Replacement Reserve</option><option>Operating Reserve</option><option>Transition Reserve</option><option>Other Reserve</option></select>
+</div>
+<div class="field"><label><span class="req">*</span> Withdrawal Amount</label><input id="withdrawalAmount" value="$27,500.00"/></div>
+<div class="field"><label><span class="req">*</span> Current Reserve Balance</label><input id="currentReserveBalance" placeholder="Enter current reserve balance"/><div class="small">Enter the current balance shown on your most recent supporting statement or ledger.</div></div>
+</div>
+<div class="grid3" style="margin-top:14px">
+<div class="field"><label><span class="req">*</span> Balance As-Of Date</label><input id="balanceAsOfDate" type="date"/></div>
+<div class="field"><label><span class="req">*</span> Fiscal Year</label><select><option>2026</option><option>2025</option><option>2024</option></select></div>
+<div class="field"><label>Requested Payment / Need-By Date</label><input type="date" value="2026-09-30"/></div>
+</div>
+<div class="field" style="margin-top:14px"><label><span class="req">*</span> Description of Work / Reason for Withdrawal</label><textarea>Replacement of three HVAC units serving occupied residential units and related installation work.</textarea></div>
+<div class="info" style="margin-top:14px"><strong>Note:</strong> Supporting documentation is required in Section 5 for the current reserve balance (e.g., most recent statement).</div>
+</div>
+</div>
+<div class="section" id="invoiceSection">
+<div class="section-head" onclick="toggleSection('invoiceSection')"><span>4. Invoice / Work Detail and Bid Information</span><span>⌃</span></div>
+<div class="section-body">
+<div class="section-kicker">Provide the invoice/work detail manually or import it from the standardized LAHD Excel template.</div>
+<div class="work-entry-card">
+<div class="work-entry-card-head">
+<div>
+<div class="work-entry-card-title">Invoice / Work Detail</div>
+<div class="work-entry-card-subtitle">Choose how you want to provide the line-item information for this request.</div>
+</div>
+</div>
+<div class="entry-method-block">
+<div class="entry-method-label"><span class="req">*</span> Invoice / Work Detail Entry Method</div>
+<div aria-label="Invoice / Work Detail Entry Method" class="entry-method-options" role="radiogroup">
+<label class="entry-method-option">
+<input checked="" name="detailEntryMethod" type="radio" value="manual"/>
+<span aria-hidden="true" class="entry-method-radio"></span>
+<span class="entry-method-copy">
+<span class="entry-method-title">Enter details manually</span>
+<span class="entry-method-help">Add invoice or work items directly in the table below.</span>
+</span>
+</label>
+<label class="entry-method-option">
+<input name="detailEntryMethod" type="radio" value="excel"/>
+<span aria-hidden="true" class="entry-method-radio"></span>
+<span class="entry-method-copy">
+<span class="entry-method-title">Import from LAHD Excel Template</span>
+<span class="entry-method-help">Upload the completed template to populate and validate the table.</span>
+</span>
+</label>
+</div>
+</div>
+<div class="excel-import-panel hidden" id="excelImportPanel">
+<div class="excel-template-row">
+<div>
+<div class="excel-template-title">LAHD Reserve Withdrawal Detail Template</div>
+<div class="small">Download the standardized template, complete the line items offline, then upload it below.</div>
+</div>
+<button class="btn btn-light excel-download-btn" id="downloadExcelTemplate" type="button">↓ Download Excel Template</button>
+</div>
+<div class="excel-upload-row">
+<div class="field excel-file-field">
+<label>Completed Excel Template</label>
+<input accept=".xlsx,.xls" id="excelUpload" type="file"/>
+</div>
+<button class="btn btn-primary excel-import-btn" id="importExcelBtn" type="button">Import &amp; Validate</button>
+</div>
+<div class="small excel-import-status" id="excelImportStatus"></div>
+</div>
+<div class="table-wrap">
+<table id="invoiceTable">
+<thead><tr>
+<th style="width:105px">Invoice Date</th><th style="width:105px">Invoice #</th><th style="width:78px">Unit</th><th style="width:260px;min-width:260px">Item / Work Description</th><th style="width:155px">Contractor / Vendor</th><th style="width:120px">Requested Amount</th><th style="width:120px">Check Paid Date <span class="small">(Optional)</span></th><th style="width:135px">Invoice / Estimate</th><th style="width:125px">Notes</th><th style="width:50px"></th>
+</tr></thead>
+<tbody id="invoiceBody">
+<tr><td><input type="date" value="2026-08-20"/></td><td><input value="INV-2841"/></td><td><input value="101-103"/></td><td><input class="workDescription" maxlength="60" value="Replace three HVAC units serving occupied residential units"/></td><td><input value="ABC Mechanical"/></td><td><input class="lineAmount" value="27500.00"/></td><td><input type="date"/></td><td><select><option>Invoice</option><option>Estimate</option></select></td><td><input value="Occupied units"/></td><td class="row-actions"><button class="btn btn-light btn-small removeRow" type="button">×</button></td></tr>
+</tbody>
+<tfoot><tr class="total-row"><td class="total-label" colspan="5">Total Requested Amount</td><td class="amount" id="invoiceTotal">$27,500.00</td><td colspan="4"></td></tr></tfoot>
+</table>
+</div>
+<button class="btn btn-light btn-small" id="addInvoice" style="margin-top:10px" type="button">+ Add Invoice / Work Item</button>
+</div>
+<div class="bid-section-divider"><span>Bid Requirement</span></div>
+<div class="bid-panel hidden" id="bidRulePanel" style="margin-top:0">
+<div class="bid-head">Bid Requirement Review</div>
+<div class="bid-body">
+<div class="small" style="margin:0 0 12px">
+              The total requested amount is $20,000 or more. Please answer the question below so AHIS can determine what additional information is needed.
+            </div>
+<div class="field">
+<label><span class="req">*</span> Does the work involve an urgent or emergency condition affecting resident safety or livability?</label>
+<div class="bid-choice" style="margin-top:8px">
+<label><input name="urgentEmergency" type="radio" value="yes"/><span>Yes</span></label>
+<label><input name="urgentEmergency" type="radio" value="no"/><span>No</span></label>
+</div>
+</div>
+<div class="hidden" id="urgencyPanel" style="margin-top:16px">
+<div class="field" style="margin-top:12px">
+<label><span class="req">*</span> Explain the urgent or emergency condition and why immediate action was required</label>
+<textarea id="urgencyJustification" placeholder="Describe the condition, how it affected resident safety or livability, and why the work could not reasonably be delayed. Examples may include a broken boiler, loss of heating or cooling in occupied units, or another condition requiring immediate action to protect resident safety or livability."></textarea>
+</div>
+<div class="field" style="margin-top:12px">
+<label>Urgency Supporting Documentation <span class="small">(Optional)</span></label>
+<div class="upload-box"><input multiple="" type="file"/></div>
+<div class="small" style="margin-top:6px">Examples: photos, notices, inspection reports, contractor assessments, or other supporting documentation.</div>
+</div>
+</div>
+<div class="hidden" id="additionalBidsPanel" style="margin-top:16px">
+<div class="info">
+<strong>2 Additional Bids Required</strong><br/>
+                Because the applicable work is $20,000 or more and is not identified as urgent/emergency work affecting resident safety or livability, please upload two additional bids or estimates.
+              </div>
+<div class="upload-grid" style="margin-top:12px">
+<div class="field"><label><span class="req">*</span> Bid / Estimate 1</label><div class="upload-box"><input type="file"/></div></div>
+<div class="field"><label><span class="req">*</span> Contractor / Vendor</label><input placeholder="Vendor name"/></div>
+<div class="field"><label><span class="req">*</span> Bid Amount</label><input placeholder="$0.00"/></div>
+<div class="field"><label><span class="req">*</span> Bid Date</label><input type="date"/></div>
+</div>
+<div class="upload-grid" style="margin-top:10px">
+<div class="field"><label><span class="req">*</span> Bid / Estimate 2</label><div class="upload-box"><input type="file"/></div></div>
+<div class="field"><label><span class="req">*</span> Contractor / Vendor</label><input placeholder="Vendor name"/></div>
+<div class="field"><label><span class="req">*</span> Bid Amount</label><input placeholder="$0.00"/></div>
+<div class="field"><label><span class="req">*</span> Bid Date</label><input type="date"/></div>
+</div>
+</div>
+<div class="small" style="margin-top:14px">
+              LAHD will review the information submitted and make the final determination regarding whether the additional bid requirement applies.
+            </div>
+</div>
+</div>
+<div class="info" id="belowThresholdMessage" style="margin-top:14px">
+          The current total requested amount is below $20,000. No additional bid information is required based on the amount entered.
+        </div>
+</div>
+</div>
+<div class="section" id="reserveDocuments">
+<div class="section-head" onclick="toggleSection('reserveDocuments')"><span>5. Documents</span><span>⌃</span></div>
+<div class="section-body">
+<div class="section-kicker">Upload documents that support the Reserve Withdrawal request.</div>
+<div class="doc-upload-list">
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Signed Reserve Withdrawal Request Letter on Company Letterhead</strong><div class="small">Required. Summarize the requested amount, purpose, property/project, and authorized signer.</div></div><div class="doc-actions"><button class="btn btn-light btn-small" type="button">↓ Download Sample / Template</button><input accept=".pdf,.doc,.docx" type="file"/></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Current Reserve Balance Supporting Document</strong><div class="small">Required. Most recent reserve bank statement, loan statement showing the balance, or reserve ledger if a statement is unavailable.</div></div><div class="doc-actions"><select><option>Bank Statement</option><option>Loan Statement</option><option>Reserve Ledger</option><option>Other</option></select><input accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls" type="file"/></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Invoices / Estimates</strong><div class="small">Required as applicable. Upload supporting invoices or estimates not already attached to individual work-detail rows.</div></div><div class="doc-actions"><input multiple="" type="file"/></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Other Supporting Documents</strong><div class="small">Optional.</div></div><div class="doc-actions"><input multiple="" type="file"/></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="transaction-only" id="transactionSections"><div hidden="" id="v107StatusBar"><div><strong id="v107StatusLabel">Submitted request</strong><div style="font-size:12px;color:#526b80;margin-top:4px">Original form is read-only. Authorized supplemental documents and contributor invitations remain available.</div></div><button class="btn btn-light btn-small" id="v107ReturnEdit" type="button">Return to New Request</button></div>
+<div class="section" id="v107ChangeBorrower"><div class="section-head" onclick="toggleSection('v107ChangeBorrower')"><span>3. Borrower / Ownership Change</span><span>⌃</span></div><div class="section-body"><div class="v107-info">Illustrative current borrower values are sample data. In production, prepopulate from the selected LAHD loan and verify against the record.</div><div class="section-kicker">Provide information about the existing seller and proposed buyer for Change of Ownership (Sale).</div><div class="compare"><div><h3>Current Borrower / Seller</h3><label>Legal Entity Name<input data-v107-example="true" readonly="" value="Riverview Housing LLC"/></label><label>Entity Type<input data-v107-example="true" readonly="" value="LLC"/></label><label>FEIN<input data-v107-example="true" readonly="" value="••-•••4821"/></label><label>Authorized Representative<input data-v107-example="true" readonly="" value="Maria Hernandez"/></label><label>Contact Email<input data-v107-example="true" readonly="" value="maria@example.org"/></label></div><div><h3 id="proposedTitle">Proposed Borrower / Buyer</h3><label>Legal Entity Name<input class="entry" placeholder="Enter legal entity name"/></label><label>Entity Type<select class="entry"><option value="">Select</option><option>LLC</option><option>LP</option><option>Corporation</option><option>Other</option></select></label><label>FEIN<input class="entry" placeholder="Enter securely"/></label><label>Authorized Representative<input class="entry" placeholder="Name"/></label><label>Contact Email<input class="entry" placeholder="Email" type="email"/></label></div></div><label>Describe the proposed change<textarea class="entry" placeholder="Transaction purpose and effect on LAHD obligations" rows="3"></textarea></label></div></div><div class="section" id="lenderWorksheet">
+<div class="section-head" onclick="toggleSection('lenderWorksheet')"><span>3. Borrower - Lender Worksheet</span><span>⌃</span></div>
+<div class="section-body">
+<div class="subsection-title">Loan Calculation</div>
+<div class="loan-calc-grid">
+<div class="field"><label>Proposed Loan Amt.</label><input value="$600,000.00"/></div>
+<div class="field"><label>Refinance Amt.</label><input value="$350,000.00"/></div>
+<div class="field"><label>Cash Out</label><input value="$203,050.00"/></div>
+<div class="field"><label>Broker Fee</label><input value="$7,500.00"/></div>
+<div class="field"><label>Lender Fee</label><input value="$25,500.00"/></div>
+<div class="field"><label>Closing Costs</label><input value="$7,350.00"/></div>
+</div>
+<div class="grid2" style="margin-top:12px">
+<div class="field"><label>Annual Property Taxes</label><input value="$12,700"/></div>
+<div class="field"><label>Annual Insurance</label><input value="$10,106"/></div>
+</div>
+<div class="subsection-title">Appraisal &amp; Property Inputs</div>
+<div class="property-inputs">
+<div class="field"><label>Net Operating Income (NOI)</label><input value="$76,000"/></div>
+<div class="field"><label>Cap Rate</label><input value="4.50%"/></div>
+<div class="field"><label>Market / Property Value</label><input value="$1,650,000"/></div>
+<div class="field"><label>Appraisal Date</label><input type="date" value="2025-11-17"/></div>
+</div>
+<div class="table-wrap" style="margin-top:18px">
+<table class="debt-table"><thead><tr><th class="debt-title" colspan="10">CURRENT STATUS</th></tr><tr><th>Mortgage Holder</th><th>Present Balance</th><th>Monthly Payment</th><th>Loan Term</th><th>Interest Rate</th><th>Loan Index</th><th>ARM Margin</th><th>Annual/Life Caps</th><th>Prepay Penalty</th><th><button class="plusbtn" type="button">+</button></th></tr></thead>
+<tbody><tr><td><strong>1st. Northeast Bank</strong></td><td>$356,680</td><td>$5,142</td><td>3/1/2030</td><td>9.36%</td><td>-</td><td>-</td><td>-</td><td>TBD</td><td class="trash">▣</td></tr><tr><td><strong>2nd. HCIDLA</strong></td><td>$228,608</td><td>N/A</td><td>12/8/2037</td><td>5.00%</td><td>-</td><td>-</td><td>-</td><td>-</td><td class="trash">▣</td></tr><tr><td><strong>3rd. EC Housing</strong></td><td>$569,833</td><td>N/A</td><td>Matured</td><td>Prime +</td><td>3%</td><td>-</td><td>-</td><td>-</td><td class="trash">▣</td></tr><tr class="debt-total"><td>TOTAL</td><td>$320,121</td><td>$5,142</td><td colspan="7">*Exclude Property Taxes and Homeowner's Insurance from the MONTHLY PAYMENT.</td></tr></tbody></table>
+</div>
+<div class="table-wrap" style="margin-top:18px">
+<table class="debt-table"><thead><tr><th class="debt-title" colspan="10">AFTER-SUBORDINATION</th></tr><tr><th>Mortgage Holder</th><th>Present Balance</th><th>Monthly Payment</th><th>Loan Term</th><th>Interest Rate</th><th>Loan Index</th><th>ARM Margin</th><th>Annual/Life Caps</th><th>Prepay Penalty</th><th><button class="plusbtn" type="button">+</button></th></tr></thead>
+<tbody><tr><td><strong>1st. Lendistry</strong></td><td>$600,000</td><td>$3,862</td><td>10 Years</td><td>Prime +</td><td>2.74%</td><td>-</td><td>-</td><td>2% - Year 2</td><td class="trash">▣</td></tr><tr><td><strong>2nd. HCIDLA</strong></td><td>$228,608</td><td>N/A</td><td>12/8/2037</td><td>5.00%</td><td>-</td><td>-</td><td>-</td><td>-</td><td class="trash">▣</td></tr><tr><td><strong>3rd. EC Housing</strong></td><td>$569,833</td><td>N/A</td><td>Matured</td><td>Prime +</td><td>3%</td><td>-</td><td>-</td><td>-</td><td class="trash">▣</td></tr><tr class="debt-total"><td>TOTAL</td><td>-</td><td>-</td><td colspan="7">*Exclude Property Taxes and Homeowner's Insurance from the MONTHLY PAYMENT.</td></tr></tbody></table>
+</div>
+</div>
+</div>
+<div class="section" id="requestDetails">
+<div class="section-head" onclick="toggleSection('requestDetails')"><span>4. Request Details</span><span>⌃</span></div>
+<div class="section-body">
+<div class="field" style="max-width:220px"><label>Date Needed</label><input type="date"/></div>
+<div class="field" style="margin-top:12px"><label>Issue / Comment</label><textarea style="min-height:105px"></textarea></div>
+</div>
+</div>
+<div class="section" id="v107ChangeDocs"><div class="section-head" onclick="toggleSection('v107ChangeDocs')"><span>5. Document Upload</span><span>⌃</span></div><div class="section-body"><p class="helper">Upload required applicant documents before submitting. Buyer documents can be provided now or later by an invited contributor; missing buyer documents will not block submission. LAHD may request additional items during review.</p><div class="v108-summary" id="v108Summary">Required for submission: 0 of 10 received · Buyer documents: 0 of 12 received</div><h3>General Transaction Documents</h3><div class="docline" data-doc-number="1" data-requirement="required"><span>1. Signed statement on official letterhead stating why the City should consider the request; include Project/Loan number(s), circumstances, requested changes to existing loan terms, and signature.<span class="v108-requirement required">Required</span></span><input aria-label="Signed statement on official letterhead stating why the City should consider the request; include Project/Loan number(s), circumstances, requested changes to existing loan terms, and signature." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="2" data-requirement="required"><span>2. Resolution Authority &amp; Authorized Signatory(s).<span class="v108-requirement required">Required</span></span><input aria-label="Resolution Authority &amp; Authorized Signatory(s)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="3" data-requirement="required"><span>3. Organization Formation Documents and all Amendments (including organizational chart).<span class="v108-requirement required">Required</span></span><input aria-label="Organization Formation Documents and all Amendments (including organizational chart)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="4" data-requirement="required"><span>4. Certificate of Good Standing issued by the State of California (current within 6 months of application date).<span class="v108-requirement required">Required</span></span><input aria-label="Certificate of Good Standing issued by the State of California (current within 6 months of application date)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="5" data-requirement="required"><span>5. Estimated Closing Statement.<span class="v108-requirement required">Required</span></span><input aria-label="Estimated Closing Statement." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="6" data-requirement="conditional"><span>6. Purchase and Sale Agreement (for purchases only).<span class="v108-requirement conditional">If Applicable</span></span><input aria-label="Purchase and Sale Agreement (for purchases only)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="7" data-requirement="required"><span>7. Asset Management Questionnaire.<span class="v108-requirement required">Required</span></span><input aria-label="Asset Management Questionnaire." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="8" data-requirement="optional"><span>8. Other items as needed.<span class="v108-requirement optional">Optional</span></span><input aria-label="Other items as needed." data-v107-doc="true" type="file"/><small>Pending</small></div><h3>Seller / Current Borrower Documents</h3><p class="v108-note">Seller documents are required for initial submission in this demonstration.</p><div class="docline" data-doc-number="9" data-requirement="required"><span>9. Signed Certification and Authorization to Release Information (attached form).<span class="v108-requirement required">Required</span></span><input aria-label="Signed Certification and Authorization to Release Information (attached form)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="10" data-requirement="required"><span>10. Waiver of Notice to Inspect Form (attached form).<span class="v108-requirement required">Required</span></span><input aria-label="Waiver of Notice to Inspect Form (attached form)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="11" data-requirement="required"><span>11. Two months of current Mortgage Statements.<span class="v108-requirement required">Required</span></span><input aria-label="Two months of current Mortgage Statements." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="12" data-requirement="required"><span>12. Two months of current Reserve Account Statements.<span class="v108-requirement required">Required</span></span><input aria-label="Two months of current Reserve Account Statements." data-v107-doc="true" type="file"/><small>Pending</small></div><h3>Buyer / Proposed Borrower Documents</h3><p class="v108-note">Buyer documents are optional at initial submission, but may be required before LAHD completes its review. The seller can upload available files or invite the buyer to contribute.</p><div class="docline" data-doc-number="13" data-requirement="buyer"><span>13. Sponsor / Owner / Borrower signature blocks for proposed new Borrower (MS Word format).<span class="v108-requirement buyer">Buyer to Provide</span></span><input accept=".doc,.docx" aria-label="Sponsor / Owner / Borrower signature blocks for proposed new Borrower (MS Word format)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="14" data-requirement="buyer"><span>14. Property Title Report (with hyperlinks to recorded documents).<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Property Title Report (with hyperlinks to recorded documents)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="15" data-requirement="buyer"><span>15. Broker / Lender Worksheet.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Broker / Lender Worksheet." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-condition="true" data-doc-number="16" data-requirement="buyer"><span>16. IRS Form W-9 — only for new General Partner or Managing General Partner.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="IRS Form W-9 — only for new General Partner or Managing General Partner." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-condition="true" data-doc-number="17" data-requirement="buyer"><span>17. Business Tax Certificate — new Borrower only.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Business Tax Certificate — new Borrower only." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="18" data-requirement="buyer"><span>18. Project Proforma, including before- and after-term-change 15-year cash flow projections.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Project Proforma, including before- and after-term-change 15-year cash flow projections." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="19" data-requirement="buyer"><span>19. Appraisal (current within 6 months of application date).<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Appraisal (current within 6 months of application date)." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="20" data-requirement="buyer"><span>20. Commitment Letter.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Commitment Letter." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-condition="true" data-doc-number="21" data-requirement="buyer"><span>21. List of Properties in LAHD Multifamily Loan Portfolio Form — new General Partner(s) only.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="List of Properties in LAHD Multifamily Loan Portfolio Form — new General Partner(s) only." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="22" data-requirement="buyer"><span>22. Resume of Multifamily Affordable Housing Experience — buyer only.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Resume of Multifamily Affordable Housing Experience — buyer only." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-condition="true" data-doc-number="23" data-requirement="buyer"><span>23. List of managed properties in LAHD portfolio — new property manager only.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="List of managed properties in LAHD portfolio — new property manager only." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="docline" data-doc-number="24" data-requirement="buyer"><span>24. Buyer's Self-Certification of Financial Capacity — existing and/or new Borrower.<span class="v108-requirement buyer">Buyer to Provide</span></span><input aria-label="Buyer's Self-Certification of Financial Capacity — existing and/or new Borrower." data-v107-doc="true" type="file"/><small>Pending</small></div><div class="invitebar"><div><strong>Additional Document Contributor</strong><p id="v107InviteStatus">No invitation prepared.</p></div><button class="btn btn-primary" id="v107Invite" type="button">+ Invite Buyer / Contributor</button></div></div></div><div class="section" id="transactionDocs">
+<div class="section-head" onclick="toggleSection('transactionDocs')"><span>5. Document Upload</span><span>⌃</span></div>
+<div class="section-body">
+<div class="small" style="margin-bottom:14px">Please upload the required documents. You can download templates by clicking the links below:</div>
+<div class="doc-upload-list">
+<div class="doc-upload-row"><span class="doc-upload-name">▧   Application Form  ⓘ</span><span class="doc-actions"><button class="btn btn-light btn-small" type="button">⇩ Template</button><button class="btn btn-primary btn-small" type="button">▧ Upload</button></span></div>
+<div class="doc-upload-row"><span class="doc-upload-name">▧   Background Check Form  ⓘ</span><span class="doc-actions"><button class="btn btn-light btn-small" type="button">⇩ Template</button><button class="btn btn-primary btn-small" type="button">▧ Upload</button></span></div>
+<div class="doc-upload-row"><span class="doc-upload-name">▧   Entity Agreement &amp; Amendments  ⓘ</span><span class="doc-actions"><button class="btn btn-light btn-small" type="button">⇩ Template</button><button class="btn btn-primary btn-small" type="button">▧ Upload</button></span></div>
+<div class="doc-upload-row"><span class="doc-upload-name">▧   Resolution Authority  ⓘ</span><span class="doc-actions"><button class="btn btn-light btn-small" type="button">⇩ Template</button><button class="btn btn-primary btn-small" type="button">▧ Upload</button></span></div>
+<div class="doc-upload-row"><span class="doc-upload-name">▧   Certificate of Good Standing  ⓘ</span><span class="doc-actions"><button class="btn btn-light btn-small" type="button">⇩ Template</button><button class="btn btn-primary btn-small" type="button">▧ Upload</button></span></div>
+<div class="doc-upload-row"><span class="doc-upload-name">▧   Signed Borrower Certification  ⓘ</span><span class="doc-actions"><button class="btn btn-light btn-small" type="button">⇩ Template</button><button class="btn btn-primary btn-small" type="button">▧ Upload</button></span></div>
+</div>
+</div>
+</div>
+<div class="disclaimer"><strong>Disclaimer</strong><p>I, THE UNDERSIGNED, CERTIFY THAT THE INFORMATION PROVIDED IN THIS APPLICATION IS TRUE AND CORRECT AS OF THE DATE SET FORTH OPPOSITE MY SIGNATURE ON THIS APPLICATION. I ACKNOWLEDGE THAT ANY MISREPRESENTATION(S) OF THE INFORMATION CONTAINED HEREIN WHICH RESULTS IN CIVIL LIABILITY AND/OR A LOSS TO THE CITY OF LOS ANGELES HOUSING AND COMMUNITY INVESTMENT DEPARTMENT (HCIDLA), ITS AGENTS, SUCCESSORS, ASSIGNS, INSURERS AND ANY OTHER PARTY WHO MAY SUFFER A LOSS DUE TO RELIANCE UPON ANY INFORMATION CONTAINED HEREIN MAY RESULT IN CIVIL RECOURSE AGAINST THE UNDERSIGNED. I FURTHER ACKNOWLEDGE THAT HCIDLA AT ITS SOLE DISCRETION SHALL HAVE THE RIGHT TO USE THE INFORMATION CONTAINED HEREIN TO REFER THE APPLICANT TO AN ALTERNATE LENDER FOR ANALYSIS AND POTENTIAL OFFERS OF COMPETITIVE FINANCING IN ORDER FOR HCIDLA TO PROTECT ITS SECURITY INTEREST AS A SUBORDINATED LENDER.</p><label class="ack"><input type="checkbox"/> <span>I acknowledge and agree to the terms stated in the disclaimer above</span></label></div>
+<div class="transaction-footer" id="transactionFooter"><button class="btn btn-light" type="button">Cancel</button><button class="btn btn-primary" type="button">Submit Form</button></div>
+</div>
+<div class="footer" id="reserveFooter">
+<button class="btn btn-light" type="button">Save Draft</button>
+<button class="btn btn-primary" type="button">Continue</button>
+</div>
+</div><script>
 const md=document.getElementById('multiDisplay'),
       mm=document.getElementById('multiMenu'),
       mt=document.getElementById('multiText'),
@@ -2046,7 +2572,7 @@ syncInvoiceTotal();
 <span class="relatedFundingStatus">Related Request In Review</span>
 </div>
 <div class="supervisorFundingNoticeDetails">
-<div><small>Related Request</small><button class="relatedRequestLink" onclick="goToRelatedRequests()" type="button">RW-260298-SL-01 ↗</button></div>
+<div><small>Related Request</small><button class="relatedRequestLink" onclick="goToRelatedRequests()" type="button">RW-260315 ↗</button></div>
 <div><small>Funding Reserve</small><strong>Replacement Reserve</strong></div>
 <div><small>Related Request Amount</small><strong>$25,000</strong></div>
 </div>
@@ -2072,7 +2598,7 @@ syncInvoiceTotal();
 </div>
 <div class="staffDocWorkspace" id="staffDocumentReviewWorkspace" style="display:none;">
 <section class="staffSimpleDocs">
-<div class="staffSimpleDocsHead"><div><h2>Documents</h2><p>View requester-submitted documents and manage staff-added documents for this Reserve Withdrawal request.</p></div><div class="staffDocHeadActions"><button class="downloadAllDocsBtn" onclick="downloadAllStaffDocuments()" type="button">⇩ Download All</button><button class="addStaffDocBtn" onclick="openStaffDocModal()" type="button">＋ Add Document</button></div></div>
+<div class="staffSimpleDocsHead"><div><h2>Documents</h2><p>View requester-submitted documents and manage staff-added documents for this Reserve Withdrawal request.</p></div><div class="staffDocHeadActions"><button class="downloadAllDocsBtn" id="rwDownloadSelected" type="button" disabled onclick="downloadSelectedReserveDocs()">⇩ Download Selected (0)</button><button class="downloadAllDocsBtn" onclick="downloadAllStaffDocuments()" type="button">⇩ Download All</button><button class="addStaffDocBtn" onclick="openStaffDocModal()" type="button">＋ Add Document</button></div></div>
 <div class="docsReviewTableWrap"><table class="docsReviewTable staffManageDocsTable"><thead><tr><th>Document Name</th><th>Type</th><th>Related Invoice #</th><th>Uploaded by</th><th>Uploaded On</th><th>Source</th><th>Actions</th></tr></thead>
 <tbody id="staffManageDocsBody">
 <tr><td><a class="docLink" href="#">Signed Reserve Withdrawal Request Letter.pdf</a></td><td>Request Letter</td><td>—</td><td>John Doe</td><td>09/25/2026</td><td><span class="sourcePill requester">Requester</span></td><td><button class="docActionBtn" onclick="editStaffDoc(this)">Edit Attributes</button></td></tr>
@@ -2124,7 +2650,7 @@ syncInvoiceTotal();
 </div>
 <div class="connectionCompact related">
 <span class="connectionType">Related Request</span>
-<button class="connectionRequestLink" onclick="showRelatedRequestDemo()" type="button">RW-260298-SL-01</button>
+<button class="connectionRequestLink" onclick="showRelatedRequestDemo()" type="button">RW-260315</button>
 <span>Replacement Reserve</span>
 <span>$25,000</span>
 <span class="connectionStatus">In Review</span>
@@ -2196,12 +2722,7 @@ syncInvoiceTotal();
 <div class="associationAuditNote">Changes to the request-to-loan association are recorded in the Activity Log with staff name, date/time, prior association, and new association.</div>
 </div>
 </section>
-<section class="reviewPanel" id="p3"><h2>Step 3 - Reserve Withdrawal</h2><div class="detailCard"><div class="detailGrid three"><div><span>Reserve Fund:</span><strong>Replacement Reserve</strong></div><div><span>Withdrawal Amount:</span><strong>$78,500</strong></div><div><span>Fiscal Year:</span><strong>2026</strong></div><div><span>Current Reserve Balance:</span><strong>$214,630</strong></div><div><span>Balance As-Of:</span><strong>09/20/2026</strong></div><div><span>Need-By Date:</span><strong>10/15/2026</strong></div><div class="wide"><span>Description:</span><strong>Roof repairs and water-damage remediation affecting occupied units.</strong></div></div></div>
-<div class="reserveLinkPanel" aria-live="polite">
- <div><strong>Portfolio Management — Reserve Balances</strong><p id="reserveLinkHelp">Select a verified AHIS loan in Step 2 to view its reserve balances.</p></div>
- <button id="viewReserveBalances" type="button" disabled>View Reserve Balances ↗</button>
-</div>
-</section>
+<section class="reviewPanel" id="p3"><h2>Step 3 - Reserve Withdrawal</h2><div class="detailCard"><div class="detailGrid three"><div><span>Reserve Fund:</span><strong>Replacement Reserve</strong></div><div><span>Withdrawal Amount:</span><strong>$78,500</strong></div><div><span>Fiscal Year:</span><strong>2026</strong></div><div><span>Current Reserve Balance:</span><strong>$214,630</strong></div><div><span>Balance As-Of:</span><strong>09/20/2026</strong></div><div><span>Need-By Date:</span><strong>10/15/2026</strong></div><div class="wide"><span>Description:</span><strong>Roof repairs and water-damage remediation affecting occupied units.</strong></div></div></div></section>
 <section class="reviewPanel" id="p4">
 <h2>Step 4 - Invoice / Bid Information</h2>
 <div class="invoiceReviewHead">
@@ -2566,9 +3087,9 @@ function showLoanMatches(){
  const f=document.getElementById('associationFeedback');if(f){f.className='associationFeedback show '+(v?'info':'error');f.textContent=v?'Matching AHIS records are shown as you type. Select the applicable loan record(s), then save the association.':'No matching AHIS records found in this sample. Try Loan # 23-130489-001, APN 5147-021-018, Peak Plaza, or 310 E Washington.';}
 }
 function saveLoanAssociation(){
- const a=selectedLoans(),f=document.getElementById('associationFeedback');if(!a.length){if(f){f.className='associationFeedback show info';f.textContent='No AHIS loan linked. Reserve balance navigation is disabled until a loan is associated.';}}
- savedAssociations=[...a];renderAssociatedLoans();if(window.updateReserveLink)window.updateReserveLink();const s=document.getElementById('associationStatus');if(s){s.textContent='Staff Validated';s.className='associationStatus validated';}
- if(f){f.className='associationFeedback show success';f.textContent=savedAssociations.length?'Loan association saved: '+savedAssociations.join(', ')+'. (Prototype)':'Loan association cleared. (Prototype)';}
+ const a=selectedLoans(),f=document.getElementById('associationFeedback');if(!a.length){if(f){f.className='associationFeedback show error';f.textContent='Select at least one AHIS loan before saving the association.';}return;}
+ savedAssociations=[...a];renderAssociatedLoans();const s=document.getElementById('associationStatus');if(s){s.textContent='Staff Validated';s.className='associationStatus validated';}
+ if(f){f.className='associationFeedback show success';f.innerHTML='✓ Loan association saved: <strong>'+savedAssociations.join(', ')+'</strong>. The change is recorded in the Activity Log.';}
 
   clearAHISSearch(false);
 }
@@ -2851,7 +3372,7 @@ function confirmRelatedReserveRequest(){
 
   const toast=document.getElementById('relatedReserveSuccess');
   const txt=document.getElementById('relatedReserveSuccessText');
-  if(txt) txt.textContent='RW-260298-SL-01 was created for '+reserve+' and linked to this request. It is now available for separate staff review.';
+  if(txt) txt.textContent='RW-260315 was created for '+reserve+' and linked to this request. It is now available for separate staff review.';
   if(toast){toast.style.display='block';setTimeout(()=>toast.style.display='none',6500);}
 }
 </script><style>
@@ -2890,7 +3411,7 @@ function showRelatedRequestDemo(){
   const d=document.createElement('div');
   d.id='relatedRequestDemo';
   d.className='relatedRequestDemo';
-  d.innerHTML='<strong>RW-260298-SL-01 · Replacement Reserve</strong><br>Related to <u>RW-260298</u> — Operating Reserve Withdrawal &nbsp;·&nbsp; Relationship: Additional Reserve Funding';
+  d.innerHTML='<strong>RW-260315 · Replacement Reserve</strong><br>Related to <u>RW-260298</u> — Operating Reserve Withdrawal &nbsp;·&nbsp; Relationship: Additional Reserve Funding';
   card.insertAdjacentElement('afterend',d);
 }
 </script><style>
@@ -3332,11 +3853,206 @@ function goToRelatedRequests(){
     });
   }
 })();
-</script>
+</script><script id="v82-role-association-behavior">
+(function(){
+  const LOANS={
+    primary:[
+      {loan:"14-121637-001",project:"Arlington Square",address:"1234 Arlington Ave, Los Angeles, CA 90019"},
+      {loan:"14-121637-002",project:"Riverview Apartments",address:"825 S River Street, Los Angeles, CA 90023"},
+      {loan:"14-121637-003",project:"Sunset Gardens",address:"4100 Sunset Blvd, Los Angeles, CA 90029"}
+    ],
+    affiliated:[
+      {loan:"14-121637-001",project:"Arlington Square",address:"1234 Arlington Ave, Los Angeles, CA 90019"}
+    ],
+    basic:[]
+  };
+  let v82Role="primary";
+  const list=document.getElementById("v82AssociatedLoans"),
+        area=document.getElementById("v82AssociatedArea"),
+        or=document.getElementById("v82Or"),
+        add=document.getElementById("v82AddManual"),
+        rows=document.getElementById("v82ManualRows"),
+        inst=document.getElementById("v82AssocInstruction"),
+        assocLabel=document.getElementById("v82AssociatedLabel"),
+        manualHelp=document.getElementById("v82ManualHelp"),
+        err=document.getElementById("v82AssocError");
 
+  function category(){
+    return document.querySelector('input[name="requestCategory"]:checked')?.value || "reserve";
+  }
+  function isTransaction(){return category()==="transaction";}
+  function detectRole(){
+    const basic=document.getElementById("basicUserView");
+    if(basic && basic.style.display==="block") return "basic";
+    return document.body.classList.contains("standard") ? "affiliated" : "primary";
+  }
+  function optionType(){return isTransaction()?"checkbox":"radio";}
+  function render(){
+    if(!list) return;
+    list.innerHTML="";
+    const loans=LOANS[v82Role]||[];
+    const multi=isTransaction();
+
+    inst.textContent=multi
+      ? "Select one or more LAHD loans already associated with your profile. You may also manually add loan(s) that are not listed."
+      : "Select one LAHD loan already associated with your profile, or manually enter one loan if it is not listed.";
+    assocLabel.textContent=multi ? "Select one or more associated loans" : "Select one associated loan";
+    manualHelp.textContent=multi
+      ? "You may add one or more loans not listed in your profile. LAHD staff will verify the association during review."
+      : "Enter one loan if the applicable loan is not listed in your profile. LAHD staff will verify the association during review.";
+
+    area.style.display=v82Role==="basic"?"none":"block";
+    or.style.display=v82Role==="basic"?"none":"flex";
+    add.textContent=multi?"+ Add Loan":"Enter Loan Manually";
+
+    loans.forEach((x,i)=>{
+      const label=document.createElement("label");
+      label.className="v82-loan-option";
+      label.innerHTML='<input name="v82AssociatedLoan" type="'+optionType()+'" value="'+x.loan+'">'+
+        '<span class="v82-loan-num">'+x.loan+'</span>'+
+        '<span class="v82-loan-project">'+x.project+'</span>'+
+        '<span class="v82-loan-address">'+x.address+'</span>';
+      const inp=label.querySelector("input");
+      inp.addEventListener("change",()=>{
+        if(!multi && inp.checked){ rows.innerHTML=""; }
+        document.querySelectorAll(".v82-loan-option").forEach(o=>o.classList.toggle("selected",o.querySelector("input").checked));
+        if(err) err.style.display="none";
+      });
+      list.appendChild(label);
+    });
+
+    rows.innerHTML="";
+    document.querySelectorAll("#v82ManualArea .v82-basic-note").forEach(n=>n.remove());
+    const manualTitle=document.querySelector("#v82ManualArea .v82-manual-title strong");
+    if(v82Role==="basic"){
+      inst.textContent=multi
+        ? "Enter one or more project / loan records for this Loan Portfolio Transaction."
+        : "Enter the project / loan record for this Reserve Withdrawal request.";
+      const assocHead=document.querySelector("#v82LoanAssociation .v82-assoc-head strong");
+      if(assocHead) assocHead.textContent="Project / Loan Information";
+      const manualHeader=document.querySelector("#v82ManualArea .v82-manual-title");
+      if(manualHeader) manualHeader.style.display=multi ? "flex" : "none";
+      if(manualTitle) manualTitle.textContent="";
+      manualHelp.textContent="";
+      add.style.display=multi ? "" : "none";
+      add.textContent="+ Add Loan";
+      addManualRow();
+    } else {
+      const assocHead=document.querySelector("#v82LoanAssociation .v82-assoc-head strong");
+      if(assocHead) assocHead.textContent="Project / Loan Association";
+      const manualHeader=document.querySelector("#v82ManualArea .v82-manual-title");
+      if(manualHeader) manualHeader.style.display="flex";
+      if(manualTitle) manualTitle.textContent="Loan not listed? Enter manually";
+      add.style.display="";
+      add.textContent=multi ? "+ Add Loan" : "Enter Loan Manually";
+    }
+  }
+  function addManualRow(){
+    if(!isTransaction() && rows.children.length) return;
+    if(!isTransaction()){
+      document.querySelectorAll('input[name="v82AssociatedLoan"]').forEach(x=>{x.checked=false;x.closest(".v82-loan-option")?.classList.remove("selected");});
+    }
+    const row=document.createElement("div");
+    row.className="v82-manual-row";
+    row.innerHTML=
+      '<div class="field"><label><span class="req">*</span> Loan #</label><input class="v82-m-loan" placeholder="Enter City loan number"></div>'+
+      '<div class="field"><label><span class="req">*</span> Project / Property Name</label><input class="v82-m-project" placeholder="Enter project/property name"></div>'+
+      '<div class="field"><label><span class="req">*</span> Property Address</label><input class="v82-m-address" placeholder="Enter property address"></div>'+
+      (isTransaction()?'<button type="button" class="btn btn-light btn-small v82-remove">Remove</button>':'');
+    row.querySelector(".v82-remove")?.addEventListener("click",()=>row.remove());
+    row.querySelectorAll("input").forEach(i=>i.addEventListener("input",()=>{if(err)err.style.display="none";}));
+    rows.appendChild(row);
+  }
+  function openFor(role){
+    v82Role=role||detectRole();
+    render();
+  }
+  add?.addEventListener("click",addManualRow);
+  document.querySelectorAll('input[name="requestCategory"]').forEach(r=>r.addEventListener("change",render));
+
+  // Loan-level Add Request buttons open the same request workflow as the toolbar.
+  document.querySelectorAll('#dashboard .loan-card-requests-head .btn, #dashboard .old-global-requests .section-head .btn').forEach(button=>{
+    button.addEventListener('click',function(){
+      document.getElementById('universalAddRequest')?.click();
+    });
+  });
+
+  // Primary / Affiliated universal Add Request: detect the active dashboard role.
+  document.getElementById("universalAddRequest")?.addEventListener("click",()=>setTimeout(()=>openFor(detectRole()),0));
+
+  // Basic User: bypass the older generic basic-user modal and open the same integrated form,
+  // with manual entry only.
+  document.addEventListener("click",function(e){
+    const b=e.target.closest("#basicSubmitRequest");
+    if(!b) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    const req=document.getElementById("integratedRequestView");
+    const shell=document.getElementById("portalShell");
+    const modal=document.getElementById("basicRequestModal");
+    if(modal) modal.style.display="none";
+    if(shell) shell.style.display="none";
+    if(req) req.style.display="block";
+    openFor("basic");
+    window.scrollTo(0,0);
+  },true);
+
+  // Validate the association rule when the user advances/submits.
+  function validAssociation(){
+    const selected=[...document.querySelectorAll('input[name="v82AssociatedLoan"]:checked')];
+    const manual=[...rows.querySelectorAll(".v82-manual-row")].filter(r=>
+      r.querySelector(".v82-m-loan")?.value.trim() &&
+      r.querySelector(".v82-m-project")?.value.trim() &&
+      r.querySelector(".v82-m-address")?.value.trim()
+    );
+    const ok=selected.length>0 || manual.length>0;
+    if(err) err.style.display=ok?"none":"block";
+    return ok;
+  }
+  document.getElementById("reserveFooter")?.addEventListener("click",e=>{
+    if(e.target.closest(".btn-primary") && !validAssociation()){e.preventDefault();e.stopPropagation();}
+  },true);
+  document.getElementById("transactionFooter")?.addEventListener("click",e=>{
+    if(e.target.closest(".btn-primary") && !validAssociation()){e.preventDefault();e.stopPropagation();}
+  },true);
+
+  // Initial borrower demo state.
+  openFor("primary");
+})();
+</script><script id="v86-basic-first-time-demo">
+function startBasicFirstTime(){showOb('basicprofile');}
+function openBasicDashboardFirstTime(){
+  const onboarding=document.getElementById('onboarding');
+  const shell=document.getElementById('portalShell');
+
+  if(onboarding) onboarding.classList.remove('active');
+
+  // portalShell is hidden by .hidden-for-onboard {display:none!important}.
+  // Remove that exact baseline class, matching the working Tier 1/Tier 2 transition.
+  if(shell) shell.classList.remove('hidden-for-onboard');
+
+  // Initialize the already-established Basic User dashboard/view.
+  setTimeout(function(){
+    const basicBtn=document.getElementById('basicUserDemo');
+    if(basicBtn) basicBtn.click();
+    window.scrollTo(0,0);
+  },0);
+}
+</script>
+<script id="v93-returning-user-script">
+function returningUserLogin(){
+  const onboarding=document.getElementById('onboarding');
+  const shell=document.getElementById('portalShell');
+  if(onboarding) onboarding.classList.remove('active');
+  if(shell) shell.classList.remove('hidden-for-onboard');
+  // Demo defaults to the established Primary User dashboard for a returning user.
+  const tier1=document.getElementById('tier1Btn');
+  if(tier1) tier1.click();
+  window.scrollTo(0,0);
+}
+</script>
 <script id="v96-route-start">
 (function(){
-const route="staff";
+const route="borrower";
 document.documentElement.setAttribute('data-v96-route',route);
 if(route==='home')return;
 const ob=document.getElementById('onboarding'),shell=document.getElementById('portalShell'),req=document.getElementById('integratedRequestView');
@@ -3354,9 +4070,151 @@ if(route==='staff'){
  if(input){input.checked=true;input.dispatchEvent(new Event('change',{bubbles:true}));}
 }
 })();
+</script><script id="v103-borrower-request-actions">
+(function(){
+  'use strict';
+  const menu=document.createElement('div');
+  menu.id='borrowerRequestActionMenu';
+  menu.setAttribute('role','menu');
+  menu.innerHTML='<button type="button" data-action="view" role="menuitem">View request</button><div class="menu-separator"></div><button type="button" data-action="cancel" role="menuitem">Cancel Request</button><button type="button" data-action="letter" role="menuitem">Download Determination Letter</button>';
+  const modal=document.createElement('div');
+  modal.id='borrowerRequestViewModal';
+  modal.innerHTML='<div class="request-dialog" role="dialog" aria-modal="true" aria-labelledby="borrowerRequestTitle"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="borrowerRequestTitle" style="margin:0;font-size:20px">Request details</h2><button type="button" data-close="true" aria-label="Close" style="border:0;background:transparent;font-size:25px;cursor:pointer">×</button></div><dl id="borrowerRequestFields"></dl><div style="text-align:right"><button type="button" class="btn primary" data-close="true">Close</button></div></div>';
+  document.body.append(menu,modal);
+  let row=null,trigger=null;
+  function details(r){
+    const cells=Array.from(r.cells);
+    const text=i=>cells[i]?.textContent.trim()||'';
+    const legacy=!!r.closest('.old-global-requests');
+    return {number:text(0),type:text(1),loan:legacy?text(2):(r.closest('.loan-card-simple')?.querySelector('.loan-card-top .pair b')?.textContent.trim()||''),date:text(legacy?3:2),status:text(legacy?4:3),staff:text(legacy?5:4)};
+  }
+  function closeMenu(){menu.classList.remove('open');if(trigger)trigger.setAttribute('aria-expanded','false');row=null;trigger=null;}
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest('#dashboard .request-table .dots, #dashboard .old-global-requests .req-menu');
+    if(btn){
+      e.preventDefault();e.stopPropagation();
+      if(menu.classList.contains('open')&&trigger===btn){closeMenu();return;}
+      closeMenu();trigger=btn;row=btn.closest('tr');if(!row)return;
+      const d=details(row),complete=/complete|approved|denied|closed|determined/i.test(d.status);
+      menu.querySelector('[data-action="cancel"]').disabled=complete||/cancel/i.test(d.status);
+      menu.querySelector('[data-action="letter"]').disabled=!complete;
+      menu.querySelector('[data-action="letter"]').title=complete?'Download demonstration determination letter':'Available for completed requests only';
+      menu.classList.add('open');btn.setAttribute('aria-expanded','true');btn.setAttribute('aria-haspopup','menu');
+      const rect=btn.getBoundingClientRect();const width=menu.offsetWidth,height=menu.offsetHeight;
+      menu.style.left=Math.max(8,Math.min(rect.right-width,innerWidth-width-8))+'px';
+      menu.style.top=(rect.bottom+height+8>innerHeight?Math.max(8,rect.top-height-5):rect.bottom+5)+'px';
+      return;
+    }
+    const action=e.target.closest('#borrowerRequestActionMenu [data-action]');
+    if(action&&row){
+      e.preventDefault();e.stopPropagation();const d=details(row),which=action.dataset.action;const currentRow=row;closeMenu();
+      if(which==='view'){
+        if(window.v120OpenSubmittedRequest){window.v120OpenSubmittedRequest(d);return;}
+        const fields=modal.querySelector('#borrowerRequestFields');fields.replaceChildren();
+        [['Request #',d.number],['Request Type',d.type],['Loan #',d.loan],['Requested On',d.date],['Status',d.status],['Assigned Staff',d.staff]].forEach(([k,v])=>{const dt=document.createElement('dt');dt.textContent=k;const dd=document.createElement('dd');dd.textContent=v;fields.append(dt,dd);});
+        modal.classList.add('open');
+      }else if(which==='cancel'){
+        if(confirm('Cancel request '+d.number+'? This is a demonstration and will update the displayed status only.')){
+          const legacy=!!currentRow.closest('.old-global-requests');const cell=currentRow.cells[legacy?4:3];if(cell){cell.innerHTML='<span class="pill" style="background:#f3f4f6;border-color:#d3d8df;color:#5e6875">Cancelled</span>';}
+        }
+      }else if(which==='letter'){
+        const content='LAHD Borrower Portal — DEMONSTRATION ONLY\n\nDetermination Letter (sample)\nRequest: '+d.number+'\nType: '+d.type+'\nLoan: '+d.loan+'\nStatus: '+d.status+'\n\nThis is not an official LAHD determination letter.';
+        const url=URL.createObjectURL(new Blob([content],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='DEMO_Determination_'+d.number+'.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+      }
+      return;
+    }
+    if(!e.target.closest('#borrowerRequestActionMenu'))closeMenu();
+    if(e.target===modal||e.target.closest('#borrowerRequestViewModal [data-close]'))modal.classList.remove('open');
+  },true);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();modal.classList.remove('open');}});
+  window.addEventListener('scroll',closeMenu,true);
+  window.addEventListener('resize',closeMenu);
+  document.querySelectorAll('#dashboard .request-table .dots, #dashboard .old-global-requests .req-menu').forEach(b=>{b.setAttribute('aria-label','Request actions');b.setAttribute('aria-haspopup','menu');b.setAttribute('aria-expanded','false');});
+})();
 </script>
-
-<script>
+<script id="v105-dashboard-role-entry">
+/* Select the requested dashboard role after navigation from registration. */
+(function(){
+  const role=new URLSearchParams(window.location.search).get('role');
+  if(!['tier1','tier2','basic'].includes(role))return;
+  function applyRole(){
+    const button=document.getElementById(role==='tier2'?'tier2Btn':role==='basic'?'basicUserDemo':'tier1Btn');
+    if(button)button.click();
+    const onboarding=document.getElementById('onboarding');
+    const shell=document.getElementById('portalShell');
+    if(onboarding)onboarding.classList.remove('active');
+    if(shell)shell.classList.remove('hidden-for-onboard');
+    window.scrollTo(0,0);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyRole,{once:true});
+  else applyRole();
+})();
+</script>
+<div class="overlay" id="v107Overlay"><div class="dialog"><h2>Invite Document Contributor</h2><p class="muted">Restricted access to selected document uploads only.</p><label>Contributor role<select><option>Proposed Buyer</option><option>Buyer Representative</option><option>Seller Representative</option></select></label><label>Recipient name<input id="v107Person" placeholder="Full name"/></label><label>Recipient email<input id="v107Email" placeholder="name@example.com" type="email"/></label><h3>Documents requested</h3><label><input checked="" class="requested-doc" type="checkbox"/> Sponsor / Owner / Borrower signature blocks for proposed new Borrower (MS Word format).</label><label><input checked="" class="requested-doc" type="checkbox"/> Property Title Report (with hyperlinks to recorded documents).</label><label><input checked="" class="requested-doc" type="checkbox"/> Broker / Lender Worksheet.</label><label><input checked="" class="requested-doc" type="checkbox"/> IRS Form W-9 — only for new General Partner or Managing General Partner.</label><label><input checked="" class="requested-doc" type="checkbox"/> Business Tax Certificate — new Borrower only.</label><label><input checked="" class="requested-doc" type="checkbox"/> Project Proforma, including before- and after-term-change 15-year cash flow projections.</label><label><input checked="" class="requested-doc" type="checkbox"/> Appraisal (current within 6 months of application date).</label><label><input checked="" class="requested-doc" type="checkbox"/> Commitment Letter.</label><label><input checked="" class="requested-doc" type="checkbox"/> List of Properties in LAHD Multifamily Loan Portfolio Form — new General Partner(s) only.</label><label><input checked="" class="requested-doc" type="checkbox"/> Resume of Multifamily Affordable Housing Experience — buyer only.</label><label><input checked="" class="requested-doc" type="checkbox"/> List of managed properties in LAHD portfolio — new property manager only.</label><label><input checked="" class="requested-doc" type="checkbox"/> Buyer's Self-Certification of Financial Capacity — existing and/or new Borrower.</label><button class="btn btn-light" id="v107Cancel">Cancel</button><button class="btn btn-primary" id="v107Send">Send Invitation (Demo)</button></div></div><script id="v107-integration-script">
+(function(){
+'use strict';
+const own=document.getElementById('v107ChangeBorrower'),docs=document.getElementById('v107ChangeDocs');
+const lender=document.getElementById('lenderWorksheet'),standard=document.getElementById('transactionDocs');
+const checks=[...document.querySelectorAll('#multiMenu input[type="checkbox"]')];
+const sale=checks.find(x=>x.value==='Change of Ownership (Sale)');
+let submitted=false;
+function selection(){
+ const active=!!sale?.checked;
+ const selected=checks.filter(x=>x.checked);
+ const other=selected.some(x=>x!==sale);
+ own.hidden=!active;docs.hidden=!active;
+ // Preserve existing worksheet and checklist for other selected transaction types.
+ lender.hidden=active&&!other;
+ standard.hidden=active&&!other;
+ document.querySelectorAll('#v107ChangeBorrower .entry').forEach(x=>x.disabled=submitted);
+ document.querySelectorAll('#requestDetails input,#requestDetails textarea').forEach(x=>x.disabled=submitted);
+ document.querySelectorAll('#requestor input,#requestor select,#requestor textarea').forEach(x=>x.disabled=submitted);
+ document.getElementById('v107StatusBar').hidden=!submitted;
+ const submit=document.querySelector('#transactionFooter .btn-primary');
+ if(submit){submit.textContent=submitted?'Submitted — View Only':'Submit Form';submit.disabled=submitted;}
+}
+checks.forEach(x=>x.addEventListener('change',()=>setTimeout(selection,0)));
+document.querySelectorAll('input[name="requestCategory"]').forEach(x=>x.addEventListener('change',selection));
+selection();
+// Demo document selection statuses (not a backend upload).
+docs.querySelectorAll('.docline input[type="file"]').forEach(input=>input.addEventListener('change',()=>{
+ const st=input.parentElement.querySelector('small');if(st){st.textContent=input.files?.length?'Selected':'Pending';st.style.color=input.files?.length?'#167047':'#986619';}
+}));
+const overlay=document.getElementById('v107Overlay');
+document.getElementById('v107Invite').addEventListener('click',()=>overlay.classList.add('open'));
+document.getElementById('v107Cancel').addEventListener('click',()=>overlay.classList.remove('open'));
+overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
+document.getElementById('v107Send').addEventListener('click',()=>{
+ const name=document.getElementById('v107Person').value.trim(),email=document.getElementById('v107Email').value.trim();
+ const n=overlay.querySelectorAll('.requested-doc:checked').length;
+ if(!name||!email.includes('@')||n===0){alert('Enter recipient name, valid email and select at least one document.');return;}
+ document.getElementById('v107InviteStatus').textContent='Demo invitation prepared for '+name+' ('+email+') · '+n+' documents requested. No email sent.';
+ overlay.classList.remove('open');
+});
+const submit=document.querySelector('#transactionFooter .btn-primary');
+if(submit)submit.addEventListener('click',e=>{
+ if(!sale?.checked||submitted)return;
+ // Preserve earlier validation handlers: this demo switches only after the association check.
+ const hasLoan=[...document.querySelectorAll('input[name="v82AssociatedLoan"]:checked')].length>0 ||
+  [...document.querySelectorAll('.v82-manual-row')].some(r=>r.querySelector('.v82-m-loan')?.value.trim()&&r.querySelector('.v82-m-project')?.value.trim()&&r.querySelector('.v82-m-address')?.value.trim());
+ if(!hasLoan)return;
+ e.preventDefault();submitted=true;
+ document.getElementById('v107StatusLabel').textContent='Submitted — Change of Ownership (Sale)';
+ selection();document.getElementById('v107StatusBar').scrollIntoView({behavior:'smooth',block:'start'});
+},false);
+document.getElementById('v107ReturnEdit').addEventListener('click',()=>{submitted=false;selection();});
+// Expose controlled demo open for future dashboard request-detail integration.
+window.v107OpenSubmittedOwnershipRequest=function(){
+ const category=document.querySelector('input[name="requestCategory"][value="transaction"]');
+ if(category){category.checked=true;category.dispatchEvent(new Event('change',{bubbles:true}));}
+ if(sale&&!sale.checked){sale.checked=true;sale.dispatchEvent(new Event('change',{bubbles:true}));}
+ const req=document.getElementById('integratedRequestView');
+ if(req){req.style.display='block';}
+ const shell=document.getElementById('portalShell');if(shell) shell.style.display='none';
+ submitted=true;selection();window.scrollTo(0,0);
+};
+})();
+</script><script>
 (function(){
  const root=document.getElementById('v107ChangeDocs');if(!root)return;
  const rows=[...root.querySelectorAll('.docline[data-doc-number]')];
@@ -3569,206 +4427,19 @@ window.v120OpenSubmittedRequest=function(d){
  window.addEventListener('click',back,true);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
  window.addEventListener('pageshow',init);
-})();</script><style id="v146-reserve-detail-isolation">
-html body #staffWrap>.staffQueue,html body #staffWrap #staffQueue{display:none!important}
-html body #staffWrap>.requestOnlyChrome,html body #staffWrap>.staffGrid{display:block!important}
-html body #staffWrap>#ownershipStaffWorkspace{display:none!important}
+})();</script>
+<style id="rwSelection1780">
+#staffDocumentReviewWorkspace .staffManageDocsTable td:first-child{position:relative;padding-left:38px!important}
+#staffDocumentReviewWorkspace .rwSelectDoc{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;cursor:pointer}
+#rwDownloadSelected:disabled{opacity:.5;cursor:not-allowed}
 </style>
-<script id="v152-original-staff-workspace">
+<script id="rwSelectionLogic1780">
 (function(){
- const SAMPLE='001250301';
- function init(){
-  const id=new URLSearchParams(location.search).get('requestId')||SAMPLE;
-  const wrap=document.getElementById('staffWrap'),view=document.getElementById('staffView');
-  if(!wrap||!view)return;
-  document.documentElement.setAttribute('data-v96-route','staff');
-  document.getElementById('borrowerView')?.style.setProperty('display','none','important');
-  view.style.setProperty('display','block','important');
-  wrap.classList.remove('queueMode','ow-mode');view.classList.remove('queue-mode');
-  document.getElementById('staffQueue')?.style.setProperty('display','none','important');
-  // Restore the original Step 1 layout, review controls and all workflow panels.
-  const parentId=id.match(/^(RW-\d+)-(?:SL|CH)-\d+$/)?.[1]||id;
-  const row=[...document.querySelectorAll('#reserveQueue tbody tr')].find(r=>r.querySelector('td')?.textContent.trim()===parentId);
-  const c=row?[...row.cells].map(x=>x.textContent.trim().replace(/\s+/g,' ')):[];
-  const data={id,submitted:c[1]||'Not supplied',project:c[2]||'Not supplied',loan:c[3]||'Not supplied',reserve:c[4]||'Not supplied',amount:c[5]||'Not supplied',name:c[6]||'Not supplied',email:c[7]||'Not supplied',comments:c[8]||'Not supplied',status:c[9]||'Not supplied'};
-  const banner=wrap.querySelector('.staffBanner');
-  if(banner){const vals=banner.querySelectorAll(':scope > div strong');
-   if(vals[0])vals[0].textContent=id;
-   if(vals[1])vals[1].textContent='Reserve Withdrawal';
-   if(vals[2])vals[2].textContent=data.project;
-   if(vals[3])vals[3].textContent=data.loan;
-   const badge=banner.querySelector('.reviewStatus');if(badge)badge.textContent='● '+data.status;
-  }
-  document.getElementById('v152DemoNotice')?.remove();
-  if(id===SAMPLE)return;
-  // Update only the original request summary and requester cards, keeping their two-column layout.
-  function field(root,label,value){
-   const card=document.querySelector(root);if(!card)return;
-   for(const d of card.querySelectorAll('.detailGrid > div')){
-    const sp=d.querySelector('span'),st=d.querySelector('strong');
-    if(sp&&st&&sp.textContent.trim().toLowerCase().replace(':','')===label.toLowerCase())st.textContent=value;
-   }
-  }
-  const cards=document.querySelectorAll('#p1 .detailCards > .detailCard');
-  if(cards.length>=2){
-   const map=(card,values)=>{for(const d of card.querySelectorAll('.detailGrid > div')){
-    const label=d.querySelector('span')?.textContent.trim().replace(':','').toLowerCase();
-    const val=d.querySelector('strong');if(val&&Object.hasOwn(values,label))val.textContent=values[label];
-   }};
-   map(cards[0],{'request #':id,'type':'Reserve Withdrawal','submitted':data.submitted,'needed by':'Not supplied','property':data.project});
-   map(cards[1],{'name':data.name,'role':'Not supplied','phone':'Not supplied','email':data.email,'on behalf of':'Not supplied'});
-  }
-  const desc=document.querySelector('#p1 .desc .readBox');if(desc)desc.textContent='Request purpose not supplied in the demonstration queue.';
-  const prior=document.querySelector('#p1 .priorRequestNotice');if(prior)prior.style.display='none';
-  const priorInline=document.querySelector('#p1 .priorHistoryInline');if(priorInline)priorInline.style.display='none';
-  const related=document.getElementById('relatedRequestInline');if(related)related.style.display='none';
-  const relatedButton=document.getElementById('relatedRequestControl');if(relatedButton)relatedButton.style.display='none';
-  function detail(panel,label,value){
-   const root=document.getElementById(panel);if(!root)return;
-   for(const d of root.querySelectorAll('.detailGrid > div')){
-    const sp=d.querySelector('span'),st=d.querySelector('strong');
-    if(sp&&st&&sp.textContent.trim().toLowerCase().replace(':','')===label.toLowerCase())st.textContent=value;
-   }
-  }
-  detail('p2','Project / Property',data.project);detail('p2','Loan #',data.loan);
-  detail('p2','Borrower','Not supplied');detail('p2','Property Address','Not supplied');
-  detail('p3','Reserve Fund',data.reserve);detail('p3','Withdrawal Amount',data.amount);
-  // Keep invoice editing, bid review, related-request creation, document review and supervisor approval controls intact.
-  // Mark sample-only sections, rather than removing the interactive DOM or replacing it with summaries.
-  for(const id of ['p4','p5','staffDocumentReviewWorkspace','staffActivityLogWorkspace','approvalLetterPanel']){
-   const root=document.getElementById(id);if(root){root.setAttribute('data-demo-sample','true');}
-  }
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script><style id="v154-final-grid-guard">html body #staffWrap > .staffGrid{display:grid!important;grid-template-columns:260px minmax(0,1fr)!important;gap:20px!important;align-items:start!important}html body #staffWrap > .staffGrid > .reviewMain{min-width:0!important}@media(max-width:750px){html body #staffWrap > .staffGrid{grid-template-columns:1fr!important}}</style>
-<style id="v169InlineEditStyles">
-.v169-editbar{display:flex;justify-content:flex-end;gap:8px;margin:0 0 12px}.v169-editbar button{padding:7px 13px;border:1px solid #9bb1c8;background:#fff;color:#174b78;border-radius:6px;cursor:pointer;font-weight:600}.v169-editbar button.v169-save{background:#155d99;color:#fff;border-color:#155d99}.v169-editbar button[hidden]{display:none!important}.v169-editfield{box-sizing:border-box;width:100%;max-width:440px;min-height:34px;border:1px solid #7d9ab8;border-radius:5px;padding:6px 9px;font:inherit;color:#24384c;background:white}.v169-editfield.v169-multiline{min-height:80px;resize:vertical}.v169-editfield:focus{outline:2px solid #80b9e8;outline-offset:1px}
-</style>
-<script id="v169InlineEditLogic">
-(function(){
- 'use strict';
- var settings={p1:{labels:['Needed By:','Phone:','Email:','On Behalf Of:'], title:'Request Information'},p3:{labels:['Reserve Fund:','Withdrawal Amount:','Fiscal Year:','Need-By Date:','Description:'],title:'Reserve Withdrawal'}};
- function initialize(){
-  Object.keys(settings).forEach(function(id){
-   var panel=document.getElementById(id); if(!panel||panel.querySelector('.v169-editbar'))return;
-   var config=settings[id],targets=[];
-   panel.querySelectorAll('.detailGrid > div').forEach(function(cell){
-    var span=cell.querySelector('span'),value=cell.querySelector('strong');
-    if(span&&value&&config.labels.indexOf(span.textContent.trim())!==-1)targets.push({label:span.textContent.trim(),node:value});
-   });
-   if(!targets.length)return;
-   var bar=document.createElement('div');bar.className='v169-editbar';
-   bar.innerHTML='<button type="button" data-action="edit">Edit</button><button type="button" class="v169-save" data-action="save" hidden>Save</button><button type="button" data-action="cancel" hidden>Cancel</button>';
-   var h=panel.querySelector('h2'); if(h)h.insertAdjacentElement('afterend',bar);
-   var edit=bar.querySelector('[data-action="edit"]'),save=bar.querySelector('[data-action="save"]'),cancel=bar.querySelector('[data-action="cancel"]');
-   function buttons(active){edit.hidden=active;save.hidden=!active;cancel.hidden=!active;}
-   edit.addEventListener('click',function(){
-    targets.forEach(function(t){
-     var value=t.node.textContent.trim(),input;
-     if(t.label==='Reserve Fund:'){
-      input=document.createElement('select');['Operating Reserve','Replacement Reserve'].forEach(function(x){var o=document.createElement('option');o.value=x;o.textContent=x;input.appendChild(o)});input.value=value;
-     }else if(t.label==='Description:') {input=document.createElement('textarea');input.value=value;input.classList.add('v169-multiline');}
-     else {input=document.createElement('input');input.type='text';input.value=value;}
-     input.classList.add('v169-editfield');input.setAttribute('aria-label',t.label.replace(':',''));t.node.hidden=true;t.node.insertAdjacentElement('afterend',input);t.input=input;
-    });buttons(true);
-   });
-   cancel.addEventListener('click',function(){targets.forEach(function(t){if(t.input){t.input.remove();t.input=null;t.node.hidden=false;}});buttons(false);});
-   save.addEventListener('click',function(){
-    for(var i=0;i<targets.length;i++){
-     var t=targets[i],value=t.input.value.trim();if(!value){alert(t.label+' is required.');t.input.focus();return;}
-     if(t.label==='Email:'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)){alert('Enter a valid email address.');t.input.focus();return;}
-     if(t.label==='Withdrawal Amount:'&&!/^\$?[\d,]+(?:\.\d{1,2})?$/.test(value)){alert('Enter a valid withdrawal amount.');t.input.focus();return;}
-    }
-    targets.forEach(function(t){t.node.textContent=t.input.value.trim();t.input.remove();t.input=null;t.node.hidden=false;});buttons(false);
-   });
-  });
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize);else initialize();
+ const tbody=document.getElementById('staffManageDocsBody');if(!tbody)return;
+ function refresh(){let n=tbody.querySelectorAll('.rwSelectDoc:checked').length;const b=document.getElementById('rwDownloadSelected');if(b){b.textContent='⇩ Download Selected ('+n+')';b.disabled=!n}}
+ function install(){tbody.querySelectorAll('tr').forEach(row=>{const cell=row.cells[0];if(!cell||cell.querySelector('.rwSelectDoc'))return;const cb=document.createElement('input');cb.type='checkbox';cb.className='rwSelectDoc';cb.setAttribute('aria-label','Select '+cell.textContent.trim());cb.title='Select document metadata (sample file not attached)';cb.addEventListener('change',refresh);cell.prepend(cb)});refresh()}
+ window.downloadSelectedReserveDocs=function(){const rows=[...tbody.querySelectorAll('tr')].filter(r=>r.querySelector('.rwSelectDoc:checked'));if(!rows.length)return;const esc=v=>'"'+String(v||'').replace(/"/g,'""')+'"';const data=[['Document Name','Type','Related Invoice #','Uploaded By','Uploaded On','Source','Note'],...rows.map(r=>[...Array.from(r.cells).slice(0,6).map(c=>c.innerText.trim()),'Sample record — actual file not attached'])];const csv=data.map(row=>row.map(esc).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='Reserve-Withdrawal-Selected-Document-Metadata.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)};
+ install();new MutationObserver(()=>{if([...tbody.querySelectorAll('tr')].some(r=>r.cells[0]&&!r.cells[0].querySelector('.rwSelectDoc')))install()}).observe(tbody,{childList:true,subtree:true});
 })();
 </script>
-
-<style>
-.reserveLinkPanel{margin-top:12px;padding:14px 16px;border:1px solid #d4e0ec;border-radius:8px;background:#f8fbfe;display:flex;align-items:center;justify-content:space-between;gap:18px;font:13px Arial;color:#243d57}
-.reserveLinkPanel p{margin:5px 0 0;font-size:12px;color:#61758d}
-#viewReserveBalances{background:#1261a4;color:white;border:1px solid #1261a4;border-radius:5px;padding:10px 14px;font:700 12px Arial;cursor:pointer;white-space:nowrap}
-#viewReserveBalances:disabled{background:#e9edf2;color:#7b8794;border-color:#d3dce5;cursor:not-allowed}
-#reserveBalancePreview{position:fixed;inset:0;background:rgba(18,36,58,.55);z-index:99999;display:none;align-items:center;justify-content:center;padding:20px}
-#reserveBalancePreview.open{display:flex}
-#reserveBalancePreview .rbDialog{background:white;border-radius:10px;padding:24px;width:min(540px,95vw);box-shadow:0 12px 38px #0003;font:14px Arial;color:#20384f}
-#reserveBalancePreview .rbHeader{display:flex;justify-content:space-between;align-items:center;gap:10px}
-#reserveBalancePreview .rbHeader button{border:1px solid #bdcbd8;background:white;border-radius:5px;padding:7px 11px;cursor:pointer}
-</style>
-<div id="reserveBalancePreview" role="dialog" aria-modal="true" aria-label="Reserve balances navigation preview">
- <div class="rbDialog"><div class="rbHeader"><strong>Portfolio Management → Reserve Balances</strong><button id="closeReserveBalancePreview" type="button">Close ✕</button></div>
- <p id="reserveBalancePreviewContext"></p><p><b>Prototype navigation preview.</b> In AHIS, this link will open the Reserve Balances tab for the verified project/loan, with the appropriate Operating or Replacement sub-tab selected.</p>
- <p>Live Portfolio Management navigation and reserve data are not connected to this standalone HTML mock-up.</p></div>
-</div>
-<script>
-(function(){
- function verifiedLoans(){return typeof savedAssociations!=='undefined'?savedAssociations:[];}
- function updateReserveLink(){
-  var loans=verifiedLoans(),btn=document.getElementById('viewReserveBalances'),help=document.getElementById('reserveLinkHelp');
-  if(!btn||!help)return;
-  btn.disabled=!loans.length;
-  help.textContent=loans.length?'Verified AHIS loan'+(loans.length>1?'s':'')+': '+loans.join(', ')+'. Opens the selected reserve type for the linked project.':'No linked loan. Associate and save an AHIS loan in Step 2 to view reserve balances.';
- }
- document.addEventListener('DOMContentLoaded',function(){
-  updateReserveLink();
-  document.getElementById('viewReserveBalances')?.addEventListener('click',function(){
-   if(!verifiedLoans().length)return;
-   var type=document.querySelector('#p3 .detailGrid strong')?.textContent.trim()||'Replacement Reserve';
-   document.getElementById('reserveBalancePreviewContext').textContent='Loan: '+verifiedLoans().join(', ')+' | Reserve sub-tab: '+type;
-   document.getElementById('reserveBalancePreview').classList.add('open');
-  });
-  document.getElementById('closeReserveBalancePreview')?.addEventListener('click',function(){document.getElementById('reserveBalancePreview').classList.remove('open');});
-  document.getElementById('reserveBalancePreview')?.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
- });
- window.updateReserveLink=updateReserveLink;
-})();
-</script>
-<script id="v1711-relationship-fix">
-(function(){'use strict';
- const ORIGINAL='RW-260298', CHILD='RW-260298-SL-01';
- function init(){
-  const id=new URLSearchParams(location.search).get('requestId')||'001250301';
-  const related=(id===ORIGINAL||id===CHILD);
-  document.getElementById('v152DemoNotice')?.remove();
-  if(!related)return;
-  const parent=id===ORIGINAL;
-  const cards=document.querySelectorAll('#p1 .detailCards > .detailCard');
-  const values={submitted:'09/24/2026',property:'Harbor View Apts',name:'Lisa Chen',email:'lisa.chen@example.com',loan:'23-130505-002',reserve:'Operating',amount:'$12,750'};
-  function fill(card, entries){if(!card)return;card.querySelectorAll('.detailGrid > div').forEach(cell=>{const label=cell.querySelector('span')?.textContent.trim().replace(/:$/,'').toLowerCase();const target=cell.querySelector('strong');if(target&&Object.prototype.hasOwnProperty.call(entries,label))target.textContent=entries[label]})}
-  fill(cards[0],{'request #':id,'type':'Reserve Withdrawal','submitted':values.submitted,'property':values.property});
-  fill(cards[1],{'name':values.name,'email':values.email});
-  fill(document.getElementById('p2'),{'project / property':values.property,'loan #':values.loan});
-  fill(document.getElementById('p3'),{'reserve fund':values.reserve,'withdrawal amount':values.amount});
-  const banner=document.querySelector('#staffWrap .staffBanner');
-  if(banner){const fields=banner.querySelectorAll(':scope > div strong');if(fields[0])fields[0].textContent=id;if(fields[1])fields[1].textContent='Reserve Withdrawal';if(fields[2])fields[2].textContent=values.property;if(fields[3])fields[3].textContent=values.loan;const badge=banner.querySelector('.reviewStatus');if(badge)badge.textContent='● Submitted'}
-  const description=document.querySelector('#p1 .desc .readBox');if(description&&description.textContent.includes('not supplied'))description.textContent='Roof repairs and water-damage remediation affecting occupied units.';
-  // Reuse the original related-request panel and toolbar, without adding another banner.
-  const panel=document.getElementById('relatedRequestInline');
-  const toolbar=document.getElementById('relatedRequestControl');
-  if(panel){
-    panel.style.display='block';
-    const head=panel.querySelector('.relatedRequestInlineHead strong');
-    if(head)head.textContent=parent?'Related Request':'Original Request';
-    const desc=panel.querySelector('.relatedRequestInlineHead span');
-    if(desc)desc.textContent=parent?'Staff-created split request linked to this withdrawal.':'Parent withdrawal request for this split allocation.';
-    const type=panel.querySelector('.connectionType');
-    if(type)type.textContent=parent?'Related Request':'Original Request';
-    const link=panel.querySelector('.connectionRequestLink');
-    if(link){link.textContent=parent?CHILD:ORIGINAL;link.onclick=()=>location.assign('reserve-withdrawal-detail.html?requestId='+encodeURIComponent(parent?CHILD:ORIGINAL));}
-    const reserve=panel.querySelector('.connectionCompact.related > span:nth-of-type(2)');
-    if(reserve)reserve.textContent=parent?'Replacement Reserve':'Operating Reserve';
-    const amount=panel.querySelector('.connectionCompact.related > span:nth-of-type(3)');
-    if(amount)amount.textContent=parent?'Split allocation':'$12,750';
-    const purpose=panel.querySelector('.connectionPurpose');
-    if(purpose)purpose.textContent=parent?'Staff-created split request':'Original withdrawal';
-  }
-  if(toolbar){toolbar.style.display='inline-flex';toolbar.title=parent?'Go to related request information':'Go to original request information';}
-
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script></body></html>
+</body></html>
