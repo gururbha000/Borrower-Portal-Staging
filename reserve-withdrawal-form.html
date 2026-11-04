@@ -1999,6 +1999,15 @@ syncRequestCategory();syncInvoiceTotal();
 })();</script><script id="v171-reserve-child-form">
 (function(){'use strict';
 const START='lahdV171Start',KEY='lahdV171Requests';let ctx;try{ctx=JSON.parse(sessionStorage.getItem(START)||'null')}catch(e){}if(!ctx||!['additional','staff'].includes(ctx.mode))return;
+// A stale staff-start flag must not turn a normal borrower form into staff entry.
+// Staff entry is recognized only when opened directly from the staff dashboard
+// or with an explicit staff-entry query parameter.
+if(ctx.mode==='staff'){
+  const params=new URLSearchParams(location.search);
+  const fromStaff=/staff-dashboard\.html(?:[?#]|$)/i.test(document.referrer||'');
+  const explicitStaff=params.get('staffEntry')==='1';
+  if(!fromStaff&&!explicitStaff){sessionStorage.removeItem(START);return;}
+}
 const form=document.getElementById('borrowerView');if(!form)return;
 const banner=document.createElement('div');banner.style.cssText='padding:14px 18px;margin:12px 0;border:1px solid #bfd3e7;border-radius:6px;background:#f1f7ff;color:#173b61;font-weight:bold';banner.textContent=ctx.mode==='additional'?'Additional Funds / Change Request — Related to '+ctx.parent:'Staff Entry — Create Reserve Withdrawal on Behalf of Borrower';const section=document.getElementById('borrower');section.parentNode.insertBefore(banner,section);
 const requestor=document.querySelector('#requestor .grid3');if(requestor){const inputs=requestor.querySelectorAll('input');[ctx.requester,ctx.phone,ctx.email].forEach((v,i)=>{if(v&&inputs[i])inputs[i].value=v});}
