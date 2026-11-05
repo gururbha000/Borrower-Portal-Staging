@@ -1599,9 +1599,8 @@ html[data-v96-route="reserve"] .demoSwitch {display:none!important}
 </div></div>
 <div class="section" id="fhInvoices"><div class="section-head" onclick="toggleSection('fhInvoices')"><span>4. Applicable Invoices / Financial Year</span><span>⌃</span></div><div class="section-body">
 <div class="field"><label>Select / enter invoice, if applicable</label><div id="fhMatchedInvoices" aria-live="polite" style="margin-top:12px"></div></div>
+<div class="field"><div id="fhInvoiceRows"></div><button class="btn btn-light btn-small" type="button" id="fhAddInvoice">+ Add Invoice</button></div>
 <label class="radio" style="display:flex;gap:8px;align-items:center;margin:14px 0"><input id="fhCurrentYear" type="checkbox"> This request also applies to the current financial year</label>
-<div class="field"><label>Associated Invoices (optional)</label><div id="fhInvoiceRows"></div><button class="btn btn-light btn-small" type="button" id="fhAddInvoice">+ Add Invoice</button></div>
-<div class="small">Invoices are optional. You may submit this request without associating an invoice.</div>
 </div></div>
 <div class="section" id="fhDocuments"><div class="section-head" onclick="toggleSection('fhDocuments')"><span>5. Supporting Documents</span><span>⌃</span></div><div class="section-body"><div class="doc-upload-list">
 <div class="doc-upload-row"><div class="doc-upload-name"><strong>Signed Financial Hardship Request Letter *</strong><div class="small">Signed by an authorized representative of the Owner; explains the circumstances and request.</div></div><div class="doc-actions"><input id="fhLetter" type="file" accept=".pdf,.doc,.docx"></div></div>
@@ -2066,9 +2065,8 @@ function fhRefreshInvoiceMatches(){
  const target=$('fhMatchedInvoices');if(!target)return;
  const loan=fhSelectedLoan();const matches=fhSampleInvoices[loan]||[];
  target.replaceChildren();
- if(!loan){const msg=document.createElement('div');msg.className='small';msg.textContent='Select a project / loan above to view associated invoices, if available.';target.append(msg);return;}
- if(!matches.length){const msg=document.createElement('div');msg.className='small';msg.textContent='No associated invoice record found for the selected project / loan. You may enter an invoice manually or submit without an invoice.';target.append(msg);return;}
- const heading=document.createElement('div');heading.style.cssText='font-weight:700;margin-bottom:8px;color:#173b61';heading.textContent='Associated invoice records found — select if applicable';target.append(heading);
+ if(!loan)return;
+ if(!matches.length){const msg=document.createElement('div');msg.className='small';msg.textContent='No associated invoices found.';target.append(msg);return;}
  matches.forEach(inv=>{const label=document.createElement('label');label.style.cssText='display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #cad9e9;border-radius:6px;background:#f5f9fd;margin:8px 0;cursor:pointer';
  const check=document.createElement('input');check.type='checkbox';check.className='fh-matched-invoice';check.value=inv.invoice;check.dataset.year=inv.year;check.style.cssText='width:17px;height:17px;flex:none';
  const details=document.createElement('span');details.textContent=inv.invoice+'  ·  Financial Year '+inv.year+'  ·  '+inv.amount+'  ·  '+inv.status;label.append(check,details);target.append(label);});
