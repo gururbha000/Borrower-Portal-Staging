@@ -1,1 +1,2066 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Financial Hardship Request | LAHD</title><style>body{margin:0;background:#f3f6fa;font:14px Arial,sans-serif;color:#24384d}header{background:#123f67;color:white;padding:19px 5%}header h1{font-size:23px;margin:0}nav{background:#e8eef5;padding:12px 5%;display:flex;gap:24px}a{color:#07578d}main{max-width:1080px;margin:24px auto;padding:0 18px}.panel{background:white;border:1px solid #d4deea;border-radius:8px;padding:23px;margin:15px 0}.panel h2{font-size:18px;margin:0 0 16px;color:#164b76}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}.field label{font-weight:bold}input,select,textarea{box-sizing:border-box;width:100%;padding:10px;border:1px solid #b9c9d8;border-radius:5px;font:inherit}input[type=checkbox],input[type=radio]{width:auto}textarea{min-height:85px}button{cursor:pointer;padding:10px 15px;border-radius:5px;border:1px solid #9cb0c6;background:#fff;color:#15476f;font-weight:600}.primary{background:#15548b;color:white;border-color:#15548b}.muted{color:#66788b;font-size:13px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.entry{border:1px solid #d4dfec;background:#f9fbfe;padding:14px;border-radius:6px;margin:10px 0}.inline{display:flex;align-items:center;gap:8px;margin:12px 0}.inline label{font-weight:normal}.notice{padding:12px;background:#eef6ff;border-left:4px solid #3477b0;margin:12px 0}.hidden,[hidden]{display:none!important}.pill{display:inline-block;background:#e8eff9;border-radius:20px;padding:5px 10px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}table{width:100%;border-collapse:collapse}th,td{text-align:left;border-bottom:1px solid #e1e7ee;padding:10px}th{background:#f0f4f9}@media(max-width:650px){.grid{grid-template-columns:1fr}} </style></head><body><header><h1>LAHD · Financial Hardship Request</h1></header><nav><a href="borrower-portal.html">Borrower Dashboard</a><a href="reserve-withdrawal-form.html">Reserve Withdrawal</a><a href="rra-dispute-form.html">RRA Dispute</a><a href="staff-dashboard.html">Staff Dashboard</a></nav><main><div class="notice">Request LAHD consideration of financial hardship affecting an affordable housing property. Invoice association is optional. Submission does not guarantee a particular determination.</div><form id="hardshipForm"><section class="panel"><h2>1. Requester Information</h2><div class="grid"><div class="field"><label for="requester">Requested By *</label><input id="requester" required value="John Doe"></div><div class="field"><label for="organization">Borrower / Organization *</label><input id="organization" required></div><div class="field"><label for="email">Email *</label><input id="email" type="email" required></div><div class="field"><label for="phone">Phone *</label><input id="phone" required></div></div><label class="inline"><input id="onBehalf" type="checkbox"> Submitting on behalf of an owner / borrower</label><div class="grid hidden" id="onBehalfFields"><div class="field"><label for="onBehalfName">Owner / Borrower Name *</label><input id="onBehalfName"></div><div class="field"><label for="onBehalfRole">Relationship / Role *</label><input id="onBehalfRole"></div></div></section><section class="panel"><h2>2. Project / Loan Information</h2><div id="loanChoice"><div class="field"><label>Select Associated Loan *</label><div id="loanOptions"></div></div><div class="row"><span class="muted">If your loan is not listed, enter it manually for staff verification.</span><button type="button" id="manualBtn">Enter Loan Manually</button></div></div><div id="loanFields" class="grid hidden"><div class="field"><label for="loan">Loan # *</label><input id="loan" required></div><div class="field"><label for="project">Project / Property Name *</label><input id="project" required></div><div class="field"><label for="address">Property Address *</label><input id="address" required></div></div></section><section class="panel"><h2>3. Financial Hardship Details</h2><div class="grid"><div class="field"><label for="reason">Reason for Hardship *</label><select id="reason" required><option value="">Select reason</option><option>Natural disaster / property damage</option><option>Vacancy or tenancy-related income loss</option><option>Other financial hardship</option></select></div><div class="field"><label for="start">Hardship Start Date *</label><input id="start" type="date" required></div></div><div class="field"><label for="description">Explain the hardship and financial impact *</label><textarea id="description" required></textarea></div><div class="field"><label for="period">Financial Year(s) Affected (if known)</label><input id="period" placeholder="e.g., FY 2025, FY 2026"></div></section><section class="panel"><h2>4. Applicable Invoices / Financial Year</h2><p class="muted">You may submit a request with no invoices, one invoice, or multiple invoices. If no invoice has been issued, leave the invoice list empty.</p><label class="inline"><input type="checkbox" id="currentYear"> This request also applies to the current financial year</label><div id="invoiceList"></div><div class="actions"><button type="button" id="addInvoice">+ Add Invoice</button></div><p class="muted">Existing invoices may be selected for associated loans; manual invoice details are also supported. No invoice is required.</p></section><section class="panel"><h2>5. Supporting Documents</h2><div id="docs"></div><div class="field"><label for="otherLenders">Have you requested hardship consideration from other lenders? *</label><select id="otherLenders" required><option value="">Select</option><option value="yes">Yes</option><option value="no">No</option></select></div><div id="lenderDocs" class="hidden"></div><div class="field"><label for="otherDocs">Other Supporting Documents (optional)</label><input id="otherDocs" type="file" multiple></div></section><section class="panel"><h2>6. Review & Submit</h2><p>By submitting, the authorized representative certifies that the information and supporting documents provided are true, correct, and complete.</p><label class="inline"><input id="certify" type="checkbox" required> I certify the information submitted is true, correct, and complete. *</label><div class="grid"><div class="field"><label for="signer">Authorized Representative Name *</label><input id="signer" required></div><div class="field"><label for="signerTitle">Title / Capacity *</label><input id="signerTitle" required></div></div><div class="actions"><button type="button" onclick="location.assign('borrower-portal.html')">Cancel</button><button class="primary" type="submit">Submit Financial Hardship Request</button></div><div id="confirmation" role="status"></div></section></form></main><script>(()=>{'use strict';const $=id=>document.getElementById(id);const params=new URLSearchParams(location.search);const role=(params.get('role')||sessionStorage.getItem('lahdRole')||localStorage.getItem('lahdRole')||'tier1').toLowerCase();const basic=/basic/.test(role);const loanSamples=[{loan:'14-121637-001',project:'Arlington Square',address:'1234 Arlington Ave, Los Angeles, CA 90019'},{loan:'14-121637-002',project:'Riverview Apartments',address:'825 S River Street, Los Angeles, CA 90023'},{loan:'14-121637-003',project:'Arlington Square',address:'1234 Arlington Ave, Los Angeles, CA 90019'}];const invoiceSamples={'14-121637-001':['RRA-2026-1001'],'14-121637-002':['RRA-2026-1002','RRA-2025-0902'],'14-121637-003':['RRA-2026-1003']};let loanMode=basic?'manual':'none';let chosenLoan='';const available=/tier.?2|affiliated/.test(role)?loanSamples.slice(0,1):loanSamples;function setLoan(mode,rec){loanMode=mode;$('loanFields').classList.toggle('hidden',mode==='none');['loan','project','address'].forEach(x=>$(x).required=mode!=='none');if(mode==='selected'&&rec){$('loan').value=rec.loan;$('project').value=rec.project;$('address').value=rec.address;chosenLoan=rec.loan}else if(mode==='manual'){['loan','project','address'].forEach(x=>$(x).value='');chosenLoan=''}else{['loan','project','address'].forEach(x=>$(x).value='');chosenLoan=''}['loan','project','address'].forEach(x=>$(x).readOnly=mode==='selected');refreshInvoiceOptions()}if(basic){$('loanChoice').hidden=true;setLoan('manual');}else{available.forEach(rec=>{let label=document.createElement('label');label.className='inline entry';label.innerHTML='<input type="radio" name="associatedLoan">';label.append(document.createTextNode(rec.loan+' · '+rec.project+' · '+rec.address));$('loanOptions').append(label);label.querySelector('input').addEventListener('change',()=>setLoan('selected',rec))});$('manualBtn').addEventListener('click',()=>{document.querySelectorAll('[name=associatedLoan]').forEach(x=>x.checked=false);setLoan('manual')})}function refreshInvoiceOptions(){document.querySelectorAll('.invoice-select').forEach(sel=>{const old=sel.value;sel.innerHTML='<option value="">Enter invoice manually</option>';(invoiceSamples[chosenLoan]||[]).forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.append(o)});sel.value=[...sel.options].some(o=>o.value===old)?old:''})}let invoiceIndex=0;$('addInvoice').onclick=()=>{const row=document.createElement('div');row.className='entry invoice-row';const i=++invoiceIndex;row.innerHTML='<div class="row"><strong>Invoice '+i+'</strong><button type="button" class="remove">Remove</button></div><div class="grid"><div class="field"><label>Associated Invoice (optional)</label><select class="invoice-select"><option value="">Enter invoice manually</option></select></div><div class="field"><label>Invoice Number *</label><input class="inv-number" required></div><div class="field"><label>Financial Year (optional)</label><input class="inv-year" type="number" min="1990" max="2100"></div></div>';row.querySelector('.remove').onclick=()=>row.remove();row.querySelector('.invoice-select').onchange=e=>{row.querySelector('.inv-number').value=e.target.value;row.querySelector('.inv-number').readOnly=!!e.target.value};$('invoiceList').append(row);refreshInvoiceOptions()};$('onBehalf').onchange=e=>{ $('onBehalfFields').classList.toggle('hidden',!e.target.checked);['onBehalfName','onBehalfRole'].forEach(x=>$(x).required=e.target.checked)};const docDefs=[['letter','Signed Hardship Request Letter from authorized owner representative',true],['income','Documentation of reduced income due to hardship',true],['rentroll','Rent Rolls for two months (tenant payments, rental assistance, rents received)',false],['delinquency','Tenant Delinquency Reports for two months',false],['operating','Current Operating Reserve Balance supporting document',true],['replacement','Current Replacement Reserve Balance supporting document',true]];docDefs.forEach(([id,label,required])=>{const div=document.createElement('div');div.className='field';div.id='doc-'+id;div.innerHTML='<label for="file-'+id+'">'+label+(required?' *':'')+'</label><input id="file-'+id+'" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.jpg,.png" '+(required?'required':'')+'>'; $('docs').append(div)});const lender=document.createElement('div');lender.className='field';lender.innerHTML='<label for="file-lender">Documentation submitted to other lenders requesting hardship consideration *</label><input id="file-lender" type="file" multiple>';$('lenderDocs').append(lender);function conditional(){const tenancy=$('reason').value==='Vacancy or tenancy-related income loss';['rentroll','delinquency'].forEach(id=>{$('doc-'+id).classList.toggle('hidden',!tenancy);$('file-'+id).required=tenancy});const other=$('otherLenders').value==='yes';$('lenderDocs').classList.toggle('hidden',!other);$('file-lender').required=other}$('reason').onchange=conditional;$('otherLenders').onchange=conditional;conditional();$('hardshipForm').addEventListener('submit',e=>{e.preventDefault();if(loanMode==='none'){alert('Select an associated loan or enter loan information manually.');return}if(!$('hardshipForm').reportValidity())return;const invoices=[...document.querySelectorAll('.invoice-row')].map(r=>({invoice:r.querySelector('.inv-number').value.trim(),year:r.querySelector('.inv-year').value}));if(invoices.some(x=>!x.invoice)){alert('Complete or remove each invoice row.');return}const docs=[...document.querySelectorAll('input[type=file]')].filter(el=>!el.closest('.hidden')).map(el=>({category:el.id,files:[...el.files].map(f=>f.name)}));const data={id:'FH-'+String(Date.now()).slice(-8),type:'Financial Hardship Request',requester:$('requester').value,organization:$('organization').value,email:$('email').value,phone:$('phone').value,onBehalf:$('onBehalf').checked,onBehalfName:$('onBehalfName').value,loan:$('loan').value,project:$('project').value,address:$('address').value,reason:$('reason').value,start:$('start').value,description:$('description').value,period:$('period').value,currentYear:$('currentYear').checked,invoices,documents:docs,otherLenders:$('otherLenders').value,signer:$('signer').value,signerTitle:$('signerTitle').value,status:'Submitted',created:new Date().toISOString(),activity:[{at:new Date().toISOString(),action:'Submitted by borrower',by:$('requester').value}]};try{const key='lahdFinancialHardshipRequests';const arr=JSON.parse(sessionStorage.getItem(key)||'[]');arr.push(data);sessionStorage.setItem(key,JSON.stringify(arr));$('confirmation').innerHTML='<div class="notice"><strong>Demonstration request '+data.id+' submitted.</strong><p>Stored in this browser session only; no files were uploaded to LAHD. <a href="staff-dashboard.html">View Staff Queue</a> · <a href="borrower-portal.html">Return to Dashboard</a></p></div>';e.target.querySelector('[type=submit]').disabled=true;$('confirmation').scrollIntoView({behavior:'smooth'})}catch(err){alert('Unable to save this demonstration request: '+err.message)}})})();</script></body></html>
+<!DOCTYPE html>
+
+<html data-standalone-page="reserve-withdrawal-form" lang="en">
+<head><script>document.documentElement.setAttribute("data-v96-route","reserve");</script>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>LAHD Borrower Portal - Financial Hardship Request</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7f9;color:#17243a;font-size:13px}
+button,select,input{font:inherit}.top{height:78px;background:#fff;border-bottom:1px solid #dbe3eb;display:flex;align-items:center;justify-content:space-between;padding:0 6%;box-shadow:0 1px 4px #0000000d}
+.brand{display:flex;gap:14px;align-items:center}.logo{width:50px;height:43px;position:relative}.logo:before{content:"";position:absolute;width:35px;height:32px;left:0;top:9px;background:#233f80;border-radius:6px}.logo:after{content:"";position:absolute;width:35px;height:34px;right:0;top:5px;background:#4898cf;clip-path:polygon(50% 0,100% 38%,100% 100%,0 100%,0 38%)}
+.brand h1{font-size:21px;margin:0}.brand p{margin:3px 0 0;color:#68798d;font-size:12px}.profile{display:flex;align-items:center;gap:13px;text-align:right}.profile b{display:block}.profile span{font-size:12px;color:#66798e}.avatar{width:42px;height:42px;border-radius:50%;background:#66768a;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.demo{background:#eaf1f8;border-bottom:1px solid #cbd8e6;padding:11px 6%;display:flex;align-items:center;justify-content:center;gap:13px}.demo b{font-size:12px;color:#31506f}.switch{display:flex;background:#fff;border:1px solid #aebed0;border-radius:6px;padding:3px}.switch button{border:0;background:transparent;padding:8px 14px;border-radius:4px;font-size:12px;font-weight:700;color:#536a82;cursor:pointer}.switch button.active{background:#284a7e;color:#fff}.demo small{color:#687b90}
+.page{max-width:1380px;margin:30px auto 70px;padding:0 24px}.nav{display:flex;align-items:center;justify-content:space-between}.tabs{display:flex;padding:4px;border:1px solid #cbd6e2;background:#fff;border-radius:7px}.tab{padding:11px 20px;border:0;background:transparent;color:#35475d;font-weight:700;border-radius:4px;cursor:pointer}.tab.active{background:#eaf1f8;color:#213f70;box-shadow:inset 0 -2px #2b4d84}.btn{border:0;border-radius:5px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:#284a7e;color:#fff}.secondary{background:#fff;border:1px solid #a9b8c9;color:#31516f}.danger{background:#a92d3e;color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:26px 0}.card{background:#fff;border:1px solid #d9e2ea;border-radius:9px;box-shadow:0 2px 7px #1d334d0c}.kpi{padding:20px}.kpi span{color:#70839a}.kpi strong{display:block;font-size:26px;margin-top:7px}.project{overflow:hidden}.project-info{display:grid;grid-template-columns:1.1fr 1.25fr 1fr 1fr 1.7fr;gap:16px;padding:18px 22px;border-bottom:1px solid #e0e6ec;color:#697b90}.project-info b{color:#25384f}.tier2-project{display:none;padding:19px 22px;border-bottom:1px solid #e0e6ec}.tier2-project h2{margin:0 0 4px;font-size:19px}.address{color:#687b90}.loanrefs{display:flex;gap:7px;align-items:center;margin-top:12px;flex-wrap:wrap}.loanrefs label{font-size:11px;font-weight:bold;color:#6a7e94}.loan{background:#eef3f8;border:1px solid #d5e0ea;padding:5px 8px;border-radius:4px;font-size:11px;font-weight:bold;color:#34536f}
+.notice{margin:13px 20px;padding:12px 14px;border:1px solid #d6a94e;background:#fff9e9;color:#725315;border-radius:5px;display:flex;align-items:center;justify-content:space-between}.notice.red{border-color:#c74b5b;background:#fff1f3;color:#9b2938}.section{padding:8px 20px 20px}.section-head{display:flex;align-items:center;gap:12px;margin:9px 0 10px}.section-head h3{font-size:17px;margin:0}.section-head:after{content:"";height:1px;background:#dce3ea;flex:1}.section-head .btn{margin-left:auto}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:#26394f;font-size:12px;padding:11px 12px}td{padding:11px 12px;border-top:1px solid #e9eef3;font-size:12px;background:#fafbfd}.pill{display:inline-block;padding:4px 9px;border-radius:13px;background:#edf8f4;border:1px solid #b9decf;color:#267258;font-size:11px;font-weight:700}.link{border:0;background:transparent;color:#265b91;font-weight:bold;cursor:pointer;padding:0}
+.view{display:none}.view.active{display:block}.members-head{display:flex;justify-content:space-between;align-items:end;margin:27px 0 14px}.members-head h2{margin:0 0 5px;font-size:21px}.members-head p{margin:0;color:#6d7e92}.actions{display:flex;gap:9px}.context{padding:12px 15px;margin-bottom:15px;background:#f7fafc;border:1px solid #dbe5ee;border-radius:6px;color:#5f738a}.entity{margin-bottom:16px;overflow:hidden}.entity-head{padding:14px 17px;background:#f7f9fc;border-bottom:1px solid #dfe6ed;display:flex;justify-content:space-between}.entity-head strong{font-size:14px}.entity-head span{display:block;color:#718398;font-size:11px;margin-top:3px}.tier{display:inline-block;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:700}.tier1{background:#e7f0fa;color:#244e79}.tier2{background:#f0f3f6;color:#52677d}.rowbtn{border:1px solid #a8b8c8;background:#fff;color:#315675;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer}.muted{color:#74869a;font-size:11px}.pending{display:none;margin-bottom:16px;overflow:hidden}.pending.show{display:block}.pending-title{padding:13px 16px;background:#f7f9fc;border-bottom:1px solid #dfe6ed;display:flex;justify-content:space-between}.pending-title span{display:block;color:#74869a;font-size:11px;margin-top:3px}
+.modal{display:none;position:fixed;inset:0;background:#17283e70;z-index:10;align-items:center;justify-content:center}.modal.show{display:flex}.dialog{width:570px;max-width:94vw;background:#fff;border-radius:9px;box-shadow:0 18px 45px #0003;overflow:hidden}.dialog-head,.dialog-foot{padding:16px 20px;display:flex;align-items:center;justify-content:space-between}.dialog-head{border-bottom:1px solid #e0e6ec}.dialog-foot{border-top:1px solid #e0e6ec;justify-content:flex-end;gap:9px}.dialog-body{padding:18px 20px}.close{border:0;background:transparent;font-size:22px;cursor:pointer}.field{margin-bottom:13px}.field label{display:block;font-weight:700;font-size:11px;color:#41566f;margin-bottom:5px}.field input,.field select{width:100%;padding:10px;border:1px solid #bfcbd8;border-radius:5px;background:#fff}.access-guide{display:grid;grid-template-columns:1fr 1fr;gap:9px}.access-guide div{padding:10px;border:1px solid #dbe4ed;border-radius:6px;background:#f8fafc}.access-guide b{display:block;color:#2b4c6f;font-size:11px;margin-bottom:4px}.access-guide span{font-size:10.5px;line-height:1.4;color:#66798e}.warning{padding:11px;background:#fff6f7;border:1px solid #edd1d5;color:#733642;border-radius:5px}.toast{display:none;position:fixed;right:24px;bottom:24px;background:#203c61;color:#fff;padding:11px 15px;border-radius:6px}.toast.show{display:block}
+.standard .kpis{display:none}.restricted-note{display:none;margin:18px 0 0;padding:11px 14px;background:#f7fafc;border:1px solid #dbe5ee;border-radius:6px;color:#687b90;font-size:11px}
+body.standard .admin-only{display:none!important}body.standard .financial{display:none!important}body.standard .tier1-project{display:block}body.standard .restricted-note{display:block}body.standard .tabs{width:auto}
+@media(max-width:900px){.kpis{grid-template-columns:1fr 1fr}.project-info{grid-template-columns:1fr 1fr}.members-head{align-items:flex-start;flex-direction:column;gap:12px}}
+
+.req-actions{display:flex;align-items:center;justify-content:center;gap:10px}
+.req-menu{border:0;background:transparent;color:#0d5686;font-size:21px;font-weight:700;line-height:1;cursor:pointer;padding:3px 6px}
+.comment-action{position:relative;border:0;background:transparent;color:#0d5686;font-size:18px;cursor:pointer;padding:3px 5px}
+.comment-count{position:absolute;right:-2px;top:-5px;min-width:16px;height:16px;padding:0 3px;border-radius:9px;background:#c8102e;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.site-landing{max-width:1180px;margin:32px auto;background:#fff;padding:0 24px 55px}.crumb{background:#171717;color:#fff;padding:26px 50px;font-size:13px}.crumb b{display:block;font-size:25px;margin-bottom:22px}.service-row{display:flex;gap:24px;justify-content:center;margin-top:55px}.service-card{width:420px;border:1px solid #d5e0ea;border-radius:16px;padding:28px;box-shadow:0 3px 12px rgba(20,50,80,.06)}.service-card.active{border:2px solid #1f5e9d}.service-card h2{font-size:23px}.service-card p{min-height:66px}.flow-choice{display:flex;gap:14px;margin-top:18px}.help-banner{background:#f2f7fb;border:1px solid #cbddeb;border-left:4px solid #1f5e9d;border-radius:7px;padding:15px 18px;margin:16px 0 20px}.help-banner .help-title{font-weight:700;margin-bottom:6px}.help-banner button{float:right;border:0;background:transparent;color:#1f5e9d;font-weight:700;cursor:pointer}.help-banner.collapsed .help-body{display:none}.help-banner.collapsed{padding-bottom:12px}.help-banner{margin-bottom:18px}.help-banner .helpToggle,.help-banner .helpClose{border:0;background:transparent;color:#1f5e9d;font-weight:700;cursor:pointer}.help-banner .helpClose{font-size:18px}
+
+.tier1-loans{display:block}.tier2-project{display:none}.std-loan{display:table-cell!important}.standard .tier1-loans{display:none}.standard .tier2-project{display:block}
+.loan-row{background:#fff;border:1px solid #d7e0e8;border-radius:9px;margin-bottom:12px;overflow:hidden}
+.loan-row-main{display:grid;grid-template-columns:.9fr 1fr .8fr .8fr 1.4fr;gap:18px;padding:16px 20px}
+.loan-row-main .lbl{color:#708397;font-size:12px}.loan-row-main b{display:block;margin-top:2px}
+.loan-row-foot{border-top:1px solid #e1e7ed;padding:10px 20px;display:flex;align-items:center;gap:12px}
+.access-loans{border:1px solid #d7e0e8;border-radius:7px;overflow:hidden;margin-top:8px}.access-loan{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-bottom:1px solid #e4e9ee}.access-loan:last-child{border-bottom:0}.access-loan label{font-weight:600;margin:0}.access-loan small{display:block;color:#718398;margin-top:3px}.access-loan input{width:auto}
+.danger-zone{background:#fff6f6;border:1px solid #edcaca;border-radius:7px;padding:13px;margin-top:18px}
+
+.project-group{background:#fff;border:1px solid #d7e0e8;border-radius:9px;overflow:hidden;margin-bottom:18px}
+.project-group-head{display:flex;justify-content:space-between;align-items:flex-start;padding:17px 20px;background:#f8fafc;border-bottom:1px solid #e0e7ed}
+.project-group-head h3{margin:0 0 4px;font-size:18px}.project-group-head .muted{font-size:13px}
+.loan-table{width:100%;border-collapse:collapse}.loan-table th{background:#fff;color:#718398;font-size:12px;text-align:left;padding:12px 18px;border-bottom:1px solid #e4e9ee}.loan-table td{padding:14px 18px;border-bottom:1px solid #e8edf1}.loan-table tr:last-child td{border-bottom:0}
+.attention-card{background:#fff;border:1px solid #d7e0e8;border-radius:9px;padding:16px 20px;margin-bottom:18px}.attention-card .notice{margin:0}
+
+.loan-centric-card{background:#fff;border:1px solid #d7e0e8;border-radius:9px;margin-bottom:16px;overflow:hidden}
+.loan-centric-head{display:grid;grid-template-columns:1fr 1.3fr .9fr .9fr auto;gap:18px;align-items:center;padding:17px 20px}
+.loan-centric-head .lbl{font-size:12px;color:#718398}.loan-centric-head b{display:block;margin-top:3px}
+.loan-context{font-size:12px;color:#718398;margin-top:4px}
+.loan-requests{border-top:1px solid #e4e9ee;padding:13px 20px 16px;background:#fbfcfd}
+.loan-requests-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.loan-requests-head b{font-size:14px}.empty-requests{font-size:13px;color:#718398;padding:8px 0}
+.portfolio-attn{background:#fff;border:1px solid #d7e0e8;border-radius:9px;padding:14px 18px;margin-bottom:18px}
+.old-global-requests{display:none}.standard .old-global-requests{display:block}
+.hybrid-project{background:#fff;border:1px solid #d7e0e8;border-radius:10px;overflow:hidden;margin-bottom:18px}
+.hybrid-project-head{display:flex;justify-content:space-between;align-items:flex-start;padding:18px 20px;background:#f8fafc;border-bottom:1px solid #e2e8ee}
+.hybrid-project-head h3{margin:0 0 4px;font-size:18px}.hybrid-project-head .addr{color:#718398;font-size:13px}
+.hybrid-loan{border-bottom:1px solid #dfe6ec}.hybrid-loan:last-child{border-bottom:0}
+.hybrid-loan-head{display:grid;grid-template-columns:1.05fr 1fr .9fr .7fr auto;gap:18px;align-items:center;padding:15px 20px}
+.hybrid-loan-head .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:#718398}.hybrid-loan-head b{display:block;margin-top:3px}
+.hybrid-req{background:#fbfcfd;border-top:1px solid #edf1f4;padding:11px 20px 14px 42px}
+.hybrid-req-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.hybrid-req-head b{font-size:13px}
+.hybrid-req table{margin:0}.hybrid-empty{font-size:13px;color:#718398;padding:3px 0}
+.project-attention{margin:12px 20px 0;padding:10px 12px;background:#fff4f5;border:1px solid #efb4ba;border-radius:6px;color:#a52d3b;font-size:13px}
+
+.compact-project{background:#fff;border:1px solid #d7e0e8;border-radius:10px;overflow:hidden;margin-bottom:18px}
+.compact-project-head{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;padding:17px 20px;background:#f8fafc;border-bottom:1px solid #e2e8ee}
+.compact-project-head h3{margin:0 0 3px;font-size:18px}.compact-project-head .addr{font-size:13px;color:#718398}
+.compact-attn{font-size:12.5px;color:#a52d3b;margin-top:8px}.compact-attn b{font-weight:700}
+.compact-loans{width:100%;border-collapse:collapse}.compact-loans th{padding:11px 16px;text-align:left;color:#718398;font-size:11px;text-transform:uppercase;letter-spacing:.03em;background:#fff;border-bottom:1px solid #e3e9ee}
+.compact-loans td{padding:13px 16px;border-bottom:1px solid #e8edf1;vertical-align:middle}.compact-loans .actions{white-space:nowrap;text-align:right}
+.req-link{border:0;background:transparent;color:#1f5e9d;font-weight:700;cursor:pointer;padding:5px 0}.req-none{color:#718398}
+.req-detail{display:none;background:#f8fafc}.req-detail.show{display:table-row}.req-detail td{padding:0 16px 14px 44px}
+.req-box{border-left:3px solid #a9bfd3;padding:10px 14px;background:#fff;border-radius:4px;display:grid;grid-template-columns:1fr 1.2fr .9fr .7fr 1fr;gap:18px;font-size:13px}
+.req-box .muted{font-size:11px;text-transform:uppercase;display:block;margin-bottom:2px}
+.compact-add{margin-left:8px}
+
+.simple-project{background:#fff;border:1px solid #d7e0e8;border-radius:10px;padding:0;margin-bottom:18px;overflow:hidden}
+.simple-project-head{display:flex;justify-content:space-between;align-items:flex-start;padding:17px 20px;background:#f8fafc;border-bottom:1px solid #e1e8ee}
+.simple-project-head h3{margin:0 0 4px;font-size:18px}.simple-project-head .addr{color:#718398;font-size:13px}
+.simple-attn{font-size:12.5px;color:#a52d3b;margin-top:8px}
+.loan-cards{padding:16px 18px 18px;display:grid;gap:14px}
+.loan-card-simple{border:1px solid #dbe3ea;border-radius:8px;background:#fff;overflow:hidden}
+.loan-card-top{display:grid;grid-template-columns:1.15fr 1fr .9fr .7fr;gap:20px;align-items:center;padding:15px 18px}
+.loan-card-top .lbl{display:block;color:#718398;font-size:11px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.loan-card-requests{border-top:1px solid #e6ebef;background:#fbfcfd;padding:12px 18px 14px}
+.loan-card-requests-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.loan-card-requests-head b{font-size:13px}
+.request-line{display:grid;grid-template-columns:1fr 1.2fr .75fr .9fr;gap:18px;align-items:center;padding:9px 11px;background:#fff;border:1px solid #e2e8ed;border-radius:6px;font-size:13px}
+.request-line .mini{display:block;color:#718398;font-size:10px;text-transform:uppercase;margin-bottom:2px}
+.no-request{color:#718398;font-size:13px;padding:5px 0}
+
+/* v16 polished loan-card dashboard */
+.simple-project{border:1px solid #d9e2ea;border-radius:10px;box-shadow:0 1px 3px rgba(20,43,67,.04)}
+.simple-project-head{padding:18px 22px;background:#fff}
+.simple-project-head h3{font-size:19px;color:#172b43}
+.simple-project-head .addr{margin-top:2px}
+.simple-attn{display:inline-flex;align-items:center;gap:5px;margin-top:9px;padding:5px 9px;border-radius:5px;background:#fff5f5;border:1px solid #f1c7cb;font-size:12px}
+.loan-cards{padding:16px;background:#f7f9fb;gap:12px}
+.loan-card-simple{border:1px solid #d8e2ea;border-radius:8px;box-shadow:0 1px 2px rgba(20,43,67,.025)}
+.loan-card-top{grid-template-columns:1.05fr .95fr .85fr .55fr;gap:24px;padding:15px 18px;background:#fff}
+.loan-card-top .lbl{font-size:10.5px;font-weight:600;letter-spacing:.045em}
+.loan-card-top b{font-size:14px;color:#172b43}
+.loan-card-requests{padding:0;background:#fff;border-top:1px solid #e7edf2}
+.loan-card-requests-head{margin:0;padding:10px 18px;background:#fafbfd;border-bottom:1px solid #edf1f4}
+.loan-card-requests-head b{font-size:12.5px;color:#314b67}
+.loan-card-requests-head .btn{padding:7px 12px;font-size:12px}
+.request-line{margin:10px 18px 12px;padding:10px 13px;border:0;border-left:3px solid #b9cad9;border-radius:4px;background:#f8fafc;grid-template-columns:1.05fr 1.25fr .7fr 1fr}
+.request-line .mini{font-size:9.5px;font-weight:600;letter-spacing:.035em}
+.request-line b,.request-line div{font-size:12.5px}
+.no-request{padding:12px 18px 14px;font-size:12.5px}
+.loan-card-simple .pill{font-size:11px;padding:4px 9px}
+
+/* v17 - match approved/reference loan card pattern */
+.loan-cards{padding:18px;background:#f7f9fb;gap:18px}
+.loan-card-simple{border:1px solid #d8e0e7;border-radius:9px;background:#fff;box-shadow:0 2px 7px rgba(26,48,72,.10);overflow:hidden}
+.loan-card-top{display:grid;grid-template-columns:1fr 1.15fr 1fr 1fr 1.65fr;gap:22px;align-items:center;padding:18px 22px;border-bottom:1px solid #dfe5ea;background:#fff}
+.loan-card-top .lbl{display:inline;color:#718398;font-size:13px;text-transform:none;letter-spacing:0;font-weight:400}
+.loan-card-top b{display:inline;font-size:14px;margin:0;color:#1d2e45}
+.loan-card-top .pair{white-space:nowrap}
+.loan-card-requests{padding:16px 22px 20px;background:#fff;border-top:0}
+.loan-card-requests-head{display:flex;align-items:center;gap:16px;margin:0 0 13px;padding:0;background:#fff;border:0}
+.loan-card-requests-head b{font-size:18px;font-weight:500;color:#222}
+.loan-card-requests-head:after{content:"";height:1px;background:#d7dee5;flex:1}
+.loan-card-requests-head .btn{order:3;padding:9px 14px;font-size:13px}
+.request-line{margin:0;padding:0;border:0;border-radius:0;background:#fff;display:grid;grid-template-columns:1.05fr .95fr .95fr .75fr 1fr;gap:20px}
+.request-line>div{padding:10px 12px;background:#f7f9fb;font-size:13px}
+.request-line .mini{display:block;font-size:11px;color:#718398;text-transform:none;letter-spacing:0;margin-bottom:5px}
+.no-request{padding:10px 12px;background:#f7f9fb;font-size:13px}
+.simple-project-head{background:#fff;padding:17px 20px}
+.simple-attn{display:none}
+
+/* v18 request table treatment */
+.loan-card-requests{padding:16px 22px 20px}
+.loan-card-requests-head{margin-bottom:10px}
+.request-table{width:100%;border-collapse:collapse;font-size:13px}
+.request-table th{padding:9px 12px;text-align:left;color:#263c56;font-weight:700;background:#fff;border-bottom:1px solid #dfe6ec}
+.request-table td{padding:11px 12px;background:#f7f9fb;border-bottom:1px solid #e2e8ed;color:#26364a}
+.request-table tbody tr:last-child td{border-bottom:0}
+.request-table .action{text-align:center;width:54px}.request-table .dots{border:0;background:transparent;color:#08689c;font-size:20px;line-height:1;cursor:pointer}
+.request-table .pill{font-size:11px}
+.standard .old-global-requests{display:none!important}</style>
+<style>
+.onboard-shell{display:none;min-height:100vh;background:#f5f7f9;font-family:Arial,sans-serif;color:#172d44}
+.onboard-shell.active{display:block}
+.portal-shell.hidden-for-onboard,.demo.hidden-for-onboard{display:none!important}
+.citybar{background:#0c263d;color:#fff;padding:10px 28px;font-size:13px;font-weight:700}
+.lahdbar{background:#fff;border-bottom:1px solid #d9e0e7;padding:18px 34px;display:flex;align-items:center;gap:30px}
+.lahdmark{font-size:31px;font-weight:800;color:#183b68;letter-spacing:-1px}.lahdmark small{display:block;font-size:9px;letter-spacing:0;color:#49657d}
+.lahdnav{font-size:14px;font-weight:700;color:#23384b}
+.onboard-wrap{max-width:980px;margin:38px auto;padding:0 24px 60px}
+.stepper{display:flex;justify-content:center;gap:0;margin:0 auto 30px;max-width:720px}
+.stepnode{flex:1;text-align:center;font-size:12px;color:#718398;position:relative;padding-top:30px}
+.stepnode:before{content:"";width:20px;height:20px;border-radius:50%;background:#d9e1e8;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
+.stepnode:after{content:"";height:2px;background:#d9e1e8;position:absolute;top:9px;left:-50%;right:50%;z-index:1}
+.stepnode:first-child:after{display:none}.stepnode.current:before,.stepnode.done:before{background:#1f5e9d}.stepnode.current{color:#173d64;font-weight:700}.stepnode.done:after,.stepnode.current:after{background:#1f5e9d}
+.ob-card{background:#fff;border:1px solid #d7e0e9;border-radius:10px;box-shadow:0 3px 12px rgba(24,54,84,.08);padding:30px 34px}
+.ob-card h1{font-size:26px;margin:0 0 8px}.ob-card h2{font-size:20px;margin:0 0 10px}.ob-card p{line-height:1.55;color:#52697e}
+.info-callout{background:#f4f8fc;border:1px solid #d4e2ef;border-radius:8px;padding:15px 17px;margin:18px 0}
+.ob-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+.ob-btn{border:1px solid #1f5e9d;border-radius:6px;padding:11px 20px;font-weight:700;background:#fff;color:#1f5e9d;cursor:pointer}.ob-btn.primary{background:#1f5e9d;color:#fff}
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.ob-field label{display:block;font-weight:700;font-size:13px;margin-bottom:7px}.ob-field input,.ob-field select{width:100%;box-sizing:border-box;border:1px solid #b9c7d4;border-radius:5px;padding:11px;font:inherit}
+.foundbox{border:1px solid #b9d2e7;background:#f7fbff;border-radius:8px;padding:18px;margin:18px 0}.foundnum{font-size:28px;font-weight:800;color:#1f5e9d}
+.rolebadge{display:inline-block;background:#e8f2fb;color:#174f83;border-radius:14px;padding:5px 10px;font-size:12px;font-weight:700}
+.choicegrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.choice{border:1px solid #d5dfe8;border-radius:8px;padding:20px}.choice h3{margin:0 0 6px}
+.guidegrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:18px}.guide{border:1px solid #d9e2ea;border-radius:8px;padding:18px}.guide b{display:block;margin-bottom:7px}
+.devbar{background:#fff4d8;border-bottom:1px solid #ead29b;padding:8px 20px;text-align:center;font:12px Arial;color:#66501d}.devbar button{margin-left:8px}
+@media(max-width:800px){.ob-grid,.choicegrid,.guidegrid{grid-template-columns:1fr}}
+.site-landing{max-width:1180px;margin:32px auto;background:#fff;padding:0 24px 55px}.crumb{background:#171717;color:#fff;padding:26px 50px;font-size:13px}.crumb b{display:block;font-size:25px;margin-bottom:22px}.service-row{display:flex;gap:24px;justify-content:center;margin-top:55px}.service-card{width:420px;border:1px solid #d5e0ea;border-radius:16px;padding:28px;box-shadow:0 3px 12px rgba(20,50,80,.06)}.service-card.active{border:2px solid #1f5e9d}.service-card h2{font-size:23px}.service-card p{min-height:66px}.flow-choice{display:flex;gap:14px;margin-top:18px}.help-banner{background:#f2f7fb;border:1px solid #cbddeb;border-left:4px solid #1f5e9d;border-radius:7px;padding:15px 18px;margin:16px 0 20px}.help-banner .help-title{font-weight:700;margin-bottom:6px}.help-banner button{float:right;border:0;background:transparent;color:#1f5e9d;font-weight:700;cursor:pointer}.help-banner.collapsed .help-body{display:none}.help-banner.collapsed{padding-bottom:12px}.help-banner{margin-bottom:18px}.help-banner .helpToggle,.help-banner .helpClose{border:0;background:transparent;color:#1f5e9d;font-weight:700;cursor:pointer}.help-banner .helpClose{font-size:18px}
+
+.tier1-loans{display:block}.tier2-project{display:none}.std-loan{display:table-cell!important}.standard .tier1-loans{display:none}.standard .tier2-project{display:block}
+.loan-row{background:#fff;border:1px solid #d7e0e8;border-radius:9px;margin-bottom:12px;overflow:hidden}
+.loan-row-main{display:grid;grid-template-columns:.9fr 1fr .8fr .8fr 1.4fr;gap:18px;padding:16px 20px}
+.loan-row-main .lbl{color:#708397;font-size:12px}.loan-row-main b{display:block;margin-top:2px}
+.loan-row-foot{border-top:1px solid #e1e7ed;padding:10px 20px;display:flex;align-items:center;gap:12px}
+.access-loans{border:1px solid #d7e0e8;border-radius:7px;overflow:hidden;margin-top:8px}.access-loan{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-bottom:1px solid #e4e9ee}.access-loan:last-child{border-bottom:0}.access-loan label{font-weight:600;margin:0}.access-loan small{display:block;color:#718398;margin-top:3px}.access-loan input{width:auto}
+.danger-zone{background:#fff6f6;border:1px solid #edcaca;border-radius:7px;padding:13px;margin-top:18px}
+
+.project-group{background:#fff;border:1px solid #d7e0e8;border-radius:9px;overflow:hidden;margin-bottom:18px}
+.project-group-head{display:flex;justify-content:space-between;align-items:flex-start;padding:17px 20px;background:#f8fafc;border-bottom:1px solid #e0e7ed}
+.project-group-head h3{margin:0 0 4px;font-size:18px}.project-group-head .muted{font-size:13px}
+.loan-table{width:100%;border-collapse:collapse}.loan-table th{background:#fff;color:#718398;font-size:12px;text-align:left;padding:12px 18px;border-bottom:1px solid #e4e9ee}.loan-table td{padding:14px 18px;border-bottom:1px solid #e8edf1}.loan-table tr:last-child td{border-bottom:0}
+.attention-card{background:#fff;border:1px solid #d7e0e8;border-radius:9px;padding:16px 20px;margin-bottom:18px}.attention-card .notice{margin:0}
+
+.hybrid-project{background:#fff;border:1px solid #d7e0e8;border-radius:10px;overflow:hidden;margin-bottom:18px}
+.hybrid-project-head{display:flex;justify-content:space-between;align-items:flex-start;padding:18px 20px;background:#f8fafc;border-bottom:1px solid #e2e8ee}
+.hybrid-project-head h3{margin:0 0 4px;font-size:18px}.hybrid-project-head .addr{color:#718398;font-size:13px}
+.hybrid-loan{border-bottom:1px solid #dfe6ec}.hybrid-loan:last-child{border-bottom:0}
+.hybrid-loan-head{display:grid;grid-template-columns:1.05fr 1fr .9fr .7fr auto;gap:18px;align-items:center;padding:15px 20px}
+.hybrid-loan-head .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:#718398}.hybrid-loan-head b{display:block;margin-top:3px}
+.hybrid-req{background:#fbfcfd;border-top:1px solid #edf1f4;padding:11px 20px 14px 42px}
+.hybrid-req-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.hybrid-req-head b{font-size:13px}
+.hybrid-req table{margin:0}.hybrid-empty{font-size:13px;color:#718398;padding:3px 0}
+.project-attention{margin:12px 20px 0;padding:10px 12px;background:#fff4f5;border:1px solid #efb4ba;border-radius:6px;color:#a52d3b;font-size:13px}
+</style>
+<style>
+.basic-workspace{max-width:1180px;margin:34px auto;padding:0 24px}
+.basic-title{margin:0 0 6px;color:#172b43;font-size:25px}
+.basic-subtitle{color:#718398;font-size:14px;margin-bottom:20px}
+.basic-guidance{background:#f4f9fd;border:1px solid #cbddeb;border-left:4px solid #2469a7;border-radius:8px;margin-bottom:20px;overflow:hidden}
+.basic-guidance-head{display:flex;justify-content:space-between;align-items:center;padding:15px 18px}
+.basic-guidance-head strong{color:#183651;font-size:15px}
+.basic-guidance-toggle{border:0;background:transparent;color:#185a97;font-weight:700;cursor:pointer}
+.basic-guidance-body{padding:0 18px 17px;color:#425d75;font-size:14px;line-height:1.55}
+.basic-guidance-body p{margin:0 0 13px}
+.basic-guide-options{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.basic-guide-option{background:#fff;border:1px solid #dce5ec;border-radius:7px;padding:14px}
+.basic-guide-option b{display:block;color:#203d59;margin-bottom:5px}
+.basic-actions{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.basic-action-card{background:#fff;border:1px solid #d8e2ea;border-radius:9px;padding:23px;box-shadow:0 1px 4px rgba(26,48,72,.05)}
+.basic-action-card h3{margin:0 0 7px;color:#172b43;font-size:18px}
+.basic-action-card p{margin:0 0 18px;color:#647a90;font-size:13.5px;line-height:1.5}
+.basic-note{margin-top:18px;color:#718398;font-size:12.5px}
+</style>
+<style>
+.portal-actionbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:0 0 18px}
+.portal-actionbar .btn{white-space:nowrap}
+</style>
+<style>
+:root{
+  --navy:#1f3566;--navy2:#172c57;--blue:#0b83d5;--orange:#ff7a1a;
+  --border:#cbd3df;--border-dark:#9aa8bb;--text:#1f2937;--muted:#5f6b7a;
+  --bg:#f5f7fa;--danger:#c62828;--danger-bg:#fff5f5;--success:#18794e;
+  --warn:#9a6700;--warn-bg:#fff8db;--shadow:0 2px 8px rgba(31,53,102,.12)
+}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+.page{max-width:1180px;margin:0 auto;padding:28px}
+.topbar{display:flex;justify-content:flex-end;align-items:center;margin-bottom:26px}
+.topbar h1{margin:0;font-size:30px}
+.btn{border:none;border-radius:5px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:14px}
+.btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:var(--navy2)}
+.btn-light{background:#fff;border:1px solid var(--border);color:var(--navy)}
+.btn-small{padding:7px 11px;font-size:12px}
+.panel,.section{background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow);margin-bottom:18px}
+.panel{padding:20px}
+.label{font-weight:700;display:block;margin-bottom:7px}
+.helper{font-size:12px;color:var(--muted);font-weight:400}
+.multi{position:relative;max-width:760px}
+.multi-display{min-height:44px;border:1px solid var(--border-dark);border-radius:4px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:8px 11px;cursor:pointer}
+.placeholder{color:#737e8c}
+.count{background:#eaf5fd;color:var(--navy);font-weight:700;padding:4px 8px;border-radius:999px;font-size:12px}
+.menu{display:none;position:absolute;z-index:20;top:49px;left:0;right:0;background:#fff;border:1px solid var(--border-dark);border-radius:5px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:8px}
+.menu.open{display:block}
+.opt{display:flex;gap:9px;padding:9px 8px;border-radius:4px;cursor:pointer;line-height:1.3}
+.opt:hover{background:#f2f6fb}.opt.reserve{border-top:1px solid #e5e9ef;margin-top:4px;padding-top:12px}
+.typechips,.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.typechip{border:1px solid #b9c7d7;background:#f7fafc;border-radius:999px;padding:5px 9px;font-size:12px}
+.section-head{display:flex;justify-content:space-between;padding:15px 18px;font-weight:700;font-size:16px;cursor:pointer}
+.section-body{padding:0 18px 18px}.section.collapsed .section-body{display:none}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field label{font-weight:700;display:block;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border-dark);border-radius:4px;padding:8px 10px;font:inherit;background:#fff}
+.field input,.field select{height:42px}.field textarea{min-height:92px;resize:vertical}
+.field input[readonly]{background:#f4f6f9}
+.small{margin-top:5px;font-size:12px;color:var(--muted)}
+.context{background:#f0f5fa;border-left:4px solid var(--navy);padding:10px 12px;border-radius:3px;margin-bottom:14px;color:#405269}
+.related{margin-top:12px;border:1px solid #ef9a9a;background:var(--danger-bg);border-radius:4px;overflow:hidden}
+.related-toggle{width:100%;border:0;background:transparent;padding:10px 12px;display:flex;justify-content:space-between;color:var(--danger);text-align:left;cursor:pointer}
+.related-content{border-top:1px solid #f3baba;padding:11px 12px;background:#fff}.hidden{display:none!important}
+.records{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.record{border:1px solid var(--border);border-radius:6px;padding:10px;background:#fafbfc;display:flex;gap:8px}
+.record.initiating{border-color:#91bce2;background:#f1f8fe}.record strong{display:block;font-size:13px;margin-bottom:2px}.record small{color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 11px;color:#fff;font-weight:700;font-size:12px}
+.loan{background:var(--blue)}.ground{background:var(--orange)}.required:after{content:"Initiating";background:rgba(255,255,255,.2);padding:2px 6px;border-radius:999px;font-size:10px}
+.info{border:1px solid #81b9e8;background:#eaf5ff;padding:12px 13px;border-radius:4px;margin-top:14px}
+.warning{border:1px solid #e4bd58;background:var(--warn-bg);padding:12px 13px;border-radius:4px;line-height:1.45}
+.success{border:1px solid #9bc9b1;background:#eef8f2;padding:12px 13px;border-radius:4px;line-height:1.45;color:#275c42}
+.radio{display:flex;gap:12px;align-items:center;margin-top:18px;font-weight:700;flex-wrap:wrap}.radio label{font-weight:400}
+.footer{display:flex;justify-content:flex-end;gap:10px}
+.x{cursor:pointer}.required .x{display:none}
+.section-kicker{font-size:12px;color:var(--muted);margin:-4px 0 15px}
+.req{color:#c62828}
+.reserve-only{display:none}
+.policy-box{border:1px solid #d3dbe6;background:#f9fbfd;border-radius:6px;padding:14px;margin-top:15px}
+.policy-title{font-weight:700;color:var(--navy);margin-bottom:8px}
+.policy-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:9px 0}
+.policy-row .q{font-weight:700;min-width:390px}
+.policy-status{margin-top:12px}
+.table-wrap{overflow-x:auto;margin-top:14px}
+table{width:100%;border-collapse:collapse;min-width:980px}
+th{background:#eef3f8;color:#26364b;font-size:12px;text-align:left;padding:9px 8px;border:1px solid #c8d1dc}
+td{padding:7px;border:1px solid #d5dce5;vertical-align:middle}
+td input,td select{width:100%;height:34px;border:1px solid #aeb9c8;border-radius:3px;padding:5px 7px;font:inherit;font-size:12px}
+.amount{text-align:right}
+.total-row td{font-weight:700;background:#f6f8fb}
+.total-label{text-align:right}
+.row-actions{white-space:nowrap;text-align:center}
+.bid-panel{border:1px solid #dfc26c;border-radius:6px;margin-top:16px;overflow:hidden}
+.bid-head{background:#fff8db;padding:11px 13px;font-weight:700;color:#6f5200}
+.bid-body{padding:13px;background:#fff}
+.upload-grid{display:grid;grid-template-columns:1.2fr 1fr .9fr .9fr;gap:10px;align-items:end}
+.upload-box{border:1px dashed #9aa8bb;background:#fafbfc;border-radius:5px;padding:10px;min-height:58px}
+.file-name{font-size:12px;color:#405269;margin-top:5px}
+.badge{display:inline-flex;padding:3px 7px;border-radius:999px;font-size:11px;font-weight:700}
+.badge-required{background:#fff0d6;color:#8c5700}.badge-optional{background:#edf2f7;color:#526171}
+.request-category-label{font-weight:700;margin-bottom:9px;display:block}
+.category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.category-card{position:relative;display:flex;gap:12px;align-items:flex-start;border:1px solid var(--border);border-radius:7px;padding:14px;background:#fff;cursor:pointer;min-height:86px}
+.category-card:hover{border-color:#8ea5c2;background:#fbfdff}
+.category-card.selected{border:2px solid var(--navy);background:#f3f7fc;padding:13px}
+.category-card input{margin-top:3px;accent-color:var(--navy)}
+.category-title{font-weight:700;color:#17233a;margin-bottom:4px}
+.category-desc{font-size:12px;color:var(--muted);line-height:1.4}
+.transaction-type-block{margin-top:16px;padding-top:15px;border-top:1px solid #e1e7ef}
+.category-rule{margin-top:10px;font-size:12px;color:#526171}
+
+@media(max-width:850px){.grid3,.grid2,.records,.upload-grid,.category-grid{grid-template-columns:1fr}.topbar{flex-direction:row;align-items:center;justify-content:flex-end}.page{padding:18px}.policy-row .q{min-width:0}}
+
+/* v7 loan portfolio transaction sections */
+.transaction-only{display:none}.loan-calc-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.property-inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.subsection-title{font-weight:700;margin:18px 0 12px;color:#26364a}.debt-table{width:100%;border-collapse:collapse;font-size:11px}.debt-table th,.debt-table td{padding:9px 8px;border-bottom:1px solid #d8dee7;text-align:left}.debt-table th{background:#f5f6f8}.debt-title{background:#ffc20a!important;color:#17233a!important;text-align:center!important;font-weight:800;font-size:12px}.debt-total td{background:#e7e7e7;font-weight:700}.plusbtn{background:#233d78;color:white;border:0;border-radius:4px;width:25px;height:25px;font-weight:700}.trash{color:#d63b46;font-weight:700;text-align:center}.doc-upload-list{display:grid;gap:8px}.doc-upload-row{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #d8e0ea;background:#f8fafc;border-radius:5px;padding:9px 11px}.doc-upload-name{font-size:12px}.doc-actions{display:flex;gap:7px}.disclaimer{background:#eaf5ff;border:1px solid #4e8dbb;border-radius:6px;padding:14px 16px;margin-top:14px;font-size:11px;line-height:1.45}.ack{display:flex;gap:8px;align-items:flex-start;margin-top:14px;font-weight:700}.transaction-footer{display:none;justify-content:flex-end;gap:10px;margin-top:18px}@media(max-width:1000px){.loan-calc-grid{grid-template-columns:repeat(3,1fr)}.property-inputs{grid-template-columns:repeat(2,1fr)}}
+
+.staffNoteEntry{background:#f7fbff;border-left:4px solid #2f6fb3;padding-left:14px!important}.auditEntryTitle{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.staffNoteBadge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:#e8f1fb;color:#245889;font-size:11px;font-weight:700;margin-left:4px}.staffNoteText{margin-top:7px!important;color:#243b55!important;font-weight:500;line-height:1.45}.auditFilters button:nth-child(2){border-color:#9dbddd;background:#f3f8fd;color:#245889}
+
+.submittedSearchHint{margin:8px 16px 10px;color:#5d7288;font:12px Arial}
+.searchResultsHeader{display:flex;justify-content:space-between;align-items:center;margin:12px 16px 7px;padding-bottom:7px;border-bottom:1px solid #dbe5ef;color:#193a5b;font:12px Arial}.searchResultsHeader span{color:#6b7f94;font-weight:normal}
+.clearAhisBtn{margin-left:7px;padding:10px 15px;border:1px solid #b9c9d9;background:#fff;color:#234d75;border-radius:5px;font:bold 12px Arial;cursor:pointer}.clearAhisBtn:hover{background:#f5f8fb}
+.associatedLoanChip{display:inline-block;margin:3px 5px 3px 0;padding:5px 9px;border:1px solid #b9d4ee;border-radius:14px;background:#edf6ff;color:#174e7e;font:bold 11px Arial}.noneAssociated{color:#7a8998;font-style:italic}
+.liveSearchHint{margin:6px 16px 2px;color:#60778e;font:11.5px Arial}\n
+
+/* v11: compact professional Yes/No controls for Bid Requirement Review */
+#bidRulePanel .bid-choice{
+  display:flex;
+  align-items:center;
+  gap:26px;
+}
+#bidRulePanel .bid-choice label{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin:0;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  line-height:1.2;
+}
+#bidRulePanel .bid-choice input[type="radio"]{
+  appearance:auto;
+  -webkit-appearance:radio;
+  width:16px !important;
+  height:16px !important;
+  min-width:16px !important;
+  margin:0;
+  padding:0;
+  accent-color:#0b5ed7;
+  box-shadow:none;
+}
+#bidRulePanel #urgencyPanel{
+  margin-top:14px !important;
+}
+
+
+/* v12 - refined professional UI for entry method and clear separation from bid requirement */
+#invoiceSection .work-entry-card{
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  background:#fff;
+  padding:16px;
+  margin-top:12px;
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+}
+#invoiceSection .work-entry-card-head{
+  padding-bottom:12px;
+  margin-bottom:14px;
+  border-bottom:1px solid #e5e7eb;
+}
+#invoiceSection .work-entry-card-title{
+  font-size:15px;
+  font-weight:700;
+  color:#172033;
+}
+#invoiceSection .work-entry-card-subtitle{
+  margin-top:3px;
+  font-size:12px;
+  color:#667085;
+}
+#invoiceSection .entry-method-block{margin-bottom:16px}
+#invoiceSection .entry-method-label{
+  font-size:13px;
+  font-weight:700;
+  color:#172033;
+  margin-bottom:8px;
+}
+#invoiceSection .entry-method-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  max-width:760px;
+}
+#invoiceSection .entry-method-option{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  min-height:62px;
+  padding:12px 14px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+}
+#invoiceSection .entry-method-option:hover{
+  border-color:#8da2bf;
+  background:#fbfcfe;
+}
+#invoiceSection .entry-method-option:has(input:checked){
+  border-color:#315b96;
+  box-shadow:0 0 0 1px #315b96;
+  background:#f7faff;
+}
+#invoiceSection .entry-method-option input[type="radio"]{
+  position:absolute;
+  opacity:0;
+}
+#invoiceSection .entry-method-radio{
+  flex:0 0 16px;
+  width:16px;
+  height:16px;
+  border:1.5px solid #8a97a8;
+  border-radius:50%;
+  margin-top:2px;
+  background:#fff;
+  box-sizing:border-box;
+}
+#invoiceSection .entry-method-option:has(input:checked) .entry-method-radio{
+  border:5px solid #1f6feb;
+}
+#invoiceSection .entry-method-copy{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+#invoiceSection .entry-method-title{
+  font-size:13px;
+  font-weight:700;
+  color:#172033;
+}
+#invoiceSection .entry-method-help{
+  font-size:11.5px;
+  line-height:1.35;
+  color:#667085;
+}
+#invoiceSection .excel-import-panel{
+  border:1px solid #d6dee9;
+  border-radius:8px;
+  background:#f8fafc;
+  padding:14px;
+  margin:0 0 16px;
+}
+#invoiceSection .excel-template-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+#invoiceSection .excel-template-title{
+  font-size:13px;
+  font-weight:700;
+  color:#172033;
+  margin-bottom:3px;
+}
+#invoiceSection .excel-upload-row{
+  display:grid;
+  grid-template-columns:minmax(280px,1fr) auto;
+  gap:12px;
+  align-items:end;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid #e2e8f0;
+}
+#invoiceSection .excel-file-field{margin:0}
+#invoiceSection .excel-import-btn{
+  height:36px;
+  margin:0;
+  white-space:nowrap;
+}
+#invoiceSection .excel-import-status{margin-top:8px}
+#invoiceSection .bid-section-divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:24px 0 10px;
+  color:#667085;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+#invoiceSection .bid-section-divider::before,
+#invoiceSection .bid-section-divider::after{
+  content:"";
+  height:1px;
+  background:#d8dee8;
+  flex:1;
+}
+#invoiceSection .bid-section-divider span{white-space:nowrap}
+@media (max-width:780px){
+  #invoiceSection .entry-method-options{grid-template-columns:1fr}
+  #invoiceSection .excel-upload-row{grid-template-columns:1fr}
+}
+
+
+#reserveBorrowerContext .reserve-id-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  max-width:900px;
+  margin-top:8px;
+}
+#reserveBorrowerContext .entry-method-option{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  min-height:66px;
+  padding:12px 14px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+}
+#reserveBorrowerContext .entry-method-option:hover{
+  border-color:#8da2bf;
+  background:#fbfcfe;
+}
+#reserveBorrowerContext .entry-method-option:has(input:checked){
+  border-color:#315b96;
+  box-shadow:0 0 0 1px #315b96;
+  background:#f7faff;
+}
+#reserveBorrowerContext .entry-method-option input[type="radio"]{
+  position:absolute;
+  opacity:0;
+}
+#reserveBorrowerContext .entry-method-radio{
+  flex:0 0 16px;
+  width:16px;
+  height:16px;
+  border:1.5px solid #8a97a8;
+  border-radius:50%;
+  margin-top:2px;
+  background:#fff;
+  box-sizing:border-box;
+}
+#reserveBorrowerContext .entry-method-option:has(input:checked) .entry-method-radio{
+  border:5px solid #1f6feb;
+}
+#reserveBorrowerContext .entry-method-copy{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+#reserveBorrowerContext .entry-method-title{
+  font-size:13px;
+  font-weight:700;
+  color:#172033;
+}
+#reserveBorrowerContext .entry-method-help{
+  font-size:11.5px;
+  line-height:1.35;
+  color:#667085;
+}
+#reserveBorrowerContext .security-note{
+  border-color:#b9c9dc;
+  background:#f6f9fc;
+}
+@media (max-width:780px){
+  #reserveBorrowerContext .reserve-id-options{grid-template-columns:1fr}
+}
+
+
+#reserveBorrowerContext .reserve-project-note{
+  margin:0 0 18px;
+  padding:13px 16px;
+  border-left:4px solid #1f3b70;
+  border-radius:4px;
+  background:#eef4f9;
+  color:#172033;
+  font-size:13px;
+}
+#reserveBorrowerContext .reserve-project-grid{align-items:start}
+
+
+.demoSwitch{position:fixed;right:22px;bottom:18px;z-index:9999;background:#fff;border:1px solid #ccd6e2;border-radius:9px;padding:7px;box-shadow:0 8px 25px #18324d26}.demoSwitch button{border:0;padding:9px 13px;border-radius:6px;font:600 12px Arial;background:#eef2f6;color:#29415f}.demoSwitch button.on{background:#173f73;color:#fff}.staffView{display:none;font-family:Arial;background:#f6f8fb;min-height:100vh;color:#172b45}.staffWrap{max-width:1500px;margin:auto;padding:20px}.staffTop{display:flex;justify-content:space-between;align-items:center;background:#fff;border-bottom:1px solid #dce3eb;padding:12px 4px 22px;margin-bottom:20px}.staffTop h1{font-size:22px;margin:0}.staffBanner{display:grid;grid-template-columns:1fr 1.1fr 1.1fr .9fr auto auto;gap:24px;align-items:center;background:#edf3ff;border:1px solid #c8d7eb;border-top:5px solid #2459a7;border-radius:6px;padding:23px 28px}.staffBanner div{display:flex;flex-direction:column;gap:6px}.staffBanner small{font-weight:700;color:#5e6a7d;letter-spacing:.4px}.staffBanner strong{font-size:16px}.reviewStatus{padding:9px 15px;border:1px solid #aabaff;border-radius:20px;color:#3949b8;background:#eef0ff;font-weight:700}.staffTools{display:flex;justify-content:space-between;background:#eef0f3;border:1px solid #d2d8df;border-radius:6px;padding:7px;margin:20px 0}.staffTools button{padding:12px 22px;border:1px solid #c4ccd6;background:#fff;border-radius:4px;font:600 14px Arial}.staffTools .active{background:#104f83;color:#fff}.staffTools .action{background:#1262b7;color:#fff}.staffGrid{display:grid;grid-template-columns:235px 1fr;gap:20px}.reviewNav,.reviewMain{background:#fff;border:1px solid #d6dde6;border-radius:9px;box-shadow:0 2px 8px #18324d17}.reviewNav{padding:15px;height:max-content}.reviewNav h2{font-size:18px;margin:2px 0 15px}.reviewNav button{width:100%;text-align:left;margin:3px 0;padding:11px;border:1px solid #d8dfe7;border-radius:5px;background:#f7f8fa;font:500 13px Arial}.reviewNav button.on{background:#eaf2ff;border-color:#b8d0f4;color:#123f8a}.reviewMain{padding:25px 28px;min-height:580px}.reviewPanel{display:none}.reviewPanel.on{display:block}.reviewPanel h2{font-size:20px;margin:0 0 20px}.detailCards{display:grid;grid-template-columns:1fr 1fr;gap:22px}.detailCard{border:1px solid #ccd6e2;border-radius:8px;padding:22px}.detailCard h3{font-size:17px;margin:0 0 20px}.detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}.detailGrid.three{grid-template-columns:repeat(3,1fr)}.detailGrid div{display:flex;gap:7px;align-items:baseline}.detailGrid span{color:#586b83}.detailGrid .wide{grid-column:1/-1}.desc{margin-top:20px}.desc h3{font-size:16px}.readBox{background:#eef4fb;border:1px solid #c8d6e6;border-radius:7px;padding:14px;line-height:1.45}.reviewTable{width:100%;border-collapse:collapse;font-size:13px;border:1px solid #d6dee8}.reviewTable th{background:#eaf1f7;text-align:left;padding:12px}.reviewTable td{padding:13px 12px;border-top:1px solid #e1e6ec}.reviewTable tfoot{font-weight:700;background:#f7f9fb}.docs div{display:grid;grid-template-columns:1.3fr 1fr auto;gap:15px;padding:14px;border-bottom:1px solid #e1e6ec}.docs{border:1px solid #d6dee8;border-radius:7px}.docs button{border:1px solid #b8c7d8;background:#fff;color:#174f8c;border-radius:5px;padding:7px 12px}.staffNote{margin-top:18px;background:#f4f7fb;border-left:4px solid #315d95;padding:13px}.footerActions{display:flex;justify-content:flex-end;gap:10px;margin-top:25px;border-top:1px solid #e0e5eb;padding-top:18px}.footerActions button{padding:10px 16px;border-radius:5px;border:1px solid #b9c5d2;background:#fff;font-weight:700}.footerActions .primary{background:#104f83;color:#fff;border-color:#104f83}@media(max-width:1000px){.staffBanner{grid-template-columns:1fr 1fr}.staffGrid{grid-template-columns:1fr}.detailCards{grid-template-columns:1fr}}
+
+
+.invoiceReviewHead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:4px 0 12px}
+.invoiceReviewHead h3,.applicantBidTitle h3{margin:0;color:#172b45;font-size:16px}
+.reviewSubtext,.applicantBidTitle span{font-size:12px;color:#66788f;margin-top:4px}
+.downloadSheetBtn{border:1px solid #1c5f9f;background:#fff;color:#174f87;border-radius:5px;padding:9px 13px;font:700 12px Arial;cursor:pointer;white-space:nowrap}
+.downloadSheetBtn:hover{background:#eef5fc}
+.reviewTableWrap{border:1px solid #d7e0ea;border-radius:7px;overflow:hidden}
+.applicantBidBlock{margin-top:20px;border:1px solid #d5dfeb;border-radius:8px;background:#fff;overflow:hidden}
+.applicantBidTitle{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px 16px;background:#f4f7fb;border-bottom:1px solid #dce4ed}
+.submittedBadge{display:inline-flex!important;align-items:center;padding:6px 9px;border-radius:14px;background:#e8f2ff;color:#245d96!important;font-weight:700;font-size:11px!important;white-space:nowrap}
+.bidResponseGrid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.bidResponse{padding:15px 16px;border-right:1px solid #e2e7ed;border-bottom:1px solid #e2e7ed;min-height:76px}
+.bidResponse:nth-child(2n){border-right:0}.bidResponseGrid .bidResponse:nth-last-child(-n+2){border-bottom:0}
+.bidResponse.wideResponse{grid-column:1/-1;border-right:0}
+.bidLabel{display:block;color:#5c6f86;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px}
+.bidResponse strong{display:block;color:#172b45;font-size:14px;line-height:1.35}
+.bidResponse small{display:block;color:#687b91;font-size:11px;margin-top:4px}
+.yesValue{color:#15733d!important}
+@media(max-width:900px){.invoiceReviewHead{align-items:flex-start;flex-direction:column}.bidResponseGrid{grid-template-columns:1fr}.bidResponse,.bidResponse:nth-child(2n){border-right:0}.wideResponse{grid-column:auto}}
+
+
+.docsReviewTableWrap{border:1px solid #d4d4d4;border-radius:8px;overflow:hidden;background:#fff}
+.docsReviewTable{width:100%;border-collapse:collapse;table-layout:fixed;font-family:Arial,sans-serif}
+.docsReviewTable th{background:#f3f3f3;color:#353535;text-align:left;font-size:14px;font-weight:700;padding:16px 15px;border-bottom:1px solid #777}
+.docsReviewTable td{font-size:13px;color:#333;padding:15px;border-bottom:1px solid #d9d9d9;vertical-align:middle}
+.docsReviewTable tbody tr:last-child td{border-bottom:0}
+.docsReviewTable th:nth-child(1){width:29%}.docsReviewTable th:nth-child(2){width:18%}.docsReviewTable th:nth-child(3){width:14%}.docsReviewTable th:nth-child(4){width:12%}.docsReviewTable th:nth-child(5){width:12%}.docsReviewTable th:nth-child(6){width:15%}
+.docLink{color:#1d4f91;text-decoration:none;font-weight:600}.docLink:hover{text-decoration:underline}
+.invoiceDocRow{background:#fbfdff}.invoiceDocRow td:nth-child(3){color:#123f73}
+.docStatus{display:inline-flex;align-items:center;justify-content:center;min-width:122px;padding:7px 10px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid}
+.docStatus.reviewed{background:#d9f8e9;border-color:#82d8ad;color:#08734d}
+.docStatus.under{background:#e6ebff;border-color:#b7c5ff;color:#3d42d6}
+.docStatus.notreviewed{background:#f6f7fa;border-color:#adb9cc;color:#566173}
+.docsHelpText{font-size:12px;color:#66778c;line-height:1.45;margin-top:12px;padding:0 2px}
+@media(max-width:1000px){.docsReviewTable{table-layout:auto}.docsReviewTableWrap{overflow-x:auto}.docsReviewTable{min-width:950px}}
+
+
+.staffDocWorkspace{font-family:Arial,sans-serif;margin:18px 0 40px}
+.staffDocTopbar{display:flex;align-items:center;gap:10px;background:#f4f5f7;border:1px solid #d4d9df;border-radius:7px;padding:7px;margin-bottom:16px}
+.staffDocTab,.staffDocAction{border:1px solid #c8cdd3;background:#fff;border-radius:4px;padding:11px 22px;font-size:14px;cursor:pointer}
+.staffDocTab.active{background:#0c4f83;color:#fff;border-color:#0c4f83}
+.staffDocAction{margin-left:auto;background:#0c5aa7;color:#fff;border-color:#0c5aa7}
+.staffDocSelector{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:12px 16px;background:#fff;border:1px solid #d5dde6;border-radius:8px}
+.staffDocSelectorLabel{font-size:13px;font-weight:700;color:#31445b}
+.staffDocSelector select{min-width:390px;max-width:600px;padding:9px 34px 9px 11px;border:1px solid #bfcbd8;border-radius:5px;background:#fff;color:#1d2e43}
+.staffDocCount{margin-left:auto;color:#63758a;font-size:12px;font-weight:700}
+.staffDocReviewGrid{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(320px,.95fr);gap:18px;align-items:stretch}
+.staffDocViewerCard,.staffChecklistCard{background:#fff;border:1px solid #d1dbe5;border-radius:12px;box-shadow:0 2px 8px rgba(27,52,77,.08);overflow:hidden}
+.staffDocViewerHeader{min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px;border-bottom:1px solid #d7e0e8;font-size:13px}
+.staffFileIcon{margin-right:8px;color:#315b82}.staffDocMeta{color:#66798e}
+.staffDocHeaderActions{display:flex;align-items:center;gap:8px}.staffDocHeaderActions button{border:0;background:#f4f6f8;border-radius:5px;padding:7px 9px;color:#344b63;cursor:pointer}
+.staffDocResultPill{padding:6px 10px;border-radius:14px;font-size:12px;font-weight:700;border:1px solid}
+.staffDocResultPill.pending{background:#f5f7fa;color:#566173;border-color:#bdc8d5}.staffDocResultPill.pass{background:#dcf7e8;color:#08734d;border-color:#9edbbd}.staffDocResultPill.fail{background:#fde7e9;color:#b01c2e;border-color:#efb8bf}.staffDocResultPill.info{background:#fff2e5;color:#a34a00;border-color:#efc69e}
+.mockPdfToolbar{height:47px;margin:18px 18px 0;background:#25282b;color:#fff;display:flex;align-items:center;gap:18px;padding:0 18px;border-radius:6px 6px 0 0;font-size:12px}.toolbarSpacer{flex:1}.zoomBox{background:#111;padding:4px 9px}
+.staffDocCanvas{margin:0 18px 18px;min-height:660px;background:#303336;display:grid;grid-template-columns:150px 1fr;overflow:hidden}
+.pdfThumbs{background:#26292c;padding:20px 18px;color:#fff}.thumb{margin-bottom:18px;text-align:center;font-size:11px}.miniPage{width:88px;height:116px;background:#fff;margin:0 auto 6px;box-shadow:0 0 0 2px #4d8ec4 inset;background-image:linear-gradient(#fff 0 14%,transparent 14%),repeating-linear-gradient(to bottom,#fff 0 8px,#dfe3e6 9px,#fff 10px)}.miniPage.lines{box-shadow:none}
+.mockDocumentPage{width:min(70%,650px);min-height:760px;margin:26px auto;background:#fff;padding:70px 68px;color:#1c1c1c;box-shadow:0 2px 9px rgba(0,0,0,.35);font-family:"Times New Roman",serif;box-sizing:border-box}
+.docAgency{text-align:center;font-size:11px;letter-spacing:.8px}.mockDocumentPage h3{text-align:center;font-size:18px;margin:13px 0 5px}.docSub{text-align:center;font-size:12px}.docRule{height:1px;background:#333;margin:22px 0 30px}.mockDocumentPage p{font-size:13px;line-height:1.55;margin:12px 0}.signatureLine{margin-top:80px;border-top:1px solid #555;padding-top:7px;font-size:12px}
+.staffChecklistCard{padding:22px;display:flex;flex-direction:column;min-height:760px}.checklistHeading{display:flex;justify-content:space-between;align-items:center}.checklistHeading h3{font-size:18px;margin:0}.reviewChoiceRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:20px 0 28px}.reviewChoice{background:#fff;border-radius:20px;padding:9px 6px;font-size:12px;cursor:pointer}.reviewChoice.pass{border:1px solid #17724d;color:#11633f}.reviewChoice.fail{border:1px solid #d51c3f;color:#c21636}.reviewChoice.info{border:1px solid #c76118;color:#a64b09}
+.reviewContext{border-top:1px solid #e1e6eb;border-bottom:1px solid #e1e6eb;padding:14px 0;margin-bottom:24px}.reviewContext div{display:flex;justify-content:space-between;gap:16px;padding:6px 0;font-size:12px}.reviewContext span{color:#66788c}.reviewContext strong{text-align:right;color:#263b52}
+.staffNotesLabel{font-size:13px;font-weight:700;margin-bottom:9px}.staffReviewNotes{min-height:135px;resize:vertical;border:1px solid #9eabb8;border-radius:4px;padding:10px;font-family:Arial;font-size:13px}.saveReviewProgress{margin-top:auto;background:#0c4f83;color:#fff;border:0;border-radius:6px;padding:12px;font-size:13px;cursor:pointer}
+.reviewProgressBox{margin-top:18px;padding-top:15px;border-top:1px solid #e1e6eb;font-size:12px;color:#53687d}.progressTrack{height:7px;background:#e7edf2;border-radius:8px;margin:9px 0}.progressTrack span{display:block;height:100%;width:0;background:#3182bd;border-radius:8px}
+@media(max-width:1050px){.staffDocReviewGrid{grid-template-columns:1fr}.staffDocSelector select{min-width:0;flex:1}.staffChecklistCard{min-height:520px}.staffDocCanvas{min-height:550px}}
+
+
+#staffView.review-doc-mode .staffGrid{display:none !important;}
+#staffView.review-doc-mode #staffDocumentReviewWorkspace{display:block !important;}
+#staffView:not(.review-doc-mode) #staffDocumentReviewWorkspace{display:none !important;}
+#staffView.review-doc-mode .staffTools button:first-child{background:#fff;color:#111;border-color:#c8cdd3;}
+#staffView.review-doc-mode .staffTools button:nth-child(2){background:#0c4f83;color:#fff;border-color:#0c4f83;}
+#staffDocumentReviewWorkspace{margin:16px 0 36px;}
+
+
+.histSec{margin:18px 0;background:#fff;border:1px solid #d6e0e9;border-radius:9px;padding:18px 20px;box-shadow:0 1px 4px #18334d0d;font-family:Arial,sans-serif}
+.histHead{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #e5ebf0;padding-bottom:12px;margin-bottom:14px}.histHead h3{margin:0 0 4px;font-size:17px;color:#172d45}.histHead p{margin:0;font-size:12px;color:#64788c}.histHead>span{font-size:11px;font-weight:700;color:#45617c;background:#f4f7fa;border:1px solid #d3dee8;border-radius:14px;padding:6px 10px;height:max-content}
+.histKpi{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #dbe4ec;border-radius:7px;overflow:hidden;margin-bottom:15px}.histKpi div{padding:11px 14px;border-right:1px solid #e2e8ee}.histKpi div:last-child{border:0}.histKpi small{display:block;font-size:9px;color:#728397;margin-bottom:4px}.histKpi b{font-size:16px;color:#1c3853}
+.histTbl{width:100%;border-collapse:collapse;font-size:11px}.histTbl th{background:#edf3f8;text-align:left;padding:9px;color:#35516b}.histTbl td{padding:10px 9px;border-bottom:1px solid #e2e8ee;color:#294158}.histTbl i{font-style:normal;background:#e5f4ed;color:#176d4d;border-radius:12px;padding:4px 7px;font-size:9px;font-weight:700}.histTbl i.gray{background:#f0f2f4;color:#66717c}.histTbl button{border:0;background:none;color:#075ca8;font-weight:700;cursor:pointer}
+.auditFilters{display:flex;gap:6px;align-items:center;margin-bottom:6px}.auditFilters button{border:1px solid #ced9e3;background:#fff;border-radius:14px;padding:6px 10px;font-size:10px;color:#4f687f}.auditFilters button:first-child{background:#eaf2f9;color:#174f7c;font-weight:700}.auditFilters a{margin-left:auto;color:#075ca8;font-size:10px;font-weight:700}
+.auditLine{display:grid;grid-template-columns:105px 1fr;gap:14px;padding:12px 5px;border-bottom:1px solid #e6ebf0;font-size:11px;color:#314a62}.auditLine time{font-size:10px;color:#64788c}.auditLine p{margin:4px 0 0;color:#65788b}.auditLine em{font-style:normal;background:#f1f5f8;padding:2px 5px;border-radius:4px}.auditNote{font-size:10px;color:#788999;margin:12px 0 0}
+
+
+/* v24: Current request remains primary; history follows it at full content width */
+.staffHistoryFullWidth{
+  grid-column:1 / -1 !important;
+  width:100% !important;
+  min-width:0;
+  box-sizing:border-box;
+  margin-top:22px;
+}
+.staffHistoryFullWidth .histSec{
+  width:100% !important;
+  max-width:none !important;
+  box-sizing:border-box;
+  margin:0 0 18px 0 !important;
+}
+.staffHistoryFullWidth .histHead{
+  align-items:flex-start;
+}
+.staffHistoryFullWidth .histHead>span{
+  white-space:nowrap;
+}
+.staffHistoryFullWidth .histKpi{
+  width:100%;
+}
+.staffHistoryFullWidth .histTbl{
+  table-layout:auto;
+}
+.staffHistoryFullWidth .histTbl th,
+.staffHistoryFullWidth .histTbl td{
+  white-space:normal;
+}
+@media (max-width:1100px){
+  .staffHistoryFullWidth .histKpi{grid-template-columns:repeat(2,1fr)}
+  .staffHistoryFullWidth .histTbl{font-size:10px}
+}
+
+
+.staffActivityTab{padding:11px 22px;border:1px solid #cbd5df;background:#fff;font-weight:700;font-size:14px;cursor:pointer}
+.priorRequestNotice{display:flex;align-items:center;justify-content:space-between;gap:20px;background:#f7fafc;border:1px solid #d6e2ec;border-left:4px solid #2d6eaa;border-radius:7px;padding:12px 14px;margin:0 0 16px}
+.priorRequestNotice strong{display:block;color:#183550;font-size:13px;margin-bottom:3px}.priorRequestNotice span{color:#657b8f;font-size:11px}
+.priorRequestNotice button{white-space:nowrap;border:1px solid #1d65a2;background:#fff;color:#14578e;border-radius:5px;padding:8px 12px;font-weight:700;cursor:pointer}
+.priorRequestsPanel{position:fixed;z-index:9999;right:24px;top:90px;width:min(980px,calc(100vw - 48px));max-height:calc(100vh - 120px);overflow:auto;background:#fff;border:1px solid #cdd9e4;border-radius:10px;box-shadow:0 14px 38px #18334d33;padding:16px}
+.priorPanelHead{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8ee;padding:0 2px 10px;margin-bottom:10px}.priorPanelHead strong{font-size:17px;color:#183550}.priorPanelHead span{margin-left:12px;color:#667b8f;font-size:11px}.priorPanelHead button{border:0;background:none;font-size:25px;cursor:pointer;color:#536b80}
+.priorRequestsPanel .histSec{box-shadow:none;border:0;margin:0;padding:0}.priorRequestsPanel .histHead{display:none}
+.staffActivityLogWorkspace{padding:20px 28px;background:#f6f8fb}.activityWorkspaceHead{background:#fff;border:1px solid #d7e1ea;border-radius:8px 8px 0 0;padding:18px 20px}.activityWorkspaceHead h2{margin:0;color:#172f49;font-size:20px}.activityWorkspaceHead p{margin:4px 0 0;color:#667c90;font-size:12px}
+.staffActivityLogWorkspace .histSec{margin-top:0;border-radius:0 0 8px 8px}
+
+
+.priorRequestNotice{background:#f3f8fd !important;border-color:#c8dbea !important;border-left:4px solid #1769aa !important;padding:13px 15px !important}
+.priorNoticeIcon{position:relative;flex:0 0 42px;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e1effa;color:#145f99}
+.priorCount{position:absolute;right:-3px;top:-5px;min-width:18px;height:18px;padding:0 4px;border-radius:10px;background:#b42318;color:#fff;font:bold 10px/18px Arial;text-align:center;border:2px solid #fff}
+.priorNoticeText{flex:1}.priorNoticeText strong{font-size:13px !important;color:#173b5b !important}.priorNoticeText span{font-size:11px !important}
+.priorRequestNotice button{display:flex;align-items:center;gap:8px;background:#fff !important}.priorRequestNotice button b{font-size:15px}
+
+
+.staffWrap.queueMode > *:not(.staffTop):not(.staffQueue){display:none!important}
+/* Queue and request detail are separate views: never stack the detail below the queue. */
+.staffWrap:not(.queueMode) > .staffQueue{display:none!important}
+.staffQueue{margin:22px 28px 38px;background:#fff;border:1px solid #d7e0ea;border-radius:10px;box-shadow:0 2px 8px rgba(15,42,70,.08);overflow:hidden;font-family:Arial,sans-serif}
+.queueHead{padding:20px 22px 12px}.queueHead h2{margin:0;color:#17324f;font-size:22px}.queueHead p{margin:6px 0 0;color:#667b91;font-size:13px}
+.queueTabs{display:flex;gap:4px;padding:0 22px;border-bottom:1px solid #dce5ee}.queueTab{border:0;background:transparent;padding:13px 18px;font-weight:700;color:#526a82;border-bottom:3px solid transparent;cursor:pointer}.queueTab.on{color:#0b4f8a;border-color:#0b66b2}
+.queueControls{display:flex;gap:10px;padding:16px 22px;background:#f8fafc;align-items:center;flex-wrap:wrap}.queueSearch{flex:1;min-width:280px;border:1px solid #cdd9e5;border-radius:6px;padding:11px 13px;font-size:13px}.queueControls select{border:1px solid #cdd9e5;border-radius:6px;padding:10px 12px;background:#fff;color:#314a63}.queueExport{border:1px solid #b9c9d8;background:#fff;border-radius:6px;padding:10px 14px;color:#244969;font-weight:700}
+.queueTableWrap{padding:0 22px 22px;overflow:auto}.queueTable{width:100%;border-collapse:collapse;font-size:12.5px}.queueTable th{background:#eef4f9;color:#314a63;text-align:left;padding:12px 10px;border-bottom:1px solid #cbd8e4;white-space:nowrap}.queueTable td{padding:13px 10px;border-bottom:1px solid #e2e9f0;color:#243b53;vertical-align:middle}.queueTable tr:hover td{background:#f8fbfe}.queueLink{border:0;background:none;padding:0;color:#075fb4;font-weight:700;text-decoration:underline;cursor:pointer}.qStatus,.qFlag{display:inline-block;border-radius:12px;padding:4px 8px;font-size:11px;font-weight:700;white-space:nowrap}.qStatus.review{background:#e8efff;color:#314cc8}.qStatus.new{background:#e9f4ff;color:#075fae}.qStatus.info{background:#fff4d8;color:#9a6300}.qStatus.done{background:#e6f5ed;color:#176b43}.qFlag.urgent{background:#fde8e8;color:#b42318}.qFlag.bid{background:#fff2d9;color:#985b00}.qFlag.ok{background:#edf5f1;color:#28704d}.queueCount{margin-left:6px;color:#6d8297;font-weight:400}.loanQueue,.reserveQueue{display:none}.loanQueue.on,.reserveQueue.on{display:block}.queueFoot{display:flex;justify-content:space-between;align-items:center;padding:12px 22px 18px;color:#667b91;font-size:12px}.queueHint{padding:10px 22px 0;color:#667b91;font-size:12px}.staffBanner strong[style*="color:#1754a0"]{cursor:pointer}
+
+
+.staffInvoiceToolbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:14px 0 10px;padding:11px 13px;border:1px solid #cbd9e8;background:#f7fbff;border-radius:7px}
+.staffInvoiceNote{display:flex;flex-direction:column;gap:2px;color:#203a59}.staffInvoiceNote strong{font-size:13px}.staffInvoiceNote span{font-size:11px;color:#60758e}
+.staffInvoiceButtons{display:flex;gap:8px;white-space:nowrap}.staffInvoiceAdd,.staffInvoiceRemove{font:600 12px Arial;padding:8px 11px;border-radius:5px;cursor:pointer;background:#fff}
+.staffInvoiceAdd{border:1px solid #1763aa;color:#125793}.staffInvoiceRemove{border:1px solid #b9c6d5;color:#8b2d36}
+.staffInvoiceReviewTable{min-width:1320px}.staffInvoiceReviewTable .selectCol{width:34px;text-align:center}.staffInvoiceReviewTable input[type=checkbox]{width:15px;height:15px}
+.staffInvoiceReviewTable .staffEntryHead{background:#e8f2fc;color:#173b63}.staffInvoiceReviewTable .commentsHead{min-width:245px}
+.staffInvoiceReviewTable .staffEntryCell{background:#fbfdff}.moneyField{display:flex;align-items:center;border:1px solid #bfcddd;border-radius:5px;background:#fff;padding-left:7px;min-width:105px}
+.moneyField span{color:#536b84}.moneyField input{width:82px;border:0;outline:0;padding:7px 5px;font:600 12px Arial;color:#142e4d;background:transparent}
+.staffInvoiceComment{width:100%;min-width:220px;min-height:52px;box-sizing:border-box;border:1px solid #bfcddd;border-radius:5px;padding:7px 8px;font:12px Arial;resize:vertical;color:#20354e}
+.staffInvoiceReviewTable tfoot .staffEntryCell{background:#eef6fd}.staffTotalLabel{text-align:right!important;font-weight:700}
+.staffAddedInput{width:100%;box-sizing:border-box;border:1px solid #bfcddd;border-radius:4px;padding:7px;font:12px Arial}
+
+
+.loanAssociationPanel{margin:18px 0 8px;border:1px solid #c8d7e8;border-radius:8px;background:#fff;overflow:hidden}
+.loanAssociationHeader{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#f5f9fd;border-bottom:1px solid #d7e2ee}
+.loanAssociationTitle{font:700 15px Arial;color:#183452}.loanAssociationSub{font:12px Arial;color:#61758d;margin-top:3px}
+.associationStatus{font:700 11px Arial;color:#225c96;background:#e8f2fc;border-radius:14px;padding:6px 10px}
+.associationSearchRow{padding:14px 16px 10px}.associationSearchRow label{font:700 11px Arial;color:#526981;text-transform:uppercase}
+.associationSearchBox{display:flex;gap:8px;margin-top:6px}.associationSearchBox input{flex:1;border:1px solid #bccbdd;border-radius:5px;padding:9px 10px;font:13px Arial;color:#17304d}
+.associationSearchBox button,.saveAssociationBtn{border:1px solid #1763aa;border-radius:5px;background:#0f5fa8;color:#fff;padding:9px 13px;font:700 12px Arial;cursor:pointer}
+.loanMatches{padding:0 16px 10px;display:grid;gap:7px}.loanMatch{display:grid;grid-template-columns:24px 1.2fr 1fr;align-items:center;gap:8px;padding:10px 12px;border:1px solid #d6e0eb;border-radius:6px;background:#fff}
+.loanMatch.selected{border-color:#6ca4d7;background:#f4f9fe}.loanMatch input{width:16px;height:16px}
+.loanMatchMain{display:flex;flex-direction:column;gap:2px;font:12px Arial;color:#5b7088}.loanMatchMain strong{font-size:13px;color:#142f4d}
+.loanMatchMeta{display:flex;justify-content:space-between;align-items:center;gap:8px;font:11px Arial;color:#61758d}.matchBadge{color:#17623b;background:#e7f5ed;border-radius:12px;padding:4px 8px;font-weight:700}
+.associationFooter{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-top:1px solid #dce5ef;background:#fbfcfe;font:12px Arial;color:#354f6b}
+.associationAuditNote{padding:0 16px 12px;background:#fbfcfe;font:11px Arial;color:#6b7f94}
+.loanMatch:hover{border-color:#7daedc;background:#f7fbff}
+.loanMatch input{cursor:pointer;accent-color:#0f67c5}
+.associationStatus.unsaved{background:#fff3d8;color:#8a5a00}
+.associationStatus.validated{background:#e7f5ed;color:#17623b}
+.associationFeedback{display:none;margin:0 16px 10px;padding:9px 11px;border-radius:5px;font:12px Arial}
+.associationFeedback.show{display:block}.associationFeedback.info{background:#eef6fd;color:#28577f;border:1px solid #cfe2f4}
+.associationFeedback.success{background:#eaf7ef;color:#17623b;border:1px solid #bfe2cd}
+.associationFeedback.error{background:#fff0f0;color:#a32929;border:1px solid #efc3c3}
+</style><style>
+#usersPage .card.entity{overflow-x:auto;}
+#usersPage .card.entity table{min-width:1420px;}
+#usersPage .card.entity th,#usersPage .card.entity td{white-space:nowrap;}
+</style><style>
+:root{
+  --navy:#1f3566;--navy2:#172c57;--blue:#0b83d5;--orange:#ff7a1a;
+  --border:#cbd3df;--border-dark:#9aa8bb;--text:#1f2937;--muted:#5f6b7a;
+  --bg:#f5f7fa;--danger:#c62828;--danger-bg:#fff5f5;--success:#18794e;
+  --warn:#9a6700;--warn-bg:#fff8db;--shadow:0 2px 8px rgba(31,53,102,.12)
+}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+.page{max-width:1180px;margin:0 auto;padding:28px}
+.topbar{display:flex;justify-content:flex-end;align-items:center;margin-bottom:26px}
+.topbar h1{margin:0;font-size:30px}
+.btn{border:none;border-radius:5px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:14px}
+.btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:var(--navy2)}
+.btn-light{background:#fff;border:1px solid var(--border);color:var(--navy)}
+.btn-small{padding:7px 11px;font-size:12px}
+.panel,.section{background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow);margin-bottom:18px}
+.panel{padding:20px}
+.label{font-weight:700;display:block;margin-bottom:7px}
+.helper{font-size:12px;color:var(--muted);font-weight:400}
+.multi{position:relative;max-width:760px}
+.multi-display{min-height:44px;border:1px solid var(--border-dark);border-radius:4px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:8px 11px;cursor:pointer}
+.placeholder{color:#737e8c}
+.count{background:#eaf5fd;color:var(--navy);font-weight:700;padding:4px 8px;border-radius:999px;font-size:12px}
+.menu{display:none;position:absolute;z-index:20;top:49px;left:0;right:0;background:#fff;border:1px solid var(--border-dark);border-radius:5px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:8px}
+.menu.open{display:block}
+.opt{display:flex;gap:9px;padding:9px 8px;border-radius:4px;cursor:pointer;line-height:1.3}
+.opt:hover{background:#f2f6fb}.opt.reserve{border-top:1px solid #e5e9ef;margin-top:4px;padding-top:12px}
+.typechips,.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.typechip{border:1px solid #b9c7d7;background:#f7fafc;border-radius:999px;padding:5px 9px;font-size:12px}
+.section-head{display:flex;justify-content:space-between;padding:15px 18px;font-weight:700;font-size:16px;cursor:pointer}
+.section-body{padding:0 18px 18px}.section.collapsed .section-body{display:none}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field label{font-weight:700;display:block;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border-dark);border-radius:4px;padding:8px 10px;font:inherit;background:#fff}
+.field input,.field select{height:42px}.field textarea{min-height:92px;resize:vertical}
+.field input[readonly]{background:#f4f6f9}
+.small{margin-top:5px;font-size:12px;color:var(--muted)}
+.context{background:#f0f5fa;border-left:4px solid var(--navy);padding:10px 12px;border-radius:3px;margin-bottom:14px;color:#405269}
+.related{margin-top:12px;border:1px solid #ef9a9a;background:var(--danger-bg);border-radius:4px;overflow:hidden}
+.related-toggle{width:100%;border:0;background:transparent;padding:10px 12px;display:flex;justify-content:space-between;color:var(--danger);text-align:left;cursor:pointer}
+.related-content{border-top:1px solid #f3baba;padding:11px 12px;background:#fff}.hidden{display:none!important}
+.records{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.record{border:1px solid var(--border);border-radius:6px;padding:10px;background:#fafbfc;display:flex;gap:8px}
+.record.initiating{border-color:#91bce2;background:#f1f8fe}.record strong{display:block;font-size:13px;margin-bottom:2px}.record small{color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 11px;color:#fff;font-weight:700;font-size:12px}
+.loan{background:var(--blue)}.ground{background:var(--orange)}.required:after{content:"Initiating";background:rgba(255,255,255,.2);padding:2px 6px;border-radius:999px;font-size:10px}
+.info{border:1px solid #81b9e8;background:#eaf5ff;padding:12px 13px;border-radius:4px;margin-top:14px}
+.warning{border:1px solid #e4bd58;background:var(--warn-bg);padding:12px 13px;border-radius:4px;line-height:1.45}
+.success{border:1px solid #9bc9b1;background:#eef8f2;padding:12px 13px;border-radius:4px;line-height:1.45;color:#275c42}
+.radio{display:flex;gap:12px;align-items:center;margin-top:18px;font-weight:700;flex-wrap:wrap}.radio label{font-weight:400}
+.footer{display:flex;justify-content:flex-end;gap:10px}
+.x{cursor:pointer}.required .x{display:none}
+.section-kicker{font-size:12px;color:var(--muted);margin:-4px 0 15px}
+.req{color:#c62828}
+.reserve-only{display:none}
+.policy-box{border:1px solid #d3dbe6;background:#f9fbfd;border-radius:6px;padding:14px;margin-top:15px}
+.policy-title{font-weight:700;color:var(--navy);margin-bottom:8px}
+.policy-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:9px 0}
+.policy-row .q{font-weight:700;min-width:390px}
+.policy-status{margin-top:12px}
+.table-wrap{overflow-x:auto;margin-top:14px}
+table{width:100%;border-collapse:collapse;min-width:980px}
+th{background:#eef3f8;color:#26364b;font-size:12px;text-align:left;padding:9px 8px;border:1px solid #c8d1dc}
+td{padding:7px;border:1px solid #d5dce5;vertical-align:middle}
+td input,td select{width:100%;height:34px;border:1px solid #aeb9c8;border-radius:3px;padding:5px 7px;font:inherit;font-size:12px}
+.amount{text-align:right}
+.total-row td{font-weight:700;background:#f6f8fb}
+.total-label{text-align:right}
+.row-actions{white-space:nowrap;text-align:center}
+.bid-panel{border:1px solid #dfc26c;border-radius:6px;margin-top:16px;overflow:hidden}
+.bid-head{background:#fff8db;padding:11px 13px;font-weight:700;color:#6f5200}
+.bid-body{padding:13px;background:#fff}
+.upload-grid{display:grid;grid-template-columns:1.2fr 1fr .9fr .9fr;gap:10px;align-items:end}
+.upload-box{border:1px dashed #9aa8bb;background:#fafbfc;border-radius:5px;padding:10px;min-height:58px}
+.file-name{font-size:12px;color:#405269;margin-top:5px}
+.badge{display:inline-flex;padding:3px 7px;border-radius:999px;font-size:11px;font-weight:700}
+.badge-required{background:#fff0d6;color:#8c5700}.badge-optional{background:#edf2f7;color:#526171}
+.request-category-label{font-weight:700;margin-bottom:9px;display:block}
+.category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.category-card{position:relative;display:flex;gap:12px;align-items:flex-start;border:1px solid var(--border);border-radius:7px;padding:14px;background:#fff;cursor:pointer;min-height:86px}
+.category-card:hover{border-color:#8ea5c2;background:#fbfdff}
+.category-card.selected{border:2px solid var(--navy);background:#f3f7fc;padding:13px}
+.category-card input{margin-top:3px;accent-color:var(--navy)}
+.category-title{font-weight:700;color:#17233a;margin-bottom:4px}
+.category-desc{font-size:12px;color:var(--muted);line-height:1.4}
+.transaction-type-block{margin-top:16px;padding-top:15px;border-top:1px solid #e1e7ef}
+.category-rule{margin-top:10px;font-size:12px;color:#526171}
+
+@media(max-width:850px){.grid3,.grid2,.records,.upload-grid,.category-grid{grid-template-columns:1fr}.topbar{flex-direction:row;align-items:center;justify-content:flex-end}.page{padding:18px}.policy-row .q{min-width:0}}
+
+/* v7 loan portfolio transaction sections */
+.transaction-only{display:none}.loan-calc-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.property-inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.subsection-title{font-weight:700;margin:18px 0 12px;color:#26364a}.debt-table{width:100%;border-collapse:collapse;font-size:11px}.debt-table th,.debt-table td{padding:9px 8px;border-bottom:1px solid #d8dee7;text-align:left}.debt-table th{background:#f5f6f8}.debt-title{background:#ffc20a!important;color:#17233a!important;text-align:center!important;font-weight:800;font-size:12px}.debt-total td{background:#e7e7e7;font-weight:700}.plusbtn{background:#233d78;color:white;border:0;border-radius:4px;width:25px;height:25px;font-weight:700}.trash{color:#d63b46;font-weight:700;text-align:center}.doc-upload-list{display:grid;gap:8px}.doc-upload-row{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #d8e0ea;background:#f8fafc;border-radius:5px;padding:9px 11px}.doc-upload-name{font-size:12px}.doc-actions{display:flex;gap:7px}.disclaimer{background:#eaf5ff;border:1px solid #4e8dbb;border-radius:6px;padding:14px 16px;margin-top:14px;font-size:11px;line-height:1.45}.ack{display:flex;gap:8px;align-items:flex-start;margin-top:14px;font-weight:700}.transaction-footer{display:none;justify-content:flex-end;gap:10px;margin-top:18px}@media(max-width:1000px){.loan-calc-grid{grid-template-columns:repeat(3,1fr)}.property-inputs{grid-template-columns:repeat(2,1fr)}}
+
+.staffNoteEntry{background:#f7fbff;border-left:4px solid #2f6fb3;padding-left:14px!important}.auditEntryTitle{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.staffNoteBadge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:#e8f1fb;color:#245889;font-size:11px;font-weight:700;margin-left:4px}.staffNoteText{margin-top:7px!important;color:#243b55!important;font-weight:500;line-height:1.45}.auditFilters button:nth-child(2){border-color:#9dbddd;background:#f3f8fd;color:#245889}
+
+.submittedSearchHint{margin:8px 16px 10px;color:#5d7288;font:12px Arial}
+.searchResultsHeader{display:flex;justify-content:space-between;align-items:center;margin:12px 16px 7px;padding-bottom:7px;border-bottom:1px solid #dbe5ef;color:#193a5b;font:12px Arial}.searchResultsHeader span{color:#6b7f94;font-weight:normal}
+.clearAhisBtn{margin-left:7px;padding:10px 15px;border:1px solid #b9c9d9;background:#fff;color:#234d75;border-radius:5px;font:bold 12px Arial;cursor:pointer}.clearAhisBtn:hover{background:#f5f8fb}
+.associatedLoanChip{display:inline-block;margin:3px 5px 3px 0;padding:5px 9px;border:1px solid #b9d4ee;border-radius:14px;background:#edf6ff;color:#174e7e;font:bold 11px Arial}.noneAssociated{color:#7a8998;font-style:italic}
+.liveSearchHint{margin:6px 16px 2px;color:#60778e;font:11.5px Arial}\n
+.associationInputWrap{position:relative;display:flex;flex:1}
+.associationInputWrap input{width:100%;box-sizing:border-box;padding-right:38px!important}
+.associationInputWrap .inlineSearchClear{display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;border:0;background:transparent;color:#d52b1e;font:700 23px/28px Arial;cursor:pointer;border-radius:50%}
+.associationInputWrap .inlineSearchClear:hover{background:#fff1ef}
+
+</style><style>
+/* v11: compact professional Yes/No controls for Bid Requirement Review */
+#bidRulePanel .bid-choice{
+  display:flex;
+  align-items:center;
+  gap:26px;
+}
+#bidRulePanel .bid-choice label{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin:0;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  line-height:1.2;
+}
+#bidRulePanel .bid-choice input[type="radio"]{
+  appearance:auto;
+  -webkit-appearance:radio;
+  width:16px !important;
+  height:16px !important;
+  min-width:16px !important;
+  margin:0;
+  padding:0;
+  accent-color:#0b5ed7;
+  box-shadow:none;
+}
+#bidRulePanel #urgencyPanel{
+  margin-top:14px !important;
+}
+</style><style>
+/* v12 - refined professional UI for entry method and clear separation from bid requirement */
+#invoiceSection .work-entry-card{
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  background:#fff;
+  padding:16px;
+  margin-top:12px;
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+}
+#invoiceSection .work-entry-card-head{
+  padding-bottom:12px;
+  margin-bottom:14px;
+  border-bottom:1px solid #e5e7eb;
+}
+#invoiceSection .work-entry-card-title{
+  font-size:15px;
+  font-weight:700;
+  color:#172033;
+}
+#invoiceSection .work-entry-card-subtitle{
+  margin-top:3px;
+  font-size:12px;
+  color:#667085;
+}
+#invoiceSection .entry-method-block{margin-bottom:16px}
+#invoiceSection .entry-method-label{
+  font-size:13px;
+  font-weight:700;
+  color:#172033;
+  margin-bottom:8px;
+}
+#invoiceSection .entry-method-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  max-width:760px;
+}
+#invoiceSection .entry-method-option{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  min-height:62px;
+  padding:12px 14px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+}
+#invoiceSection .entry-method-option:hover{
+  border-color:#8da2bf;
+  background:#fbfcfe;
+}
+#invoiceSection .entry-method-option:has(input:checked){
+  border-color:#315b96;
+  box-shadow:0 0 0 1px #315b96;
+  background:#f7faff;
+}
+#invoiceSection .entry-method-option input[type="radio"]{
+  position:absolute;
+  opacity:0;
+}
+#invoiceSection .entry-method-radio{
+  flex:0 0 16px;
+  width:16px;
+  height:16px;
+  border:1.5px solid #8a97a8;
+  border-radius:50%;
+  margin-top:2px;
+  background:#fff;
+  box-sizing:border-box;
+}
+#invoiceSection .entry-method-option:has(input:checked) .entry-method-radio{
+  border:5px solid #1f6feb;
+}
+#invoiceSection .entry-method-copy{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+#invoiceSection .entry-method-title{
+  font-size:13px;
+  font-weight:700;
+  color:#172033;
+}
+#invoiceSection .entry-method-help{
+  font-size:11.5px;
+  line-height:1.35;
+  color:#667085;
+}
+#invoiceSection .excel-import-panel{
+  border:1px solid #d6dee9;
+  border-radius:8px;
+  background:#f8fafc;
+  padding:14px;
+  margin:0 0 16px;
+}
+#invoiceSection .excel-template-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+#invoiceSection .excel-template-title{
+  font-size:13px;
+  font-weight:700;
+  color:#172033;
+  margin-bottom:3px;
+}
+#invoiceSection .excel-upload-row{
+  display:grid;
+  grid-template-columns:minmax(280px,1fr) auto;
+  gap:12px;
+  align-items:end;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid #e2e8f0;
+}
+#invoiceSection .excel-file-field{margin:0}
+#invoiceSection .excel-import-btn{
+  height:36px;
+  margin:0;
+  white-space:nowrap;
+}
+#invoiceSection .excel-import-status{margin-top:8px}
+#invoiceSection .bid-section-divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:24px 0 10px;
+  color:#667085;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+#invoiceSection .bid-section-divider::before,
+#invoiceSection .bid-section-divider::after{
+  content:"";
+  height:1px;
+  background:#d8dee8;
+  flex:1;
+}
+#invoiceSection .bid-section-divider span{white-space:nowrap}
+@media (max-width:780px){
+  #invoiceSection .entry-method-options{grid-template-columns:1fr}
+  #invoiceSection .excel-upload-row{grid-template-columns:1fr}
+}
+</style><style>
+#reserveBorrowerContext .reserve-id-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  max-width:900px;
+  margin-top:8px;
+}
+#reserveBorrowerContext .entry-method-option{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  min-height:66px;
+  padding:12px 14px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+}
+#reserveBorrowerContext .entry-method-option:hover{
+  border-color:#8da2bf;
+  background:#fbfcfe;
+}
+#reserveBorrowerContext .entry-method-option:has(input:checked){
+  border-color:#315b96;
+  box-shadow:0 0 0 1px #315b96;
+  background:#f7faff;
+}
+#reserveBorrowerContext .entry-method-option input[type="radio"]{
+  position:absolute;
+  opacity:0;
+}
+#reserveBorrowerContext .entry-method-radio{
+  flex:0 0 16px;
+  width:16px;
+  height:16px;
+  border:1.5px solid #8a97a8;
+  border-radius:50%;
+  margin-top:2px;
+  background:#fff;
+  box-sizing:border-box;
+}
+#reserveBorrowerContext .entry-method-option:has(input:checked) .entry-method-radio{
+  border:5px solid #1f6feb;
+}
+#reserveBorrowerContext .entry-method-copy{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+#reserveBorrowerContext .entry-method-title{
+  font-size:13px;
+  font-weight:700;
+  color:#172033;
+}
+#reserveBorrowerContext .entry-method-help{
+  font-size:11.5px;
+  line-height:1.35;
+  color:#667085;
+}
+#reserveBorrowerContext .security-note{
+  border-color:#b9c9dc;
+  background:#f6f9fc;
+}
+@media (max-width:780px){
+  #reserveBorrowerContext .reserve-id-options{grid-template-columns:1fr}
+}
+</style><style>
+#reserveBorrowerContext .reserve-project-note{
+  margin:0 0 18px;
+  padding:13px 16px;
+  border-left:4px solid #1f3b70;
+  border-radius:4px;
+  background:#eef4f9;
+  color:#172033;
+  font-size:13px;
+}
+#reserveBorrowerContext .reserve-project-grid{align-items:start}
+</style><style>
+.demoSwitch{position:fixed;right:22px;bottom:18px;z-index:9999;background:#fff;border:1px solid #ccd6e2;border-radius:9px;padding:7px;box-shadow:0 8px 25px #18324d26}.demoSwitch button{border:0;padding:9px 13px;border-radius:6px;font:600 12px Arial;background:#eef2f6;color:#29415f}.demoSwitch button.on{background:#173f73;color:#fff}.staffView{display:none;font-family:Arial;background:#f6f8fb;min-height:100vh;color:#172b45}.staffWrap{width:100%;max-width:none;margin:0;padding:20px;box-sizing:border-box}.staffTop{display:flex;justify-content:space-between;align-items:center;background:#fff;border-bottom:1px solid #dce3eb;padding:12px 4px 22px;margin-bottom:20px}.staffTop h1{font-size:22px;margin:0}.staffBanner{display:grid;grid-template-columns:1fr 1.1fr 1.1fr .9fr auto auto;gap:24px;align-items:center;background:#edf3ff;border:1px solid #c8d7eb;border-top:5px solid #2459a7;border-radius:6px;padding:23px 28px}.staffBanner div{display:flex;flex-direction:column;gap:6px}.staffBanner small{font-weight:700;color:#5e6a7d;letter-spacing:.4px}.staffBanner strong{font-size:16px}.reviewStatus{padding:9px 15px;border:1px solid #aabaff;border-radius:20px;color:#3949b8;background:#eef0ff;font-weight:700}.staffTools{display:flex;justify-content:space-between;background:#eef0f3;border:1px solid #d2d8df;border-radius:6px;padding:7px;margin:20px 0}.staffTools button{padding:12px 22px;border:1px solid #c4ccd6;background:#fff;border-radius:4px;font:600 14px Arial}.staffTools .active{background:#104f83;color:#fff}.staffTools .action{background:#1262b7;color:#fff}.staffGrid{display:grid;grid-template-columns:235px 1fr;gap:20px}.reviewNav,.reviewMain{background:#fff;border:1px solid #d6dde6;border-radius:9px;box-shadow:0 2px 8px #18324d17}.reviewNav{padding:15px;height:max-content}.reviewNav h2{font-size:18px;margin:2px 0 15px}.reviewNav button{width:100%;text-align:left;margin:3px 0;padding:11px;border:1px solid #d8dfe7;border-radius:5px;background:#f7f8fa;font:500 13px Arial}.reviewNav button.on{background:#eaf2ff;border-color:#b8d0f4;color:#123f8a}.reviewMain{padding:25px 28px;min-height:580px}.reviewPanel{display:none}.reviewPanel.on{display:block}.reviewPanel h2{font-size:20px;margin:0 0 20px}.detailCards{display:grid;grid-template-columns:1fr 1fr;gap:22px}.detailCard{border:1px solid #ccd6e2;border-radius:8px;padding:22px}.detailCard h3{font-size:17px;margin:0 0 20px}.detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}.detailGrid.three{grid-template-columns:repeat(3,1fr)}.detailGrid div{display:flex;gap:7px;align-items:baseline}.detailGrid span{color:#586b83}.detailGrid .wide{grid-column:1/-1}.desc{margin-top:20px}.desc h3{font-size:16px}.readBox{background:#eef4fb;border:1px solid #c8d6e6;border-radius:7px;padding:14px;line-height:1.45}.reviewTable{width:100%;border-collapse:collapse;font-size:13px;border:1px solid #d6dee8}.reviewTable th{background:#eaf1f7;text-align:left;padding:12px}.reviewTable td{padding:13px 12px;border-top:1px solid #e1e6ec}.reviewTable tfoot{font-weight:700;background:#f7f9fb}.docs div{display:grid;grid-template-columns:1.3fr 1fr auto;gap:15px;padding:14px;border-bottom:1px solid #e1e6ec}.docs{border:1px solid #d6dee8;border-radius:7px}.docs button{border:1px solid #b8c7d8;background:#fff;color:#174f8c;border-radius:5px;padding:7px 12px}.staffNote{margin-top:18px;background:#f4f7fb;border-left:4px solid #315d95;padding:13px}.footerActions{display:flex;justify-content:flex-end;gap:10px;margin-top:25px;border-top:1px solid #e0e5eb;padding-top:18px}.footerActions button{padding:10px 16px;border-radius:5px;border:1px solid #b9c5d2;background:#fff;font-weight:700}.footerActions .primary{background:#104f83;color:#fff;border-color:#104f83}@media(max-width:1000px){.staffBanner{grid-template-columns:1fr 1fr}.staffGrid{grid-template-columns:1fr}.detailCards{grid-template-columns:1fr}}
+</style><style>
+.invoiceReviewHead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:4px 0 12px}
+.invoiceReviewHead h3,.applicantBidTitle h3{margin:0;color:#172b45;font-size:16px}
+.reviewSubtext,.applicantBidTitle span{font-size:12px;color:#66788f;margin-top:4px}
+.downloadSheetBtn{border:1px solid #1c5f9f;background:#fff;color:#174f87;border-radius:5px;padding:9px 13px;font:700 12px Arial;cursor:pointer;white-space:nowrap}
+.downloadSheetBtn:hover{background:#eef5fc}
+.reviewTableWrap{border:1px solid #d7e0ea;border-radius:7px;overflow:hidden}
+.applicantBidBlock{margin-top:20px;border:1px solid #d5dfeb;border-radius:8px;background:#fff;overflow:hidden}
+.applicantBidTitle{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px 16px;background:#f4f7fb;border-bottom:1px solid #dce4ed}
+.submittedBadge{display:inline-flex!important;align-items:center;padding:6px 9px;border-radius:14px;background:#e8f2ff;color:#245d96!important;font-weight:700;font-size:11px!important;white-space:nowrap}
+.bidResponseGrid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.bidResponse{padding:15px 16px;border-right:1px solid #e2e7ed;border-bottom:1px solid #e2e7ed;min-height:76px}
+.bidResponse:nth-child(2n){border-right:0}.bidResponseGrid .bidResponse:nth-last-child(-n+2){border-bottom:0}
+.bidResponse.wideResponse{grid-column:1/-1;border-right:0}
+.bidLabel{display:block;color:#5c6f86;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px}
+.bidResponse strong{display:block;color:#172b45;font-size:14px;line-height:1.35}
+.bidResponse small{display:block;color:#687b91;font-size:11px;margin-top:4px}
+.yesValue{color:#15733d!important}
+@media(max-width:900px){.invoiceReviewHead{align-items:flex-start;flex-direction:column}.bidResponseGrid{grid-template-columns:1fr}.bidResponse,.bidResponse:nth-child(2n){border-right:0}.wideResponse{grid-column:auto}}
+</style><style>
+.docsReviewTableWrap{border:1px solid #d4d4d4;border-radius:8px;overflow:hidden;background:#fff}
+.docsReviewTable{width:100%;border-collapse:collapse;table-layout:fixed;font-family:Arial,sans-serif}
+.docsReviewTable th{background:#f3f3f3;color:#353535;text-align:left;font-size:14px;font-weight:700;padding:16px 15px;border-bottom:1px solid #777}
+.docsReviewTable td{font-size:13px;color:#333;padding:15px;border-bottom:1px solid #d9d9d9;vertical-align:middle}
+.docsReviewTable tbody tr:last-child td{border-bottom:0}
+.docsReviewTable th:nth-child(1){width:29%}.docsReviewTable th:nth-child(2){width:18%}.docsReviewTable th:nth-child(3){width:14%}.docsReviewTable th:nth-child(4){width:12%}.docsReviewTable th:nth-child(5){width:12%}.docsReviewTable th:nth-child(6){width:15%}
+.docLink{color:#1d4f91;text-decoration:none;font-weight:600}.docLink:hover{text-decoration:underline}
+.invoiceDocRow{background:#fbfdff}.invoiceDocRow td:nth-child(3){color:#123f73}
+.docStatus{display:inline-flex;align-items:center;justify-content:center;min-width:122px;padding:7px 10px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid}
+.docStatus.reviewed{background:#d9f8e9;border-color:#82d8ad;color:#08734d}
+.docStatus.under{background:#e6ebff;border-color:#b7c5ff;color:#3d42d6}
+.docStatus.notreviewed{background:#f6f7fa;border-color:#adb9cc;color:#566173}
+.docsHelpText{font-size:12px;color:#66778c;line-height:1.45;margin-top:12px;padding:0 2px}
+@media(max-width:1000px){.docsReviewTable{table-layout:auto}.docsReviewTableWrap{overflow-x:auto}.docsReviewTable{min-width:950px}}
+</style><style>
+.staffDocWorkspace{font-family:Arial,sans-serif;margin:18px 0 40px}
+.staffDocTopbar{display:flex;align-items:center;gap:10px;background:#f4f5f7;border:1px solid #d4d9df;border-radius:7px;padding:7px;margin-bottom:16px}
+.staffDocTab,.staffDocAction{border:1px solid #c8cdd3;background:#fff;border-radius:4px;padding:11px 22px;font-size:14px;cursor:pointer}
+.staffDocTab.active{background:#0c4f83;color:#fff;border-color:#0c4f83}
+.staffDocAction{margin-left:auto;background:#0c5aa7;color:#fff;border-color:#0c5aa7}
+.staffDocSelector{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:12px 16px;background:#fff;border:1px solid #d5dde6;border-radius:8px}
+.staffDocSelectorLabel{font-size:13px;font-weight:700;color:#31445b}
+.staffDocSelector select{min-width:390px;max-width:600px;padding:9px 34px 9px 11px;border:1px solid #bfcbd8;border-radius:5px;background:#fff;color:#1d2e43}
+.staffDocCount{margin-left:auto;color:#63758a;font-size:12px;font-weight:700}
+.staffDocReviewGrid{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(320px,.95fr);gap:18px;align-items:stretch}
+.staffDocViewerCard,.staffChecklistCard{background:#fff;border:1px solid #d1dbe5;border-radius:12px;box-shadow:0 2px 8px rgba(27,52,77,.08);overflow:hidden}
+.staffDocViewerHeader{min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px;border-bottom:1px solid #d7e0e8;font-size:13px}
+.staffFileIcon{margin-right:8px;color:#315b82}.staffDocMeta{color:#66798e}
+.staffDocHeaderActions{display:flex;align-items:center;gap:8px}.staffDocHeaderActions button{border:0;background:#f4f6f8;border-radius:5px;padding:7px 9px;color:#344b63;cursor:pointer}
+.staffDocResultPill{padding:6px 10px;border-radius:14px;font-size:12px;font-weight:700;border:1px solid}
+.staffDocResultPill.pending{background:#f5f7fa;color:#566173;border-color:#bdc8d5}.staffDocResultPill.pass{background:#dcf7e8;color:#08734d;border-color:#9edbbd}.staffDocResultPill.fail{background:#fde7e9;color:#b01c2e;border-color:#efb8bf}.staffDocResultPill.info{background:#fff2e5;color:#a34a00;border-color:#efc69e}
+.mockPdfToolbar{height:47px;margin:18px 18px 0;background:#25282b;color:#fff;display:flex;align-items:center;gap:18px;padding:0 18px;border-radius:6px 6px 0 0;font-size:12px}.toolbarSpacer{flex:1}.zoomBox{background:#111;padding:4px 9px}
+.staffDocCanvas{margin:0 18px 18px;min-height:660px;background:#303336;display:grid;grid-template-columns:150px 1fr;overflow:hidden}
+.pdfThumbs{background:#26292c;padding:20px 18px;color:#fff}.thumb{margin-bottom:18px;text-align:center;font-size:11px}.miniPage{width:88px;height:116px;background:#fff;margin:0 auto 6px;box-shadow:0 0 0 2px #4d8ec4 inset;background-image:linear-gradient(#fff 0 14%,transparent 14%),repeating-linear-gradient(to bottom,#fff 0 8px,#dfe3e6 9px,#fff 10px)}.miniPage.lines{box-shadow:none}
+.mockDocumentPage{width:min(70%,650px);min-height:760px;margin:26px auto;background:#fff;padding:70px 68px;color:#1c1c1c;box-shadow:0 2px 9px rgba(0,0,0,.35);font-family:"Times New Roman",serif;box-sizing:border-box}
+.docAgency{text-align:center;font-size:11px;letter-spacing:.8px}.mockDocumentPage h3{text-align:center;font-size:18px;margin:13px 0 5px}.docSub{text-align:center;font-size:12px}.docRule{height:1px;background:#333;margin:22px 0 30px}.mockDocumentPage p{font-size:13px;line-height:1.55;margin:12px 0}.signatureLine{margin-top:80px;border-top:1px solid #555;padding-top:7px;font-size:12px}
+.staffChecklistCard{padding:22px;display:flex;flex-direction:column;min-height:760px}.checklistHeading{display:flex;justify-content:space-between;align-items:center}.checklistHeading h3{font-size:18px;margin:0}.reviewChoiceRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:20px 0 28px}.reviewChoice{background:#fff;border-radius:20px;padding:9px 6px;font-size:12px;cursor:pointer}.reviewChoice.pass{border:1px solid #17724d;color:#11633f}.reviewChoice.fail{border:1px solid #d51c3f;color:#c21636}.reviewChoice.info{border:1px solid #c76118;color:#a64b09}
+.reviewContext{border-top:1px solid #e1e6eb;border-bottom:1px solid #e1e6eb;padding:14px 0;margin-bottom:24px}.reviewContext div{display:flex;justify-content:space-between;gap:16px;padding:6px 0;font-size:12px}.reviewContext span{color:#66788c}.reviewContext strong{text-align:right;color:#263b52}
+.staffNotesLabel{font-size:13px;font-weight:700;margin-bottom:9px}.staffReviewNotes{min-height:135px;resize:vertical;border:1px solid #9eabb8;border-radius:4px;padding:10px;font-family:Arial;font-size:13px}.saveReviewProgress{margin-top:auto;background:#0c4f83;color:#fff;border:0;border-radius:6px;padding:12px;font-size:13px;cursor:pointer}
+.reviewProgressBox{margin-top:18px;padding-top:15px;border-top:1px solid #e1e6eb;font-size:12px;color:#53687d}.progressTrack{height:7px;background:#e7edf2;border-radius:8px;margin:9px 0}.progressTrack span{display:block;height:100%;width:0;background:#3182bd;border-radius:8px}
+@media(max-width:1050px){.staffDocReviewGrid{grid-template-columns:1fr}.staffDocSelector select{min-width:0;flex:1}.staffChecklistCard{min-height:520px}.staffDocCanvas{min-height:550px}}
+</style><style>
+#staffView.review-doc-mode .staffGrid{display:none !important;}
+#staffView.review-doc-mode #staffDocumentReviewWorkspace{display:block !important; position:relative;}
+#staffView:not(.review-doc-mode) #staffDocumentReviewWorkspace{display:none !important;}
+#staffView.review-doc-mode .staffTools button:first-child{background:#fff;color:#111;border-color:#c8cdd3;}
+#staffView.review-doc-mode .staffTools button:nth-child(2){background:#0c4f83;color:#fff;border-color:#0c4f83;}
+#staffDocumentReviewWorkspace{margin:16px 28px 36px;}
+#staffDocumentReviewWorkspace .staffSimpleDocs{margin:0;}
+
+</style><style>
+.histSec{margin:18px 0;background:#fff;border:1px solid #d6e0e9;border-radius:9px;padding:18px 20px;box-shadow:0 1px 4px #18334d0d;font-family:Arial,sans-serif}
+.histHead{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #e5ebf0;padding-bottom:12px;margin-bottom:14px}.histHead h3{margin:0 0 4px;font-size:17px;color:#172d45}.histHead p{margin:0;font-size:12px;color:#64788c}.histHead>span{font-size:11px;font-weight:700;color:#45617c;background:#f4f7fa;border:1px solid #d3dee8;border-radius:14px;padding:6px 10px;height:max-content}
+.histKpi{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #dbe4ec;border-radius:7px;overflow:hidden;margin-bottom:15px}.histKpi div{padding:11px 14px;border-right:1px solid #e2e8ee}.histKpi div:last-child{border:0}.histKpi small{display:block;font-size:9px;color:#728397;margin-bottom:4px}.histKpi b{font-size:16px;color:#1c3853}
+.histTbl{width:100%;border-collapse:collapse;font-size:11px}.histTbl th{background:#edf3f8;text-align:left;padding:9px;color:#35516b}.histTbl td{padding:10px 9px;border-bottom:1px solid #e2e8ee;color:#294158}.histTbl i{font-style:normal;background:#e5f4ed;color:#176d4d;border-radius:12px;padding:4px 7px;font-size:9px;font-weight:700}.histTbl i.gray{background:#f0f2f4;color:#66717c}.histTbl button{border:0;background:none;color:#075ca8;font-weight:700;cursor:pointer}
+.auditFilters{display:flex;gap:6px;align-items:center;margin-bottom:6px}.auditFilters button{border:1px solid #ced9e3;background:#fff;border-radius:14px;padding:6px 10px;font-size:10px;color:#4f687f}.auditFilters button:first-child{background:#eaf2f9;color:#174f7c;font-weight:700}.auditFilters a{margin-left:auto;color:#075ca8;font-size:10px;font-weight:700}
+.auditLine{display:grid;grid-template-columns:105px 1fr;gap:14px;padding:12px 5px;border-bottom:1px solid #e6ebf0;font-size:11px;color:#314a62}.auditLine time{font-size:10px;color:#64788c}.auditLine p{margin:4px 0 0;color:#65788b}.auditLine em{font-style:normal;background:#f1f5f8;padding:2px 5px;border-radius:4px}.auditNote{font-size:10px;color:#788999;margin:12px 0 0}
+</style><style>
+/* v24: Current request remains primary; history follows it at full content width */
+.staffHistoryFullWidth{
+  grid-column:1 / -1 !important;
+  width:100% !important;
+  min-width:0;
+  box-sizing:border-box;
+  margin-top:22px;
+}
+.staffHistoryFullWidth .histSec{
+  width:100% !important;
+  max-width:none !important;
+  box-sizing:border-box;
+  margin:0 0 18px 0 !important;
+}
+.staffHistoryFullWidth .histHead{
+  align-items:flex-start;
+}
+.staffHistoryFullWidth .histHead>span{
+  white-space:nowrap;
+}
+.staffHistoryFullWidth .histKpi{
+  width:100%;
+}
+.staffHistoryFullWidth .histTbl{
+  table-layout:auto;
+}
+.staffHistoryFullWidth .histTbl th,
+.staffHistoryFullWidth .histTbl td{
+  white-space:normal;
+}
+@media (max-width:1100px){
+  .staffHistoryFullWidth .histKpi{grid-template-columns:repeat(2,1fr)}
+  .staffHistoryFullWidth .histTbl{font-size:10px}
+}
+</style><style>
+.staffActivityTab{padding:11px 22px;border:1px solid #cbd5df;background:#fff;font-weight:700;font-size:14px;cursor:pointer}
+.priorRequestNotice{display:flex;align-items:center;justify-content:space-between;gap:20px;background:#f7fafc;border:1px solid #d6e2ec;border-left:4px solid #2d6eaa;border-radius:7px;padding:12px 14px;margin:0 0 16px}
+.priorRequestNotice strong{display:block;color:#183550;font-size:13px;margin-bottom:3px}.priorRequestNotice span{color:#657b8f;font-size:11px}
+.priorRequestNotice button{white-space:nowrap;border:1px solid #1d65a2;background:#fff;color:#14578e;border-radius:5px;padding:8px 12px;font-weight:700;cursor:pointer}
+.priorRequestsPanel{position:fixed;z-index:9999;right:24px;top:90px;width:min(980px,calc(100vw - 48px));max-height:calc(100vh - 120px);overflow:auto;background:#fff;border:1px solid #cdd9e4;border-radius:10px;box-shadow:0 14px 38px #18334d33;padding:16px}
+.priorPanelHead{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8ee;padding:0 2px 10px;margin-bottom:10px}.priorPanelHead strong{font-size:17px;color:#183550}.priorPanelHead span{margin-left:12px;color:#667b8f;font-size:11px}.priorPanelHead button{border:0;background:none;font-size:25px;cursor:pointer;color:#536b80}
+.priorRequestsPanel .histSec{box-shadow:none;border:0;margin:0;padding:0}.priorRequestsPanel .histHead{display:none}
+.staffActivityLogWorkspace{padding:20px 28px;background:#f6f8fb}.activityWorkspaceHead{background:#fff;border:1px solid #d7e1ea;border-radius:8px 8px 0 0;padding:18px 20px}.activityWorkspaceHead h2{margin:0;color:#172f49;font-size:20px}.activityWorkspaceHead p{margin:4px 0 0;color:#667c90;font-size:12px}
+.staffActivityLogWorkspace .histSec{margin-top:0;border-radius:0 0 8px 8px}
+</style><style>
+.priorRequestNotice{background:#f3f8fd !important;border-color:#c8dbea !important;border-left:4px solid #1769aa !important;padding:13px 15px !important}
+.priorNoticeIcon{position:relative;flex:0 0 42px;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e1effa;color:#145f99}
+.priorCount{position:absolute;right:-3px;top:-5px;min-width:18px;height:18px;padding:0 4px;border-radius:10px;background:#b42318;color:#fff;font:bold 10px/18px Arial;text-align:center;border:2px solid #fff}
+.priorNoticeText{flex:1}.priorNoticeText strong{font-size:13px !important;color:#173b5b !important}.priorNoticeText span{font-size:11px !important}
+.priorRequestNotice button{display:flex;align-items:center;gap:8px;background:#fff !important}.priorRequestNotice button b{font-size:15px}
+</style><style>
+.staffWrap.queueMode > *:not(.staffTop):not(.staffQueue){display:none!important}
+/* Queue and request detail are separate views: never stack the detail below the queue. */
+.staffWrap:not(.queueMode) > .staffQueue{display:none!important}
+.staffQueue{margin:22px 28px 38px;background:#fff;border:1px solid #d7e0ea;border-radius:10px;box-shadow:0 2px 8px rgba(15,42,70,.08);overflow:hidden;font-family:Arial,sans-serif}
+.queueHead{padding:20px 22px 12px}.queueHead h2{margin:0;color:#17324f;font-size:22px}.queueHead p{margin:6px 0 0;color:#667b91;font-size:13px}
+.queueTabs{display:flex;gap:4px;padding:0 22px;border-bottom:1px solid #dce5ee}.queueTab{border:0;background:transparent;padding:13px 18px;font-weight:700;color:#526a82;border-bottom:3px solid transparent;cursor:pointer}.queueTab.on{color:#0b4f8a;border-color:#0b66b2}
+.queueControls{display:flex;gap:10px;padding:16px 22px;background:#f8fafc;align-items:center;flex-wrap:wrap}.queueSearch{flex:1;min-width:280px;border:1px solid #cdd9e5;border-radius:6px;padding:11px 13px;font-size:13px}.queueControls select{border:1px solid #cdd9e5;border-radius:6px;padding:10px 12px;background:#fff;color:#314a63}.queueExport{border:1px solid #b9c9d8;background:#fff;border-radius:6px;padding:10px 14px;color:#244969;font-weight:700}
+.queueTableWrap{padding:0 22px 22px;overflow:auto}.queueTable{width:100%;border-collapse:collapse;font-size:12.5px}.queueTable th{background:#eef4f9;color:#314a63;text-align:left;padding:12px 10px;border-bottom:1px solid #cbd8e4;white-space:nowrap}.queueTable td{padding:13px 10px;border-bottom:1px solid #e2e9f0;color:#243b53;vertical-align:middle}.queueTable tr:hover td{background:#f8fbfe}.queueLink{border:0;background:none;padding:0;color:#075fb4;font-weight:700;text-decoration:underline;cursor:pointer}.qStatus,.qFlag{display:inline-block;border-radius:12px;padding:4px 8px;font-size:11px;font-weight:700;white-space:nowrap}.qStatus.review{background:#e8efff;color:#314cc8}.qStatus.new{background:#e9f4ff;color:#075fae}.qStatus.info{background:#fff4d8;color:#9a6300}.qStatus.done{background:#e6f5ed;color:#176b43}.qFlag.urgent{background:#fde8e8;color:#b42318}.qFlag.bid{background:#fff2d9;color:#985b00}.qFlag.ok{background:#edf5f1;color:#28704d}.queueCount{margin-left:6px;color:#6d8297;font-weight:400}.loanQueue,.reserveQueue{display:none}.loanQueue.on,.reserveQueue.on{display:block}.queueFoot{display:flex;justify-content:space-between;align-items:center;padding:12px 22px 18px;color:#667b91;font-size:12px}.queueHint{padding:10px 22px 0;color:#667b91;font-size:12px}.staffBanner strong[style*="color:#1754a0"]{cursor:pointer}
+</style><style>
+/* v47 staff action menu + workflow modals + approval letter */
+.actionMenuWrap{position:relative;display:inline-block}
+.staffActionDropdown{display:none;position:absolute;right:0;top:54px;width:230px;background:#fff;border:1px solid #cbd7e6;border-radius:8px;box-shadow:0 8px 24px rgba(25,49,80,.16);z-index:1000;overflow:hidden}
+.staffActionDropdown.open{display:block}
+.staffActionDropdown button{display:block;width:100%;padding:13px 16px;text-align:left;background:#fff;border:0;border-bottom:1px solid #e7edf5;font:600 14px Arial;color:#15304f;cursor:pointer}
+.staffActionDropdown button:last-child{border-bottom:0}
+.staffActionDropdown button:hover{background:#f2f7fc}
+.staffActionDropdown .approveAction{color:#146c43}
+.staffActionDropdown .returnAction{color:#a33a28}
+.staffModalBackdrop{display:none;position:fixed;inset:0;background:rgba(14,31,53,.42);z-index:5000;align-items:center;justify-content:center;padding:24px}
+.staffModalBackdrop.open{display:flex}
+.staffModal{width:min(650px,96vw);background:#fff;border-radius:10px;box-shadow:0 20px 55px rgba(0,0,0,.25);font-family:Arial;color:#132946}
+.staffModalHeader{padding:20px 24px;border-bottom:1px solid #dce5ef;display:flex;align-items:center;justify-content:space-between}
+.staffModalHeader h3{margin:0;font-size:21px}
+.staffModalClose{border:0;background:none;font-size:25px;cursor:pointer;color:#50647c}
+.staffModalBody{padding:22px 24px}
+.staffField{margin-bottom:18px}
+.staffField label{display:block;font-weight:700;font-size:13px;margin-bottom:7px;color:#28445f}
+.staffField select,.staffField textarea{width:100%;box-sizing:border-box;border:1px solid #bdcada;border-radius:6px;padding:11px;font:14px Arial;background:#fff}
+.staffField textarea{min-height:92px;resize:vertical}
+.staffHelp{font-size:12px;color:#667b92;margin-top:6px}
+.requiredMark{color:#b42318}
+.staffModalFooter{padding:16px 24px;border-top:1px solid #dce5ef;display:flex;justify-content:flex-end;gap:10px}
+.staffBtn{border:1px solid #b8c6d6;border-radius:6px;padding:10px 18px;background:#fff;font:700 14px Arial;cursor:pointer}
+.staffBtnPrimary{background:#0b5da8;color:#fff;border-color:#0b5da8}
+.staffBtnApprove{background:#16724b;color:#fff;border-color:#16724b}
+.staffBtnReturn{background:#a94732;color:#fff;border-color:#a94732}
+.approvalSummary{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #d8e2ed;border-radius:7px;margin-bottom:20px;overflow:hidden}
+.approvalSummary div{padding:13px 15px;border-right:1px solid #d8e2ed}
+.approvalSummary div:last-child{border-right:0}
+.approvalSummary small{display:block;color:#657b92;margin-bottom:4px}
+.approvalSummary strong{font-size:17px}
+#approvalLetterPanel{display:none;margin:22px 0 8px;border:1px solid #c9d8e8;border-radius:9px;overflow:hidden;background:#fff}
+#approvalLetterPanel .alpHead{padding:17px 20px;background:#f2f7fc;border-bottom:1px solid #d9e4ef;display:flex;justify-content:space-between;align-items:center}
+#approvalLetterPanel h3{margin:0;color:#173656;font-size:19px}
+.alpBody{padding:18px 20px}
+.alpGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.alpGrid small{display:block;color:#6b8097;margin-bottom:5px}
+.alpActions{display:flex;gap:9px;flex-wrap:wrap}
+.alpBadge{display:inline-block;padding:5px 10px;border-radius:14px;background:#fff2cc;color:#805500;font-weight:700;font-size:12px}
+.alpFinal{background:#e5f5eb;color:#17683e}
+</style><style>
+.staffTools .actionMenuWrap{position:relative;display:inline-block}
+.staffTools .actionMenuWrap > .action{background:#0b63b6!important;color:#fff!important;border-color:#0b63b6!important}
+.staffTools .staffActionDropdown{display:none;position:absolute;right:0;top:52px;width:230px;background:#fff;border:1px solid #cbd7e6;border-radius:8px;box-shadow:0 8px 24px rgba(25,49,80,.18);z-index:10000;overflow:hidden}
+.staffTools .staffActionDropdown.open{display:block}
+.staffTools .staffActionDropdown button{display:block!important;width:100%!important;margin:0!important;padding:13px 16px!important;text-align:left!important;background:#fff!important;color:#17324f!important;border:0!important;border-bottom:1px solid #e5ebf2!important;border-radius:0!important}
+.staffTools .staffActionDropdown button:hover{background:#f3f7fb!important}
+.staffTools .staffActionDropdown .returnAction{color:#9b3a2a!important}
+.staffTools .staffActionDropdown .approveAction{color:#176b45!important}
+</style><style>
+/* v50 — break staff workspace out of any borrower .page max-width ancestor */
+#staffView {
+  width:100vw !important;
+  max-width:none !important;
+  margin-left:calc(50% - 50vw) !important;
+  margin-right:calc(50% - 50vw) !important;
+  box-sizing:border-box !important;
+}
+#staffView .staffWrap {
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:20px 24px !important;
+  box-sizing:border-box !important;
+}
+#staffView .staffBanner,
+#staffView .staffTools,
+#staffView .staffGrid,
+#staffView #staffDocumentReviewWorkspace,
+#staffView #staffActivityLogWorkspace {
+  width:100% !important;
+  max-width:none !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+</style><style>
+/* v51 — align all staff-detail surfaces to the same viewport-based workspace width.
+   Do not shift the whole staff view; only size the detail surfaces consistently. */
+#staffView {
+  width:auto !important;
+  max-width:none !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  overflow:visible !important;
+}
+#staffView .staffWrap {
+  width:auto !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:20px 24px !important;
+  overflow:visible !important;
+}
+#staffView .staffBanner,
+#staffView .staffTools,
+#staffView .staffGrid,
+#staffView #staffDocumentReviewWorkspace,
+#staffView #staffActivityLogWorkspace {
+  width:calc(100vw - 48px) !important;
+  max-width:calc(100vw - 48px) !important;
+  box-sizing:border-box !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+#staffView .staffTools {
+  display:flex !important;
+  justify-content:space-between !important;
+}
+</style><style>
+.supervisorApprovalPanel{margin:22px 0;border:1px solid #c9d8e8;border-radius:9px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(20,50,80,.06)}
+.supervisorPanelHead{display:flex;justify-content:space-between;align-items:center;padding:17px 20px;background:#f4f8fc;border-bottom:1px solid #d9e4ef}
+.supervisorPanelHead h3{margin:0;color:#173656;font-size:19px}.supervisorPanelHead p{margin:4px 0 0;color:#60768d;font-size:13px}
+.supervisorPendingBadge,.supervisorApprovedBadge,.supervisorReturnedBadge{padding:6px 10px;border-radius:14px;font:bold 11px Arial}
+.supervisorPendingBadge{background:#fff2cc;color:#805500}.supervisorApprovedBadge{background:#e5f5eb;color:#17683e}.supervisorReturnedBadge{background:#fdecea;color:#9a3025}
+.supervisorRecommendation{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:18px 20px;border:1px solid #d8e2ed;border-radius:7px;overflow:hidden}
+.supervisorRecommendation div{padding:13px 15px;border-right:1px solid #d8e2ed}.supervisorRecommendation div:last-child{border-right:0}
+.supervisorRecommendation small{display:block;color:#657b92;margin-bottom:4px}.supervisorRecommendation strong{font-size:16px;color:#17324f}
+.supervisorInvoiceTable{width:calc(100% - 40px);margin:0 20px 18px;border-collapse:collapse;font:13px Arial}
+.supervisorInvoiceTable th{background:#eef4fa;color:#27445f;text-align:left;padding:10px;border:1px solid #d8e2ed}.supervisorInvoiceTable td{padding:10px;border:1px solid #e0e7ef}.supervisorInvoiceTable tfoot td{font-weight:700;background:#f8fafc}
+.supervisorDraftRow{margin:0 20px 18px;padding:13px 15px;border:1px solid #d8e2ed;border-radius:7px;display:flex;justify-content:space-between;align-items:center;background:#fbfcfe}
+.supervisorDraftRow div{display:flex;flex-direction:column;gap:3px}.supervisorDraftRow span{font-size:12px;color:#687d93}
+.supervisorComment{margin:0 20px 18px}.supervisorActions{display:flex;justify-content:flex-end;gap:10px;padding:15px 20px;border-top:1px solid #dce5ef;background:#fbfcfe}
+</style><style>
+.pendingSupervisorBanner{margin:14px 0;padding:12px 15px;border:1px solid #b9d2ea;border-left:4px solid #1269ad;border-radius:7px;background:#f3f8fd;align-items:center;gap:12px;font-family:Arial}
+.pendingSupervisorIcon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#dcecf9;color:#1269ad;font-weight:700}
+.pendingSupervisorText{display:flex;flex-direction:column;gap:3px;flex:1}.pendingSupervisorText strong{font-size:13px;color:#183a5b}.pendingSupervisorText span{font-size:11.5px;color:#647b91}
+.pendingSupervisorReviewBtn{white-space:nowrap}
+.supervisorApprovalOverlay{position:fixed;inset:0;z-index:9999;background:rgba(20,35,50,.42);align-items:center;justify-content:center;padding:28px;box-sizing:border-box}
+.supervisorApprovalModal{width:min(1180px,96vw);max-height:90vh;overflow:auto;margin:0!important;box-shadow:0 16px 45px rgba(0,0,0,.24)}
+.supervisorApprovalModal .supervisorPanelHead{position:sticky;top:0;z-index:2}
+.supervisorApprovalModal .supervisorActions{position:sticky;bottom:0;z-index:2}
+</style><style>
+/* v54 feedback revisions */
+.differenceValue{color:#c62828!important;}
+.removedInvoiceSection{margin:12px 0 18px;border:1px solid #e0c9c9;border-radius:7px;overflow:hidden;background:#fffafa}
+.removedInvoiceHead{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#fbf3f3;border-bottom:1px solid #ead7d7;color:#5e2d2d}
+.removedInvoiceHead div{display:flex;flex-direction:column;gap:2px}.removedInvoiceHead strong{font-size:13px}.removedInvoiceHead span{font-size:11px;color:#7a6262}.removedCount{padding:4px 8px;border-radius:12px;background:#f3dfdf!important;color:#8d3333!important;font-weight:700}
+.removedInvoiceTable{margin:0}.removedInvoiceTable td{color:#6d5555}.restoreInvoiceBtn{border:1px solid #9fb5ca;background:#fff;color:#174f82;border-radius:4px;padding:5px 9px;font:700 11px Arial;cursor:pointer}
+#staffInvoiceReviewTable th:nth-child(5){min-width:245px;width:245px}#staffInvoiceReviewTable th:nth-child(6){width:120px;min-width:110px}
+#staffInvoiceReviewTable td:nth-child(5){min-width:245px}#staffInvoiceReviewTable td:nth-child(6){width:120px}
+</style><style>
+/* v57: AHIS loan lookup input width */
+#staffView input[placeholder="Search by Loan # or Project Name..."]{
+  width: 430px !important;
+  min-width: 430px !important;
+  max-width: 100% !important;
+}
+@media (max-width: 700px){
+  #staffView input[placeholder="Search by Loan # or Project Name..."]{
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+</style><style>
+/* v81 progressive related-request story */
+.priorHistoryInline{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 16px;border:1px solid #d4dfeb;border-radius:6px;background:#f8fafc;margin:12px 0 14px}
+.priorHistoryInline>div{display:flex;align-items:center;gap:12px;min-width:0}
+.priorHistoryInline strong{color:#173150;white-space:nowrap}
+.priorHistoryInline span{color:#607792;font-size:12px}
+.priorHistoryInline button{border:0;background:transparent;color:#155b9e;font-weight:700;cursor:pointer;white-space:nowrap}
+.relatedRequestInline{border:1px solid #bfd3e7;border-radius:6px;background:#fff;margin:0 0 14px;overflow:hidden}
+.relatedRequestInlineHead{display:flex;gap:12px;align-items:center;padding:10px 14px;background:#f3f8fd;border-bottom:1px solid #d8e4ef}
+.relatedRequestInlineHead strong{color:#173150}
+.relatedRequestInlineHead span{color:#607792;font-size:12px}
+#relatedRequestInline .connectionCompact{margin:0;border:0;border-radius:0}
+</style><style>
+/* v82 — role-aware loan association; intentionally scoped so v32 dashboard remains unchanged */
+.v82-association{margin:0 0 18px;border:1px solid #d6e0e9;border-radius:7px;background:#fff;overflow:hidden}
+.v82-assoc-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:13px 15px;background:#f7f9fc;border-bottom:1px solid #dfe6ed}
+.v82-assoc-head strong{display:block;color:#1f3852;font-size:13px;margin-bottom:3px}.v82-assoc-head span{color:#687d92;font-size:11px;line-height:1.45}
+.v82-required{white-space:nowrap;background:#edf4fb;border:1px solid #caddec;border-radius:12px;padding:3px 8px!important;color:#285a85!important;font-weight:700}
+#v82AssociatedArea{padding:14px 15px 5px}.v82-loan-list{display:grid;gap:8px}
+.v82-loan-option{display:grid;grid-template-columns:22px 150px 1fr 1.35fr;gap:10px;align-items:center;border:1px solid #d7e1ea;border-radius:6px;padding:10px 12px;background:#fff;cursor:pointer}
+.v82-loan-option:hover{background:#f8fbfe;border-color:#b9d0e4}.v82-loan-option.selected{background:#f1f7fd;border-color:#86afd2}
+.v82-loan-option input{margin:0}.v82-loan-num{font-weight:700;color:#174e7e}.v82-loan-project{font-weight:700;color:#2a4056}.v82-loan-address{color:#687c90;font-size:11px}
+.v82-or{display:flex;align-items:center;gap:10px;color:#8090a0;font-size:10px;font-weight:700;padding:5px 15px}.v82-or:before,.v82-or:after{content:"";height:1px;background:#e1e7ed;flex:1}
+#v82ManualArea{padding:5px 15px 15px}.v82-manual-title{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:9px}.v82-manual-title strong{display:block;color:#2a4056;font-size:12px}.v82-manual-title span{display:block;color:#72869a;font-size:10.5px;margin-top:2px}
+.v82-manual-row{display:grid;grid-template-columns:1fr 1.35fr 1.8fr auto;gap:10px;align-items:end;padding:10px 0;border-top:1px solid #edf1f4}.v82-manual-row:first-child{border-top:0}
+.v82-manual-row .field{margin:0}.v82-remove{height:34px;margin-bottom:1px}.v82-assoc-error{margin:0 15px 14px;padding:9px 11px;border:1px solid #e5b9b2;background:#fff6f4;color:#9c342b;border-radius:5px;font-weight:700;font-size:11px}
+.v82-basic-note{margin:0 15px 10px;padding:10px 12px;background:#f7f9fc;border:1px solid #dce4eb;border-radius:5px;color:#62788d;font-size:11px}
+@media(max-width:950px){.v82-loan-option{grid-template-columns:22px 1fr}.v82-loan-address{grid-column:2}.v82-manual-row{grid-template-columns:1fr}}
+</style><style id="v85-basic-cleanup">
+#v82ManualArea .v82-manual-title:has(strong:empty){justify-content:flex-end;margin-bottom:9px}
+#v82ManualArea .v82-manual-title:has(strong:empty)>div{display:none}
+</style>
+<style id="v86-entry-style">
+#portalEntry .flow-choice{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+#portalEntry .flow-choice .ob-btn{width:100%;white-space:nowrap}
+@media(max-width:900px){#portalEntry .flow-choice{grid-template-columns:1fr}}
+</style>
+<style id="v93-returning-user-style">
+.v93-returning-wrap{margin-top:18px;text-align:center}
+.v93-or{display:flex;align-items:center;gap:12px;margin:0 0 14px;color:#718398;font-size:10px;font-weight:700;letter-spacing:.5px}
+.v93-or:before,.v93-or:after{content:"";height:1px;background:#d7e0e8;flex:1}
+.v93-returning-btn{min-width:330px;padding:12px 22px;border:1px solid #245f9e;border-radius:5px;background:#fff;color:#175899;font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.v93-returning-btn:hover{background:#f3f7fb}
+.v93-returning-help{margin-top:7px;color:#667b8f;font-size:10.5px}
+</style>
+<style id="v96-route-css">
+html[data-v96-route="reserve"] #onboarding {display:none!important}
+html[data-v96-route="reserve"] #portalShell {display:none!important}
+html[data-v96-route="reserve"] #integratedRequestView {display:none!important}
+html[data-v96-route="borrower"] #portalShell {display:block!important}
+html[data-v96-route="staff"] #integratedRequestView,
+html[data-v96-route="transaction"] #integratedRequestView,
+html[data-v96-route="reserve"] #integratedRequestView {display:block!important}
+html[data-v96-route="staff"] #borrowerView {display:none!important}
+html[data-v96-route="staff"] #staffView {display:block!important}
+html[data-v96-route="staff"] #staffWrap .staffQueue {display:block!important}
+html[data-v96-route="transaction"] #staffView,
+html[data-v96-route="reserve"] #staffView {display:none!important}
+html[data-v96-route="transaction"] #borrowerView,
+html[data-v96-route="reserve"] #borrowerView {display:block!important}
+html[data-v96-route="staff"] .demoSwitch,
+html[data-v96-route="transaction"] .demoSwitch,
+html[data-v96-route="reserve"] .demoSwitch {display:none!important}
+.v96-nav{position:relative;z-index:9999;background:#173a60;padding:11px 16px;display:flex;gap:17px;flex-wrap:wrap;font:12px Arial}
+.v96-nav a{color:white;text-decoration:none}.v96-nav a:hover{text-decoration:underline}
+</style><style>#reserveSections,#reserveFooter{display:none!important}#hardshipSections .section{display:block}#hardshipSections .doc-upload-row{align-items:center}#fhInvoiceRows .fh-invoice-row{display:flex;gap:10px;margin:8px 0;align-items:center}#fhInvoiceRows input{min-width:0;flex:1}#fhInvoiceRows .btn{flex:none}</style></head>
+<body><nav class="v96-nav"><a href="index.html">Sign In</a><a href="borrower-portal.html">Borrower Dashboard</a><a href="staff-dashboard.html">Staff Dashboard</a><a href="loan-portfolio-transaction-form.html">LP Transaction Form</a><a href="reserve-withdrawal-form.html">Reserve Withdrawal Form</a></nav>
+
+
+
+
+
+
+
+
+<div id="integratedRequestView" style="display:block;min-height:100vh;background:#f5f7fa"><div class="page" id="borrowerView">
+<div class="topbar">
+<button class="btn btn-primary" onclick="window.location.assign('borrower-portal.html');return false;" type="button">← Back to Dashboard</button>
+</div>
+<div class="panel">
+<span class="request-category-label">What would you like to submit?</span>
+<div class="category-grid">
+<label class="category-card" id="transactionCategoryCard">
+<input name="requestCategory" type="radio" value="transaction"/>
+<span>
+<div class="category-title">Loan Portfolio Transaction</div>
+<div class="category-desc">Submit one or more related transaction types, such as ownership change, refinancing, subordination, or technical correction.</div>
+</span>
+</label>
+<label class="category-card selected" id="reserveCategoryCard">
+<input checked="" name="requestCategory" type="radio" value="reserve"/>
+<span>
+<div class="category-title">Loan Portfolio Requests</div>
+<div class="category-desc">Submit reserve withdrawal requests, residual receipt disputes, and other requests related to existing City loans.</div>
+</span>
+</label>
+</div>
+<div class="category-rule">Loan Portfolio Requests are submitted separately from Loan Portfolio Transactions.</div>
+<div id="lpRequestTypeChooser" style="margin-top:12px;max-width:470px"><label for="lpRequestType" class="label" style="display:block;margin-bottom:6px;font-weight:600">Request Type *</label><select id="lpRequestType" style="width:100%;padding:11px;border:1px solid #bdc9d6;border-radius:6px;background:#fff;font:inherit"><option value="reserve">Reserve Withdrawal</option><option value="rra">Residual Receipt Invoice Dispute</option><option value="hardship" selected>Financial Hardship Request</option></select></div>
+
+</div>
+<div class="section" id="borrower">
+<div class="section-head" onclick="toggleSection('borrower')"><span>1. Project / Loan Information</span><span>⌃</span></div>
+<div class="section-body"><div class="v82-association" id="v82LoanAssociation">
+<div class="v82-assoc-head">
+<div>
+<strong>Project / Loan Association</strong>
+<span id="v82AssocInstruction">Select the LAHD loan(s) associated with this request, or enter a loan manually if it is not listed in your profile.</span>
+</div>
+<span class="v82-required">Required</span>
+</div>
+<div id="v82AssociatedArea">
+<label class="label" id="v82AssociatedLabel">Select from your associated loans</label>
+<div class="v82-loan-list" id="v82AssociatedLoans"></div>
+</div>
+<div class="v82-or" id="v82Or"><span>OR</span></div>
+<div id="v82ManualArea">
+<div class="v82-manual-title">
+<div><strong>Loan not listed? Enter manually</strong><span id="v82ManualHelp">Enter the project/property and loan information. LAHD staff will verify the association during review.</span></div>
+<button class="btn btn-light btn-small" id="v82AddManual" type="button">+ Add Loan</button>
+</div>
+<div id="v82ManualRows"></div>
+</div>
+<div class="v82-assoc-error" id="v82AssocError" style="display:none">
+    Select at least one associated loan or complete the required manual project / loan information.
+  </div>
+</div>
+
+<div class="hidden" id="reserveBorrowerContext" style="display:none!important">
+<div class="reserve-project-note">Enter project name, property address and City loan number</div>
+<div class="grid3 reserve-project-grid">
+<div class="field">
+<label><span class="req">*</span> Project / Property Name</label>
+<input placeholder="Enter project or property name" value="Peak Plaza"/>
+</div>
+<div class="field">
+<label><span class="req">*</span> Property Address</label>
+<input placeholder="Enter property address" value="1234 Peak Avenue, Los Angeles, CA"/>
+</div>
+<div class="field"><label><span class="req">*</span> Loan #</label><input placeholder="Enter City loan number" required="" type="text"/></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="requestor">
+<div class="section-head" onclick="toggleSection('requestor')"><span>2. Requestor Information</span><span>⌃</span></div>
+<div class="section-body">
+<div class="grid3">
+<div class="field"><label>Requested By</label><input value="John Doe"/></div>
+<div class="field"><label>Phone Number</label><input value="(123) 456-7890"/></div>
+<div class="field"><label>Email Address</label><input value="john.doe@email.com"/></div>
+</div>
+<div class="radio">
+<span>Are you submitting on behalf of someone else?</span>
+<label><input checked="" name="behalf" type="radio" value="no"/> No</label>
+<label><input name="behalf" type="radio" value="yes"/> Yes</label>
+</div>
+<div class="hidden" id="onBehalfFields" style="margin-top:14px">
+<div class="grid3">
+<div class="field"><label><span class="req">*</span> On Behalf Of - Name</label><input placeholder="Enter name"/></div>
+<div class="field"><label><span class="req">*</span> Phone Number</label><input placeholder="Enter phone number"/></div>
+<div class="field"><label><span class="req">*</span> Email Address</label><input placeholder="Enter email address" type="email"/></div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="hardshipSections">
+<div class="section" id="fhDetails"><div class="section-head" onclick="toggleSection('fhDetails')"><span>3. Financial Hardship Details</span><span>⌃</span></div><div class="section-body">
+<div class="grid3"><div class="field"><label><span class="req">*</span> Reason for Hardship</label><select id="fhReason"><option value="">Select hardship reason</option><option>Natural Disaster / Property Damage</option><option>Vacancy / Tenancy-Related Income Loss</option><option>Other Financial Hardship</option></select></div><div class="field"><label><span class="req">*</span> Hardship Start Date</label><input id="fhStart" type="date"></div><div class="field"><label>Hardship End Date (if known)</label><input id="fhEnd" type="date"></div></div>
+<div class="field"><label><span class="req">*</span> Describe the hardship and financial impact</label><textarea id="fhDescription" placeholder="Describe the circumstances, reduced income or operational impact, and supporting facts."></textarea></div>
+<div class="field"><label>Estimated Financial Impact (optional)</label><input id="fhImpact" type="number" min="0" step=".01" placeholder="Amount in dollars"></div>
+</div></div>
+<div class="section" id="fhInvoices"><div class="section-head" onclick="toggleSection('fhInvoices')"><span>4. Applicable Invoices / Financial Year</span><span>⌃</span></div><div class="section-body">
+<div class="info">Invoice association is optional. You may submit a Financial Hardship Request with no invoice, one invoice, or multiple invoices.</div>
+<label class="radio" style="display:flex;gap:8px;align-items:center;margin:14px 0"><input id="fhCurrentYear" type="checkbox"> This request also applies to the current financial year</label>
+<div class="field"><label>Associated Invoices (optional)</label><div id="fhInvoiceRows"></div><button class="btn btn-light btn-small" type="button" id="fhAddInvoice">+ Add Invoice</button></div>
+<div class="small">If no invoice has been issued, leave this section blank. Do not enter a placeholder invoice.</div>
+</div></div>
+<div class="section" id="fhDocuments"><div class="section-head" onclick="toggleSection('fhDocuments')"><span>5. Supporting Documents</span><span>⌃</span></div><div class="section-body"><div class="doc-upload-list">
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Signed Financial Hardship Request Letter *</strong><div class="small">Signed by an authorized representative of the Owner; explains the circumstances and request.</div></div><div class="doc-actions"><input id="fhLetter" type="file" accept=".pdf,.doc,.docx"></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Documentation of Reduced Income *</strong><div class="small">Supporting records demonstrating hardship-related reduced income.</div></div><div class="doc-actions"><input id="fhIncome" type="file" multiple></div></div>
+<div id="fhTenancyDocs" style="display:none">
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Rent Rolls — Two Months *</strong><div class="small">Identify full-paying, partial/nonpaying, assisted tenants, and rent received.</div></div><div class="doc-actions"><input id="fhRentRoll" type="file" multiple></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Tenant Delinquency Reports — Two Months *</strong><div class="small">Identify households not paying full rent.</div></div><div class="doc-actions"><input id="fhDelinquency" type="file" multiple></div></div>
+</div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Current Operating Reserve Balance *</strong></div><div class="doc-actions"><input id="fhOperating" type="file"></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Current Replacement Reserve Balance *</strong></div><div class="doc-actions"><input id="fhReplacement" type="file"></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Have you requested hardship consideration from other lenders?</strong></div><div class="doc-actions"><select id="fhOtherLenders"><option value="no">No</option><option value="yes">Yes</option></select></div></div>
+<div id="fhOtherLenderDocs" class="doc-upload-row" style="display:none"><div class="doc-upload-name"><strong>Other Lender Hardship Documentation *</strong></div><div class="doc-actions"><input id="fhLenderDocs" type="file" multiple></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Other Supporting Documents</strong><div class="small">Optional.</div></div><div class="doc-actions"><input id="fhOther" type="file" multiple></div></div>
+</div></div></div>
+<div class="section" id="fhReview"><div class="section-head" onclick="toggleSection('fhReview')"><span>6. Review &amp; Submit</span><span>⌃</span></div><div class="section-body">
+<div class="info">LAHD will review the evidence and determine the appropriate outcome. An invoice may be reduced, placed on an installment payment plan, voided, or the request may be rejected.</div>
+<label style="display:flex;gap:10px;margin:16px 0;align-items:flex-start"><input type="checkbox" id="fhCertify" style="margin-top:4px"> <span>I certify that the information and documentation submitted are true, correct, and complete to the best of my knowledge. *</span></label>
+<div class="grid3"><div class="field"><label><span class="req">*</span> Authorized Representative Name</label><input id="fhSigner" placeholder="Full name"></div><div class="field"><label><span class="req">*</span> Title / Capacity</label><input id="fhSignerTitle" placeholder="Role or title"></div><div class="field"><label>Certification Date</label><input id="fhSignedDate" type="date" readonly></div></div>
+</div></div>
+<div class="footer" id="fhFooter"><button class="btn btn-light" type="button" id="fhSave">Save Draft</button><button class="btn btn-primary" type="button" id="fhSubmit">Submit Request</button></div>
+</div>
+<div class="reserve-only" id="reserveSections">
+<div class="section" id="reserveInfo">
+<div class="section-head" onclick="toggleSection('reserveInfo')"><span>3. Reserve Withdrawal Request Information</span><span>⌃</span></div>
+<div class="section-body">
+<div class="section-kicker">Complete this section for a Multifamily - Reserve Withdrawal request.</div>
+<div class="grid3">
+<div class="field">
+<label><span class="req">*</span> Reserve Fund</label>
+<select id="fundType"><option value="">Select reserve fund</option><option selected="">Replacement Reserve</option><option>Operating Reserve</option><option>Transition Reserve</option><option>Other Reserve</option></select>
+</div>
+<div class="field"><label><span class="req">*</span> Withdrawal Amount</label><input id="withdrawalAmount" value="$27,500.00"/></div>
+<div class="field"><label><span class="req">*</span> Current Reserve Balance</label><input id="currentReserveBalance" placeholder="Enter current reserve balance"/><div class="small">Enter the current balance shown on your most recent supporting statement or ledger.</div></div>
+</div>
+<div class="grid3" style="margin-top:14px">
+<div class="field"><label><span class="req">*</span> Balance As-Of Date</label><input id="balanceAsOfDate" type="date"/></div>
+<div class="field"><label><span class="req">*</span> Fiscal Year</label><select><option>2026</option><option>2025</option><option>2024</option></select></div>
+<div class="field"><label>Requested Payment / Need-By Date</label><input type="date" value="2026-09-30"/></div>
+</div>
+<div class="field" style="margin-top:14px"><label><span class="req">*</span> Description of Work / Reason for Withdrawal</label><textarea>Replacement of three HVAC units serving occupied residential units and related installation work.</textarea></div>
+<div class="info" style="margin-top:14px"><strong>Note:</strong> Supporting documentation is required in Section 5 for the current reserve balance (e.g., most recent statement).</div>
+</div>
+</div>
+<div class="section" id="invoiceSection">
+<div class="section-head" onclick="toggleSection('invoiceSection')"><span>4. Invoice / Work Detail and Bid Information</span><span>⌃</span></div>
+<div class="section-body">
+<div class="section-kicker">Provide the invoice/work detail manually or import it from the standardized LAHD Excel template.</div>
+<div class="work-entry-card">
+<div class="work-entry-card-head">
+<div>
+<div class="work-entry-card-title">Invoice / Work Detail</div>
+<div class="work-entry-card-subtitle">Choose how you want to provide the line-item information for this request.</div>
+</div>
+</div>
+<div class="entry-method-block">
+<div class="entry-method-label"><span class="req">*</span> Invoice / Work Detail Entry Method</div>
+<div aria-label="Invoice / Work Detail Entry Method" class="entry-method-options" role="radiogroup">
+<label class="entry-method-option">
+<input checked="" name="detailEntryMethod" type="radio" value="manual"/>
+<span aria-hidden="true" class="entry-method-radio"></span>
+<span class="entry-method-copy">
+<span class="entry-method-title">Enter details manually</span>
+<span class="entry-method-help">Add invoice or work items directly in the table below.</span>
+</span>
+</label>
+<label class="entry-method-option">
+<input name="detailEntryMethod" type="radio" value="excel"/>
+<span aria-hidden="true" class="entry-method-radio"></span>
+<span class="entry-method-copy">
+<span class="entry-method-title">Import from LAHD Excel Template</span>
+<span class="entry-method-help">Upload the completed template to populate and validate the table.</span>
+</span>
+</label>
+</div>
+</div>
+<div class="excel-import-panel hidden" id="excelImportPanel">
+<div class="excel-template-row">
+<div>
+<div class="excel-template-title">LAHD Reserve Withdrawal Detail Template</div>
+<div class="small">Download the standardized template, complete the line items offline, then upload it below.</div>
+</div>
+<button class="btn btn-light excel-download-btn" id="downloadExcelTemplate" type="button">↓ Download Excel Template</button>
+</div>
+<div class="excel-upload-row">
+<div class="field excel-file-field">
+<label>Completed Excel Template</label>
+<input accept=".xlsx,.xls" id="excelUpload" type="file"/>
+</div>
+<button class="btn btn-primary excel-import-btn" id="importExcelBtn" type="button">Import &amp; Validate</button>
+</div>
+<div class="small excel-import-status" id="excelImportStatus"></div>
+</div>
+<div class="table-wrap">
+<table id="invoiceTable">
+<thead><tr>
+<th style="width:105px">Invoice Date</th><th style="width:105px">Invoice #</th><th style="width:78px">Unit</th><th style="width:260px;min-width:260px">Item / Work Description</th><th style="width:155px">Contractor / Vendor</th><th style="width:120px">Requested Amount</th><th style="width:120px">Check Paid Date <span class="small">(Optional)</span></th><th style="width:135px">Invoice / Estimate</th><th style="width:125px">Notes</th><th style="width:50px"></th>
+</tr></thead>
+<tbody id="invoiceBody">
+<tr><td><input type="date" value="2026-08-20"/></td><td><input value="INV-2841"/></td><td><input value="101-103"/></td><td><input class="workDescription" maxlength="60" value="Replace three HVAC units serving occupied residential units"/></td><td><input value="ABC Mechanical"/></td><td><input class="lineAmount" value="27500.00"/></td><td><input type="date"/></td><td><select><option>Invoice</option><option>Estimate</option></select></td><td><input value="Occupied units"/></td><td class="row-actions"><button class="btn btn-light btn-small removeRow" type="button">×</button></td></tr>
+</tbody>
+<tfoot><tr class="total-row"><td class="total-label" colspan="5">Total Requested Amount</td><td class="amount" id="invoiceTotal">$27,500.00</td><td colspan="4"></td></tr></tfoot>
+</table>
+</div>
+<button class="btn btn-light btn-small" id="addInvoice" style="margin-top:10px" type="button">+ Add Invoice / Work Item</button>
+</div>
+<div class="bid-section-divider"><span>Bid Requirement</span></div>
+<div class="bid-panel hidden" id="bidRulePanel" style="margin-top:0">
+<div class="bid-head">Bid Requirement Review</div>
+<div class="bid-body">
+<div class="small" style="margin:0 0 12px">
+              The total requested amount is $20,000 or more. Please answer the question below so AHIS can determine what additional information is needed.
+            </div>
+<div class="field">
+<label><span class="req">*</span> Does the work involve an urgent or emergency condition affecting resident safety or livability?</label>
+<div class="bid-choice" style="margin-top:8px">
+<label><input name="urgentEmergency" type="radio" value="yes"/><span>Yes</span></label>
+<label><input name="urgentEmergency" type="radio" value="no"/><span>No</span></label>
+</div>
+</div>
+<div class="hidden" id="urgencyPanel" style="margin-top:16px">
+<div class="field" style="margin-top:12px">
+<label><span class="req">*</span> Explain the urgent or emergency condition and why immediate action was required</label>
+<textarea id="urgencyJustification" placeholder="Describe the condition, how it affected resident safety or livability, and why the work could not reasonably be delayed. Examples may include a broken boiler, loss of heating or cooling in occupied units, or another condition requiring immediate action to protect resident safety or livability."></textarea>
+</div>
+<div class="field" style="margin-top:12px">
+<label>Urgency Supporting Documentation <span class="small">(Optional)</span></label>
+<div class="upload-box"><input multiple="" type="file"/></div>
+<div class="small" style="margin-top:6px">Examples: photos, notices, inspection reports, contractor assessments, or other supporting documentation.</div>
+</div>
+</div>
+<div class="hidden" id="additionalBidsPanel" style="margin-top:16px">
+<div class="info">
+<strong>2 Additional Bids Required</strong><br/>
+                Because the applicable work is $20,000 or more and is not identified as urgent/emergency work affecting resident safety or livability, please upload two additional bids or estimates.
+              </div>
+<div class="upload-grid" style="margin-top:12px">
+<div class="field"><label><span class="req">*</span> Bid / Estimate 1</label><div class="upload-box"><input type="file"/></div></div>
+<div class="field"><label><span class="req">*</span> Contractor / Vendor</label><input placeholder="Vendor name"/></div>
+<div class="field"><label><span class="req">*</span> Bid Amount</label><input placeholder="$0.00"/></div>
+<div class="field"><label><span class="req">*</span> Bid Date</label><input type="date"/></div>
+</div>
+<div class="upload-grid" style="margin-top:10px">
+<div class="field"><label><span class="req">*</span> Bid / Estimate 2</label><div class="upload-box"><input type="file"/></div></div>
+<div class="field"><label><span class="req">*</span> Contractor / Vendor</label><input placeholder="Vendor name"/></div>
+<div class="field"><label><span class="req">*</span> Bid Amount</label><input placeholder="$0.00"/></div>
+<div class="field"><label><span class="req">*</span> Bid Date</label><input type="date"/></div>
+</div>
+</div>
+<div class="small" style="margin-top:14px">
+              LAHD will review the information submitted and make the final determination regarding whether the additional bid requirement applies.
+            </div>
+</div>
+</div>
+<div class="info" id="belowThresholdMessage" style="margin-top:14px">
+          The current total requested amount is below $20,000. No additional bid information is required based on the amount entered.
+        </div>
+</div>
+</div>
+<div class="section" id="reserveDocuments">
+<div class="section-head" onclick="toggleSection('reserveDocuments')"><span>5. Documents</span><span>⌃</span></div>
+<div class="section-body">
+<div class="section-kicker">Upload documents that support the Reserve Withdrawal request.</div>
+<div class="doc-upload-list">
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Signed Reserve Withdrawal Request Letter on Company Letterhead</strong><div class="small">Required. Summarize the requested amount, purpose, property/project, and authorized signer.</div></div><div class="doc-actions"><button class="btn btn-light btn-small" type="button">↓ Download Sample / Template</button><input accept=".pdf,.doc,.docx" type="file"/></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Current Reserve Balance Supporting Document</strong><div class="small">Required. Most recent reserve bank statement, loan statement showing the balance, or reserve ledger if a statement is unavailable.</div></div><div class="doc-actions"><select><option>Bank Statement</option><option>Loan Statement</option><option>Reserve Ledger</option><option>Other</option></select><input accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls" type="file"/></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Invoices / Estimates</strong><div class="small">Required as applicable. Upload supporting invoices or estimates not already attached to individual work-detail rows.</div></div><div class="doc-actions"><input multiple="" type="file"/></div></div>
+<div class="doc-upload-row"><div class="doc-upload-name"><strong>Other Supporting Documents</strong><div class="small">Optional.</div></div><div class="doc-actions"><input multiple="" type="file"/></div></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="footer" id="reserveFooter">
+<button class="btn btn-light" type="button">Save Draft</button>
+<button class="btn btn-primary" type="button">Submit Request</button>
+</div>
+</div></div><script>
+const reserveSections=document.getElementById('reserveSections');
+const reserveFooter=document.getElementById('reserveFooter');
+const reserveCategoryCard=document.getElementById('reserveCategoryCard');
+const transactionCategoryCard=document.getElementById('transactionCategoryCard');
+function syncRequestCategory(){
+ const r=document.querySelector('input[name="requestCategory"][value="reserve"]');
+ if(r)r.checked=true;
+ if(reserveSections)reserveSections.style.display='block';
+ if(reserveFooter)reserveFooter.style.display='flex';
+ document.getElementById('reserveBorrowerContext')?.classList.remove('hidden');
+ reserveCategoryCard?.classList.add('selected');
+ transactionCategoryCard?.classList.remove('selected');
+}
+function toggleSection(id){document.getElementById(id)?.classList.toggle('collapsed');}
+function money(n){return n.toLocaleString('en-US',{style:'currency',currency:'USD'});}
+function syncInvoiceTotal(){
+ let total=0;
+ document.querySelectorAll('.lineAmount').forEach(i=>{
+  const v=parseFloat(String(i.value).replace(/[$,]/g,''));if(!isNaN(v))total+=v;
+ });
+ const target=document.getElementById('invoiceTotal');if(target)target.textContent=money(total);
+ syncBidRequirement(total);
+}
+function syncBidRequirement(total){
+ const overThreshold=total>=20000;
+ document.getElementById('bidRulePanel')?.classList.toggle('hidden',!overThreshold);
+ document.getElementById('belowThresholdMessage')?.classList.toggle('hidden',overThreshold);
+ if(!overThreshold){
+  document.querySelectorAll('input[name="urgentEmergency"]').forEach(r=>r.checked=false);
+  document.getElementById('urgencyPanel')?.classList.add('hidden');
+  document.getElementById('additionalBidsPanel')?.classList.add('hidden');
+ }else syncUrgencyChoice();
+}
+function syncUrgencyChoice(){
+ const yes=document.querySelector('input[name="urgentEmergency"]:checked')?.value;
+ document.getElementById('urgencyPanel')?.classList.toggle('hidden',yes!=='yes');
+ document.getElementById('additionalBidsPanel')?.classList.toggle('hidden',yes!=='no');
+}
+document.getElementById('invoiceBody')?.addEventListener('input',e=>{if(e.target.classList.contains('lineAmount'))syncInvoiceTotal();});
+document.getElementById('invoiceBody')?.addEventListener('click',e=>{
+ if(e.target.classList.contains('removeRow')){
+  const rows=document.querySelectorAll('#invoiceBody tr');
+  if(rows.length>1){e.target.closest('tr').remove();syncInvoiceTotal();}
+ }
+});
+document.getElementById('addInvoice')?.addEventListener('click',()=>{
+ const tr=document.createElement('tr');
+ tr.innerHTML='<td><input type="date"></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input class="lineAmount" placeholder="0.00"></td><td><input type="date"></td><td><select><option>Invoice</option><option>Estimate</option></select></td><td><input></td><td class="row-actions"><button class="btn btn-light btn-small removeRow" type="button">×</button></td>';
+ document.getElementById('invoiceBody').appendChild(tr);
+});
+document.querySelectorAll('input[name="detailEntryMethod"]').forEach(r=>r.addEventListener('change',()=>{
+ const excel=document.querySelector('input[name="detailEntryMethod"]:checked')?.value==='excel';
+ document.getElementById('excelImportPanel')?.classList.toggle('hidden',!excel);
+}));
+document.getElementById('downloadExcelTemplate')?.addEventListener('click',()=>alert('Mock-up: LAHD Reserve Withdrawal Detail Excel template would download here.'));
+document.getElementById('importExcelBtn')?.addEventListener('click',()=>{
+ const f=document.getElementById('excelUpload')?.files?.[0];
+ const st=document.getElementById('excelImportStatus');if(!st)return;
+ if(!f){st.textContent='Select a completed LAHD Excel template before importing.';st.style.color='#b42318';return;}
+ st.textContent='Validation successful — imported rows are shown below for borrower review before submission.';st.style.color='#246a35';
+});
+document.querySelectorAll('input[name="urgentEmergency"]').forEach(r=>r.addEventListener('change',syncUrgencyChoice));
+(function(){
+ const radios=document.querySelectorAll('input[name="behalf"]');
+ const fields=document.getElementById('onBehalfFields');
+ function update(){const yes=document.querySelector('input[name="behalf"][value="yes"]');fields?.classList.toggle('hidden',!(yes&&yes.checked));}
+ radios.forEach(r=>r.addEventListener('change',update));update();
+})();
+syncRequestCategory();syncInvoiceTotal();
+</script>
+
+<script id="v82-role-association-behavior">
+(function(){
+  const LOANS={
+    primary:[
+      {loan:"14-121637-001",project:"Arlington Square",address:"1234 Arlington Ave, Los Angeles, CA 90019"},
+      {loan:"14-121637-002",project:"Riverview Apartments",address:"825 S River Street, Los Angeles, CA 90023"},
+      {loan:"14-121637-003",project:"Sunset Gardens",address:"4100 Sunset Blvd, Los Angeles, CA 90029"}
+    ],
+    affiliated:[
+      {loan:"14-121637-001",project:"Arlington Square",address:"1234 Arlington Ave, Los Angeles, CA 90019"}
+    ],
+    basic:[]
+  };
+  let v82Role="primary";
+  const list=document.getElementById("v82AssociatedLoans"),
+        area=document.getElementById("v82AssociatedArea"),
+        or=document.getElementById("v82Or"),
+        add=document.getElementById("v82AddManual"),
+        rows=document.getElementById("v82ManualRows"),
+        inst=document.getElementById("v82AssocInstruction"),
+        assocLabel=document.getElementById("v82AssociatedLabel"),
+        manualHelp=document.getElementById("v82ManualHelp"),
+        err=document.getElementById("v82AssocError");
+
+  function category(){
+    return "reserve";
+  }
+  function isTransaction(){return category()==="transaction";}
+  function detectRole(){
+    const basic=document.getElementById("basicUserView");
+    if(basic && basic.style.display==="block") return "basic";
+    const saved=(sessionStorage.getItem('lahdDemoEntryRole')||sessionStorage.getItem('lahdDemoRole')||sessionStorage.getItem('borrowerRole')||sessionStorage.getItem('demoRole')||'').toLowerCase();
+    if(saved.includes('basic')||saved.includes('tier3'))return 'basic';
+    if(saved.includes('affiliated')||saved.includes('tier2'))return 'affiliated';
+    return document.body.classList.contains("standard") ? "affiliated" : "primary";
+  }
+  function optionType(){return isTransaction()?"checkbox":"radio";}
+  function render(){
+    if(!list) return;
+    list.innerHTML="";
+    const loans=LOANS[v82Role]||[];
+    const multi=isTransaction();
+
+    inst.textContent=multi
+      ? "Select one or more LAHD loans already associated with your profile. You may also manually add loan(s) that are not listed."
+      : "Select one LAHD loan already associated with your profile, or manually enter one loan if it is not listed.";
+    assocLabel.textContent=multi ? "Select one or more associated loans" : "Select one associated loan";
+    manualHelp.textContent=multi
+      ? "You may add one or more loans not listed in your profile. LAHD staff will verify the association during review."
+      : "Enter one loan if the applicable loan is not listed in your profile. LAHD staff will verify the association during review.";
+
+    area.style.display=v82Role==="basic"?"none":"block";
+    or.style.display=v82Role==="basic"?"none":"flex";
+    add.textContent=multi?"+ Add Loan":"Enter Loan Manually";
+
+    loans.forEach((x,i)=>{
+      const label=document.createElement("label");
+      label.className="v82-loan-option";
+      label.innerHTML='<input name="v82AssociatedLoan" type="'+optionType()+'" value="'+x.loan+'">'+
+        '<span class="v82-loan-num">'+x.loan+'</span>'+
+        '<span class="v82-loan-project">'+x.project+'</span>'+
+        '<span class="v82-loan-address">'+x.address+'</span>';
+      const inp=label.querySelector("input");
+      inp.addEventListener("change",()=>{
+        if(!multi && inp.checked){ rows.innerHTML=""; }
+        document.querySelectorAll(".v82-loan-option").forEach(o=>o.classList.toggle("selected",o.querySelector("input").checked));
+        if(err) err.style.display="none";
+      });
+      list.appendChild(label);
+    });
+
+    rows.innerHTML="";
+    document.querySelectorAll("#v82ManualArea .v82-basic-note").forEach(n=>n.remove());
+    const manualTitle=document.querySelector("#v82ManualArea .v82-manual-title strong");
+    if(v82Role==="basic"){
+      inst.textContent=multi
+        ? "Enter one or more project / loan records for this Loan Portfolio Transaction."
+        : "Enter the project / loan record for this Reserve Withdrawal request.";
+      const assocHead=document.querySelector("#v82LoanAssociation .v82-assoc-head strong");
+      if(assocHead) assocHead.textContent="Project / Loan Information";
+      const manualHeader=document.querySelector("#v82ManualArea .v82-manual-title");
+      if(manualHeader) manualHeader.style.display=multi ? "flex" : "none";
+      if(manualTitle) manualTitle.textContent="";
+      manualHelp.textContent="";
+      add.style.display=multi ? "" : "none";
+      add.textContent="+ Add Loan";
+      addManualRow();
+    } else {
+      const assocHead=document.querySelector("#v82LoanAssociation .v82-assoc-head strong");
+      if(assocHead) assocHead.textContent="Project / Loan Association";
+      const manualHeader=document.querySelector("#v82ManualArea .v82-manual-title");
+      if(manualHeader) manualHeader.style.display="flex";
+      if(manualTitle) manualTitle.textContent="Loan not listed? Enter manually";
+      add.style.display="";
+      add.textContent=multi ? "+ Add Loan" : "Enter Loan Manually";
+    }
+  }
+  function addManualRow(){
+    if(!isTransaction() && rows.children.length) return;
+    if(!isTransaction()){
+      document.querySelectorAll('input[name="v82AssociatedLoan"]').forEach(x=>{x.checked=false;x.closest(".v82-loan-option")?.classList.remove("selected");});
+    }
+    const row=document.createElement("div");
+    row.className="v82-manual-row";
+    row.innerHTML=
+      '<div class="field"><label><span class="req">*</span> Loan #</label><input class="v82-m-loan" placeholder="Enter City loan number"></div>'+
+      '<div class="field"><label><span class="req">*</span> Project / Property Name</label><input class="v82-m-project" placeholder="Enter project/property name"></div>'+
+      '<div class="field"><label><span class="req">*</span> Property Address</label><input class="v82-m-address" placeholder="Enter property address"></div>'+
+      (isTransaction()?'<button type="button" class="btn btn-light btn-small v82-remove">Remove</button>':'');
+    row.querySelector(".v82-remove")?.addEventListener("click",()=>row.remove());
+    row.querySelectorAll("input").forEach(i=>i.addEventListener("input",()=>{if(err)err.style.display="none";}));
+    rows.appendChild(row);
+  }
+  function openFor(role){
+    v82Role=role||detectRole();
+    render();
+  }
+  add?.addEventListener("click",addManualRow);
+  document.querySelectorAll('input[name="requestCategory"]').forEach(r=>r.addEventListener("change",render));
+
+  // Primary / Affiliated universal Add Request: detect the active dashboard role.
+  document.getElementById("universalAddRequest")?.addEventListener("click",()=>setTimeout(()=>openFor(detectRole()),0));
+
+  // Basic User: bypass the older generic basic-user modal and open the same integrated form,
+  // with manual entry only.
+  document.addEventListener("click",function(e){
+    const b=e.target.closest("#basicSubmitRequest");
+    if(!b) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    const req=document.getElementById("integratedRequestView");
+    const shell=document.getElementById("portalShell");
+    const modal=document.getElementById("basicRequestModal");
+    if(modal) modal.style.display="none";
+    if(shell) shell.style.display="none";
+    if(req) req.style.display="block";
+    openFor("basic");
+    window.scrollTo(0,0);
+  },true);
+
+  // Validate the association rule when the user advances/submits.
+  function validAssociation(){
+    const selected=[...document.querySelectorAll('input[name="v82AssociatedLoan"]:checked')];
+    const manual=[...rows.querySelectorAll(".v82-manual-row")].filter(r=>
+      r.querySelector(".v82-m-loan")?.value.trim() &&
+      r.querySelector(".v82-m-project")?.value.trim() &&
+      r.querySelector(".v82-m-address")?.value.trim()
+    );
+    const ok=selected.length>0 || manual.length>0;
+    if(err) err.style.display=ok?"none":"block";
+    return ok;
+  }
+  document.getElementById("reserveFooter")?.addEventListener("click",e=>{
+    if(e.target.closest(".btn-primary") && !validAssociation()){e.preventDefault();e.stopPropagation();}
+  },true);
+  document.getElementById("transactionFooter")?.addEventListener("click",e=>{
+    if(e.target.closest(".btn-primary") && !validAssociation()){e.preventDefault();e.stopPropagation();}
+  },true);
+
+  // Initial borrower demo state.
+  openFor(detectRole());
+})();
+</script>
+
+<script id="v157-cross-form-navigation">(function(){
+  var destination = {'category': 'transaction', 'url': 'loan-portfolio-transaction-form.html'};
+  document.querySelectorAll('input[name="requestCategory"]').forEach(function(radio){
+    radio.addEventListener('click', function(event){
+      if (radio.value === destination.category) {
+        event.preventDefault(); event.stopImmediatePropagation();
+        window.location.assign(destination.url);
+      }
+    }, true);
+    radio.addEventListener('change', function(event){
+      if (radio.value === destination.category) {
+        event.stopImmediatePropagation();
+        window.location.assign(destination.url);
+      }
+    }, true);
+  });
+})();</script><script id="v171-reserve-child-form">
+(function(){'use strict';
+const START='lahdV171Start',KEY='lahdV171Requests';let ctx;try{ctx=JSON.parse(sessionStorage.getItem(START)||'null')}catch(e){}if(!ctx||!['additional','staff'].includes(ctx.mode))return;
+// A stale staff-start flag must not turn a normal borrower form into staff entry.
+// Staff entry is recognized only when opened directly from the staff dashboard
+// or with an explicit staff-entry query parameter.
+if(ctx.mode==='staff'){
+  const params=new URLSearchParams(location.search);
+  const fromStaff=/staff-dashboard\.html(?:[?#]|$)/i.test(document.referrer||'');
+  const explicitStaff=params.get('staffEntry')==='1';
+  if(!fromStaff&&!explicitStaff){sessionStorage.removeItem(START);return;}
+}
+const form=document.getElementById('borrowerView');if(!form)return;
+const banner=document.createElement('div');banner.style.cssText='padding:14px 18px;margin:12px 0;border:1px solid #bfd3e7;border-radius:6px;background:#f1f7ff;color:#173b61;font-weight:bold';banner.textContent=ctx.mode==='additional'?'Additional Funds / Change Request — Related to '+ctx.parent:'Staff Entry — Create Reserve Withdrawal on Behalf of Borrower';const section=document.getElementById('borrower');section.parentNode.insertBefore(banner,section);
+const requestor=document.querySelector('#requestor .grid3');if(requestor){const inputs=requestor.querySelectorAll('input');[ctx.requester,ctx.phone,ctx.email].forEach((v,i)=>{if(v&&inputs[i])inputs[i].value=v});}
+function prefillLoan(){if(!ctx.loan)return;const radios=[...document.querySelectorAll('input[name="v82AssociatedLoan"]')];const target=radios.find(r=>r.value===ctx.loan);if(target){target.checked=true;target.dispatchEvent(new Event('change',{bubbles:true}));}else {const add=document.getElementById('v82AddManual');if(add){add.click();const r=document.querySelector('#v82ManualRows .v82-manual-row');if(r){r.querySelector('.v82-m-loan').value=ctx.loan;r.querySelector('.v82-m-project').value=ctx.project||'';r.querySelector('.v82-m-address').value=ctx.address||'';}}}}
+setTimeout(prefillLoan,80);
+const footer=document.getElementById('reserveFooter');if(!footer)return;
+const submit=document.createElement('button');submit.type='button';submit.className='btn btn-primary';submit.textContent=ctx.mode==='additional'?'Submit Additional Funds Request':'Create Request on Behalf of Borrower';if(ctx.mode==='additional')footer.append(submit);
+const note=document.createElement('div');note.style.cssText='margin:8px 0;color:#526b83;font-size:12px';note.textContent='Prototype: this action saves a demonstration request in this browser session.';if(ctx.mode==='additional')footer.after(note);
+submit.addEventListener('click',()=>{const loan=document.querySelector('input[name="v82AssociatedLoan"]:checked')?.value||document.querySelector('.v82-m-loan')?.value?.trim()||'';if(!loan){alert('Please associate or enter a loan in Section 1.');return;}const inputs=document.querySelectorAll('#requestor .grid3 input');const requester=inputs[0]?.value?.trim()||'';if(!requester){alert('Please enter Requested By in Section 2.');return;}const amount=document.getElementById('withdrawalAmount')?.value||'';const fund=document.getElementById('fundType')?.value||'';if(!amount||!fund){alert('Please enter a reserve fund and amount in Section 3.');return;}
+let items=[];try{items=JSON.parse(sessionStorage.getItem(KEY)||'[]')}catch(e){}const seq=items.filter(x=>x.parent===ctx.parent&&x.origin===ctx.mode).length+1;const id=ctx.mode==='additional'?(ctx.parent+'-CH-'+String(seq).padStart(2,'0')):('RW-DEMO-'+Date.now().toString().slice(-6));const record={id,parent:ctx.parent||'',loan,project:ctx.project||'',date:new Date().toLocaleDateString('en-US'),fund,amount,requester,email:inputs[2]?.value||'',origin:ctx.mode==='additional'?'borrower':'staff'};items.push(record);sessionStorage.setItem(KEY,JSON.stringify(items));sessionStorage.removeItem(START);alert('Demonstration request '+id+' created.');location.assign(ctx.mode==='additional'?'borrower-portal.html':'staff-dashboard.html');});
+})();</script><script id="v172-request-type-router">(function(){var select=document.getElementById('lpRequestType');if(select)select.addEventListener('change',function(){if(this.value==='rra')window.location.assign('rra-dispute-form.html');else if(this.value==='reserve')window.location.assign('reserve-withdrawal-form.html');});})();</script><script id="financial-hardship-behavior">(()=>{'use strict';
+const $=id=>document.getElementById(id),key='lahdFinancialHardshipRequests';
+$('fhSignedDate').value=new Date().toISOString().slice(0,10);
+function sync(){ $('fhTenancyDocs').style.display=$('fhReason').value==='Vacancy / Tenancy-Related Income Loss'?'block':'none';$('fhOtherLenderDocs').style.display=$('fhOtherLenders').value==='yes'?'flex':'none';}
+$('fhReason').addEventListener('change',sync);$('fhOtherLenders').addEventListener('change',sync);sync();
+$('fhAddInvoice').addEventListener('click',()=>{const r=document.createElement('div');r.className='fh-invoice-row';r.innerHTML='<input class="fh-invoice" aria-label="Invoice number" placeholder="Invoice #"><input class="fh-year" aria-label="Financial year" placeholder="Financial Year (e.g. 2025)"><button class="btn btn-light btn-small" type="button">Remove</button>';r.querySelector('button').onclick=()=>r.remove();$('fhInvoiceRows').append(r)});
+function collect(draft){const loan=document.querySelector('input[name="v82AssociatedLoan"]:checked')?.value||document.querySelector('.v82-m-loan')?.value?.trim()||'';const manual=document.querySelector('.v82-manual-row');const project=manual?.querySelector('.v82-m-project')?.value?.trim()||'';const address=manual?.querySelector('.v82-m-address')?.value?.trim()||'';const requestor=[...document.querySelectorAll('#requestor .grid3 input')];const invoices=[...document.querySelectorAll('.fh-invoice-row')].map(r=>({invoice:r.querySelector('.fh-invoice').value.trim(),year:r.querySelector('.fh-year').value.trim()})).filter(x=>x.invoice);
+const docs=[['Signed Hardship Letter','fhLetter'],['Reduced Income Evidence','fhIncome'],['Two-Month Rent Rolls','fhRentRoll'],['Two-Month Delinquency Reports','fhDelinquency'],['Operating Reserve Balance','fhOperating'],['Replacement Reserve Balance','fhReplacement'],['Other Lender Documents','fhLenderDocs'],['Other Supporting Documents','fhOther']].map(([category,id])=>({category,files:[...($(id).files||[])].map(f=>f.name)}));
+if(!draft){if(!loan){alert('Please select or enter an associated loan in Section 1.');return null}if(!requestor[0]?.value.trim()){alert('Please enter Requested By in Section 2.');return null}if(!$('fhReason').value||!$('fhStart').value||!$('fhDescription').value.trim()){alert('Complete the required hardship details in Section 3.');return null}for(const [id,label] of [['fhLetter','signed hardship letter'],['fhIncome','reduced income evidence'],['fhOperating','operating reserve balance'],['fhReplacement','replacement reserve balance'],...($('fhReason').value==='Vacancy / Tenancy-Related Income Loss'?[['fhRentRoll','two-month rent rolls'],['fhDelinquency','two-month delinquency reports']]:[]),...($('fhOtherLenders').value==='yes'?[['fhLenderDocs','other-lender documentation']]:[])]){if(!$(id).files.length){alert('Please attach '+label+' in Section 5.');return null}}if(!$('fhCertify').checked||!$('fhSigner').value.trim()||!$('fhSignerTitle').value.trim()){alert('Complete the certification in Section 6.');return null}}
+return {id:'FH-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6),status:draft?'Draft':'Submitted',loan,project:project||'Associated Loan Project',address,requester:requestor[0]?.value||'',organization:'',email:requestor[2]?.value||'',created:new Date().toISOString(),reason:$('fhReason').value,start:$('fhStart').value,period:$('fhEnd').value,description:$('fhDescription').value,impact:$('fhImpact').value,currentYear:$('fhCurrentYear').checked,invoices,documents:docs,signer:$('fhSigner').value,signerTitle:$('fhSignerTitle').value,activity:[{at:new Date().toISOString(),action:draft?'Draft saved':'Request submitted',by:requestor[0]?.value||'Borrower'}]};}
+function save(draft){const record=collect(draft);if(!record)return;let arr=[];try{arr=JSON.parse(sessionStorage.getItem(key)||'[]')}catch(e){}arr.push(record);sessionStorage.setItem(key,JSON.stringify(arr));alert((draft?'Draft saved':'Financial Hardship Request submitted')+' (demo): '+record.id);location.href='borrower-portal.html'}
+$('fhSubmit').onclick=()=>save(false);$('fhSave').onclick=()=>save(true);
+})();</script></body></html>
