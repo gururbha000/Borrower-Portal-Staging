@@ -1598,10 +1598,10 @@ html[data-v96-route="reserve"] .demoSwitch {display:none!important}
 <div class="field"><label>Estimated Financial Impact (optional)</label><input id="fhImpact" type="number" min="0" step=".01" placeholder="Amount in dollars"></div>
 </div></div>
 <div class="section" id="fhInvoices"><div class="section-head" onclick="toggleSection('fhInvoices')"><span>4. Applicable Invoices / Financial Year</span><span>⌃</span></div><div class="section-body">
-<div class="field"><label>Select / enter invoice, if applicable</label></div>
+<div class="field"><label>Select / enter invoice, if applicable</label><div id="fhMatchedInvoices" aria-live="polite" style="margin-top:12px"></div></div>
 <label class="radio" style="display:flex;gap:8px;align-items:center;margin:14px 0"><input id="fhCurrentYear" type="checkbox"> This request also applies to the current financial year</label>
 <div class="field"><label>Associated Invoices (optional)</label><div id="fhInvoiceRows"></div><button class="btn btn-light btn-small" type="button" id="fhAddInvoice">+ Add Invoice</button></div>
-<div class="small">If no invoice has been issued, leave this section blank. Do not enter a placeholder invoice.</div>
+<div class="small">Invoices are optional. You may submit this request without associating an invoice.</div>
 </div></div>
 <div class="section" id="fhDocuments"><div class="section-head" onclick="toggleSection('fhDocuments')"><span>5. Supporting Documents</span><span>⌃</span></div><div class="section-body"><div class="doc-upload-list">
 <div class="doc-upload-row"><div class="doc-upload-name"><strong>Signed Financial Hardship Request Letter *</strong><div class="small">Signed by an authorized representative of the Owner; explains the circumstances and request.</div></div><div class="doc-actions"><input id="fhLetter" type="file" accept=".pdf,.doc,.docx"></div></div>
@@ -2056,8 +2056,30 @@ const $=id=>document.getElementById(id),key='lahdFinancialHardshipRequests';
 $('fhSignedDate').value=new Date().toISOString().slice(0,10);
 function sync(){ $('fhTenancyDocs').style.display=$('fhReason').value==='Vacancy / Tenancy-Related Income Loss'?'block':'none';$('fhOtherLenderDocs').style.display=$('fhOtherLenders').value==='yes'?'flex':'none';}
 $('fhReason').addEventListener('change',sync);$('fhOtherLenders').addEventListener('change',sync);sync();
+// Demonstration invoice association, scoped to the hardship form only.
+// Replace the sample data with an AHIS invoice lookup when integrated.
+const fhSampleInvoices={
+ '14-121637-001':[{invoice:'RRA-2025-001',year:'2025',amount:'$18,750.00',status:'Open'}]
+};
+function fhSelectedLoan(){return document.querySelector('input[name="v82AssociatedLoan"]:checked')?.value||document.querySelector('.v82-m-loan')?.value?.trim()||'';}
+function fhRefreshInvoiceMatches(){
+ const target=$('fhMatchedInvoices');if(!target)return;
+ const loan=fhSelectedLoan();const matches=fhSampleInvoices[loan]||[];
+ target.replaceChildren();
+ if(!loan){const msg=document.createElement('div');msg.className='small';msg.textContent='Select a project / loan above to view associated invoices, if available.';target.append(msg);return;}
+ if(!matches.length){const msg=document.createElement('div');msg.className='small';msg.textContent='No associated invoice record found for the selected project / loan. You may enter an invoice manually or submit without an invoice.';target.append(msg);return;}
+ const heading=document.createElement('div');heading.style.cssText='font-weight:700;margin-bottom:8px;color:#173b61';heading.textContent='Associated invoice records found — select if applicable';target.append(heading);
+ matches.forEach(inv=>{const label=document.createElement('label');label.style.cssText='display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #cad9e9;border-radius:6px;background:#f5f9fd;margin:8px 0;cursor:pointer';
+ const check=document.createElement('input');check.type='checkbox';check.className='fh-matched-invoice';check.value=inv.invoice;check.dataset.year=inv.year;check.style.cssText='width:17px;height:17px;flex:none';
+ const details=document.createElement('span');details.textContent=inv.invoice+'  ·  Financial Year '+inv.year+'  ·  '+inv.amount+'  ·  '+inv.status;label.append(check,details);target.append(label);});
+}
+document.addEventListener('change',e=>{if(e.target.matches('input[name="v82AssociatedLoan"]'))fhRefreshInvoiceMatches();});
+document.addEventListener('input',e=>{if(e.target.matches('.v82-m-loan'))fhRefreshInvoiceMatches();});
+// Loan options may be generated after page initialization.
+const fhLoanList=$('v82AssociatedLoans');if(fhLoanList)new MutationObserver(()=>fhRefreshInvoiceMatches()).observe(fhLoanList,{childList:true,subtree:false});
+fhRefreshInvoiceMatches();
 $('fhAddInvoice').addEventListener('click',()=>{const r=document.createElement('div');r.className='fh-invoice-row';r.innerHTML='<input class="fh-invoice" aria-label="Invoice number" placeholder="Invoice #"><input class="fh-year" aria-label="Financial year" placeholder="Financial Year (e.g. 2025)"><button class="btn btn-light btn-small" type="button">Remove</button>';r.querySelector('button').onclick=()=>r.remove();$('fhInvoiceRows').append(r)});
-function collect(draft){const loan=document.querySelector('input[name="v82AssociatedLoan"]:checked')?.value||document.querySelector('.v82-m-loan')?.value?.trim()||'';const manual=document.querySelector('.v82-manual-row');const project=manual?.querySelector('.v82-m-project')?.value?.trim()||'';const address=manual?.querySelector('.v82-m-address')?.value?.trim()||'';const requestor=[...document.querySelectorAll('#requestor .grid3 input')];const invoices=[...document.querySelectorAll('.fh-invoice-row')].map(r=>({invoice:r.querySelector('.fh-invoice').value.trim(),year:r.querySelector('.fh-year').value.trim()})).filter(x=>x.invoice);
+function collect(draft){const loan=document.querySelector('input[name="v82AssociatedLoan"]:checked')?.value||document.querySelector('.v82-m-loan')?.value?.trim()||'';const manual=document.querySelector('.v82-manual-row');const project=manual?.querySelector('.v82-m-project')?.value?.trim()||'';const address=manual?.querySelector('.v82-m-address')?.value?.trim()||'';const requestor=[...document.querySelectorAll('#requestor .grid3 input')];const invoices=[...document.querySelectorAll('.fh-matched-invoice:checked')].map(x=>({invoice:x.value,year:x.dataset.year})).concat([...document.querySelectorAll('.fh-invoice-row')].map(r=>({invoice:r.querySelector('.fh-invoice').value.trim(),year:r.querySelector('.fh-year').value.trim()})).filter(x=>x.invoice));
 const docs=[['Signed Hardship Letter','fhLetter'],['Reduced Income Evidence','fhIncome'],['Two-Month Rent Rolls','fhRentRoll'],['Two-Month Delinquency Reports','fhDelinquency'],['Operating Reserve Balance','fhOperating'],['Replacement Reserve Balance','fhReplacement'],['Other Lender Documents','fhLenderDocs'],['Other Supporting Documents','fhOther']].map(([category,id])=>({category,files:[...($(id).files||[])].map(f=>f.name)}));
 if(!draft){if(!loan){alert('Please select or enter an associated loan in Section 1.');return null}if(!requestor[0]?.value.trim()){alert('Please enter Requested By in Section 2.');return null}if(!$('fhReason').value||!$('fhStart').value||!$('fhDescription').value.trim()){alert('Complete the required hardship details in Section 3.');return null}for(const [id,label] of [['fhLetter','signed hardship letter'],['fhIncome','reduced income evidence'],['fhOperating','operating reserve balance'],['fhReplacement','replacement reserve balance'],...($('fhReason').value==='Vacancy / Tenancy-Related Income Loss'?[['fhRentRoll','two-month rent rolls'],['fhDelinquency','two-month delinquency reports']]:[]),...($('fhOtherLenders').value==='yes'?[['fhLenderDocs','other-lender documentation']]:[])]){if(!$(id).files.length){alert('Please attach '+label+' in Section 5.');return null}}if(!$('fhCertify').checked||!$('fhSigner').value.trim()||!$('fhSignerTitle').value.trim()){alert('Complete the certification in Section 6.');return null}}
 return {id:'FH-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6),status:draft?'Draft':'Submitted',loan,project:project||'Associated Loan Project',address,requester:requestor[0]?.value||'',organization:'',email:requestor[2]?.value||'',created:new Date().toISOString(),reason:$('fhReason').value,start:$('fhStart').value,period:$('fhEnd').value,description:$('fhDescription').value,impact:$('fhImpact').value,currentYear:$('fhCurrentYear').checked,invoices,documents:docs,signer:$('fhSigner').value,signerTitle:$('fhSignerTitle').value,activity:[{at:new Date().toISOString(),action:draft?'Draft saved':'Request submitted',by:requestor[0]?.value||'Borrower'}]};}
