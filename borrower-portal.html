@@ -1562,7 +1562,7 @@ Use the verification code provided by the borrower’s Primary User. If you do n
 <div class="tabs"><button class="tab active" data-target="dashboard">Dashboard</button><button class="tab financial" data-target="loans">Loan Agreements</button><button class="tab admin-only" data-target="members">Users &amp; Access</button></div>
 <div class="portal-actionbar" id="universalPortalActions" style="margin:0">
 <button class="btn secondary" id="universalLinkLoan">+ Link a Loan</button>
-<button class="btn primary" id="universalAddRequest">+ Add Request</button>
+<button class="btn primary" id="universalAddRequest">+ Add Request</button><a href="financial-hardship-form.html" style="margin-left:12px;font-weight:600;color:#15548b">Financial Hardship Request</a>
 </div>
 </div>
 <section class="view active" id="dashboard">
@@ -2088,4 +2088,4 @@ window.LAHDDemoAFS={requestCorrection:function(){const s=state();if(s.status==='
 render();
 })();
 </script>
-</body></html>
+<script id="financial-hardship-borrower-list">(function(){function render(){let rows=[];try{rows=JSON.parse(sessionStorage.getItem('lahdFinancialHardshipRequests')||'[]')}catch(e){}let box=document.getElementById('hardshipBorrowerRequests');if(!box){box=document.createElement('section');box.id='hardshipBorrowerRequests';box.style.cssText='margin:20px auto;padding:18px;max-width:1100px;background:#fff;border:1px solid #cbd8e6;border-radius:7px';const anchor=document.getElementById('universalAddRequest');if(!anchor)return;const parent=anchor.closest('.section')||anchor.parentElement;parent.insertAdjacentElement('afterend',box)}box.hidden=!rows.length;if(!rows.length)return;box.replaceChildren();const h=document.createElement('h3');h.textContent='Financial Hardship Requests';box.append(h);rows.forEach(r=>{const line=document.createElement('p');line.textContent=r.id+' · '+r.project+' · '+r.status+' · '+(r.invoices||[]).length+' invoice(s)';box.append(line)})}window.addEventListener('pageshow',render);render()})();</script></body></html>
