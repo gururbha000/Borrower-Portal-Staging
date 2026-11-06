@@ -158,8 +158,8 @@ function renderAudit(host){
     if(formatted.note)details.append(node('div',formatted.note,'rraAuditNote'));
    }else if(h.comment&&!h.internal&&!h.external)details.append(node('div',h.comment,'rraAuditComment'));
    if(h.details)details.append(node('div',h.details,'rraAuditComment'));
-   if(h.internal)details.append(node('div','','rraAuditComment rraAuditInternal')).lastChild.append(node('span','Internal note','rraAuditNoteLabel'),node('div',h.internal));
-   if(h.external)details.append(node('div','','rraAuditComment rraAuditExternal')).lastChild.append(node('span','Borrower-visible note','rraAuditNoteLabel'),node('div',h.external));
+   if(h.internal){const note=node('div','','rraAuditComment rraAuditInternal');note.append(node('span','Internal note','rraAuditNoteLabel'),node('div',h.internal));details.append(note)}
+   if(h.external){const note=node('div','','rraAuditComment rraAuditExternal');note.append(node('span','Borrower-visible note','rraAuditNoteLabel'),node('div',h.external));details.append(note)}
    row.append(details);list.append(row);
   });
  }
