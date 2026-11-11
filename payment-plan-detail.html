@@ -15,7 +15,7 @@
 #stepContent.ppCompactAssociation .ppValidateCompact{background:#fff;color:#15548b;border:1px solid #c6d6e6;padding:5px 9px;margin-top:10px;font-size:12px;font-weight:400}
 #stepContent.ppCompactAssociation .ppAssocHeader .ppValidated{padding:5px 12px}
 @media(max-width:760px){#stepContent.ppCompactAssociation .ppAssocPanel>.cards{grid-template-columns:1fr}}
-</style></head><body>
+</style><style id="pp-approval-ux-balance">.modal:has(.ppCompactArrangement){width:min(690px,95vw);padding:22px 24px;display:flex;flex-direction:column;overflow:hidden}.modal:has(.ppCompactArrangement) #modalBody{overflow-y:auto;min-height:0;padding-right:5px}.modal:has(.ppCompactArrangement) #modalTitle{font-size:23px;margin:0 0 12px}.modal:has(.ppCompactArrangement) .modalfooter{flex-shrink:0;background:#fff;border-top:1px solid #e0e8f1;padding-top:12px;margin-top:12px}.modal:has(.ppCompactArrangement) .ppDecisionSection{background:#fff;border:0;border-bottom:1px solid #e1e8f0;border-radius:0;padding:9px 0 16px;margin:0 0 8px}.modal:has(.ppCompactArrangement) .ppDecisionSection h3{margin:0 0 10px;font-size:16px}.ppProposalSummary{display:flex;gap:5px;flex-direction:column;background:#f1f5fa;padding:11px 14px;border-radius:6px;font-size:14px}.ppProposalSummary strong{line-height:1.5}.ppTermsChoices{display:flex;gap:22px;flex-wrap:wrap;margin:12px 0 0}.ppTermsRadio{display:flex!important;gap:7px;align-items:center;margin:0!important;font-size:14px}.ppTermsRadio input{width:auto!important}.ppCompactTermsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;margin-top:8px}.ppCompactTermsGrid .formfield{min-width:0}.ppCompactConditions .ppDecisionChecks{gap:10px 18px;margin:8px 0}.ppCompactConditions .ppDecisionChecks label{font-size:14px}.ppCompactConditions #ppConditionDetails textarea{min-height:65px}.modal:has(.ppCompactArrangement) .formfield label{font-size:14px;margin:9px 0 5px}.modal:has(.ppCompactArrangement) .formfield textarea{min-height:65px}.ppNotesHeading{font-size:16px;margin:12px 0 4px}@media(max-width:600px){.ppCompactTermsGrid,.ppCompactConditions .ppDecisionChecks{grid-template-columns:1fr}.modal:has(.ppCompactArrangement){padding:16px}}</style></head><body>
 <nav class="nav"><a href="staff-dashboard.html">← Staff Dashboard</a><a href="borrower-portal.html">Borrower Dashboard</a></nav><div class="top">Analyst Requests Workspace</div><div class="wrap">
 <div class="summary"><div><div class="lbl">REQUEST ID</div><div class="val" id="requestId"></div></div><div><div class="lbl">REQUEST TYPE</div><div class="val">Payment Plan</div></div><div><div class="lbl">PROJECT NAME</div><div class="val" id="projectHeader"></div></div><div class="ppLoanSummary"><div><div class="lbl">LOAN #</div><div class="val" id="loanHeader"></div></div><span class="badge" id="statusBadge"></span></div></div>
 <div class="tabs"><button class="tab active" data-tab="details">Request Details</button><button class="tab" data-tab="docs">Documents</button><button class="tab" data-tab="decision">Determination</button><button class="tab" data-tab="activity">Activity Log</button><div class="actionbar"><button class="actionbtn" id="actionToggle">☰ Action Menu ▾</button><div class="actionmenu hidden" id="actionMenu"><button data-action="assign">Assign Reviewer</button><button data-action="return">Return to Borrower</button><button data-action="submit">Submit for Supervisor Approval</button><button data-action="approve">Approve (Supervisor)</button><button data-action="conditional">Approve with Conditions (Supervisor)</button><button data-action="restructure">Refer to Restructuring (Supervisor)</button><button data-action="reject">Deny (Supervisor)</button><button data-action="issue">Issue Determination to Applicant</button></div></div></div>
@@ -118,7 +118,7 @@ function renderDecision(){
    ['Invoice #',assocState.invoice||rec.invoice],
    ['Approved Installment Amount',d.installmentAmount?'$'+d.installmentAmount:''],
    ['Payment Frequency',d.frequency],['Payment Start Date',d.startDate],
-   ['Payment End Date',d.endDate],['Deferral End Date',d.deferralEnd],
+   ['Duration',d.durationMonths?d.durationMonths+' months':(rec.duration?rec.duration+' months':'')],['Payment End Date',d.endDate],['Deferral End Date',d.deferralEnd],
    ['Terms Decision',d.termsChoice==='accept'?'Accepted Borrower Proposed Terms':'Modified Terms'],['Approved / Negotiated Terms',d.negotiated],['Agreement Type',d.agreement]]);
   const notes=card('Determination Rationale / Internal Notes (Staff Only)',[
    ['Recommendation Rationale',d.rationale],['Internal Comments',d.internalComments||d.decisionComments],
@@ -126,12 +126,13 @@ function renderDecision(){
   if(isConditional){
    const selected=Array.isArray(d.conditions)?d.conditions:[];
    const rows=[['Applicable Conditions',selected.join('; ')]];
+   if(d.conditionDetails)rows.push(['Condition Details',d.conditionDetails]);
    [['Other conditions','Additional Conditions / Milestones','additionalConditions'],
     ['Enhanced financial reporting','Financial Reporting Requirements','reporting'],
     ['Reserve / distribution restrictions','Reserve / Distribution Restrictions','reserveRestrictions'],
     ['Senior or public lender consent','Other Lender Consent / Parity Requirements','lenderConsent'],
     ['Interim financial milestones','Interim Financial Milestones','milestones']]
-    .forEach(([option,label,key])=>{if(selected.includes(option))rows.push([label,d[key]])});
+    .forEach(([option,label,key])=>{if(!d.conditionDetails&&selected.includes(option))rows.push([label,d[key]])});
    host.append(grid(approved,card('Conditions of Approval',rows)),grid(notes));
   }else host.append(grid(approved,notes));
  }else if(isRestructuring){
@@ -169,20 +170,21 @@ const modal=$('modalBg');let action='';function modalField(id,label,kind='text',
 function ppModalSection(title,fields){const section=document.createElement('section');section.className='ppDecisionSection';const h=document.createElement('h3');h.textContent=title;section.append(h);fields.forEach(([id,label,kind,value,opts])=>section.append(modalField(id,label,kind||'text',value??'',opts||[])));return section}
 function ppDecisionTerms(){
  const d=staff.decision;
- const section=document.createElement('section');section.className='ppDecisionSection';
+ const section=document.createElement('section');section.className='ppDecisionSection ppCompactArrangement';
  section.append(make('h3','','Payment Arrangement'));
- const proposal=make('div','');proposal.style.marginBottom='14px';
- proposal.append(field('Borrower Proposed Arrangement',rec.arrangement),field('Proposed Installment Amount',rec.installment?'$'+rec.installment:''),field('Proposed Frequency',rec.frequency),field('Proposed Duration',rec.duration?rec.duration+' months':''));
+ const amount=rec.installment?'$'+rec.installment:'Amount not provided';
+ const proposal=make('div','ppProposalSummary');
+ proposal.append(make('span','muted','Borrower’s Proposal'),make('strong','',amount+' '+(rec.frequency||'').toLowerCase()+' · '+(rec.duration?rec.duration+' months':'Duration not specified')+' · '+(rec.arrangement||'Installment payments')));
  section.append(proposal);
- const choice=modalField('termsChoice','Payment Terms *','select',d.termsChoice||'accept',[]);
- const sel=choice.querySelector('select');sel.replaceChildren();
- [['accept','Accept Proposed Terms'],['modify','Modify Terms']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;sel.append(option)});
- sel.value=d.termsChoice||'accept';section.append(choice);
- const edit=make('div');edit.id='ppModifiedTerms';
- [['installmentAmount','Installment Amount ($) *','number',d.termsChoice==='modify'?d.installmentAmount:rec.installment],['frequency','Payment Frequency *','select',d.termsChoice==='modify'?d.frequency:(rec.frequency||'Monthly'),['Monthly','Quarterly','Other']],['startDate','Payment Start Date *','date',d.startDate],['endDate','Payment End Date *','date',d.endDate],['deferralEnd','Deferral End Date (if applicable)','date',d.deferralEnd],['negotiated','Modified / Negotiated Terms','textarea',d.negotiated]].forEach(([id,label,kind,value,opts])=>edit.append(modalField(id,label,kind,value||'',opts||[])));
+ const radios=make('div','ppTermsChoices');
+ const selected=d.termsChoice||'accept';
+ [['accept','Accept proposed terms'],['modify','Modify terms']].forEach(([value,label])=>{
+  const wrap=make('label','ppTermsRadio'),input=document.createElement('input');input.type='radio';input.name='ppTermsChoice';input.value=value;input.checked=value===selected;wrap.append(input,document.createTextNode(label));radios.append(wrap);
+ });section.append(radios);
+ const edit=make('div','ppCompactTermsGrid');edit.id='ppModifiedTerms';
+ [['installmentAmount','Installment Amount ($) *','number',d.termsChoice==='modify'?d.installmentAmount:rec.installment],['frequency','Frequency *','select',d.termsChoice==='modify'?d.frequency:(rec.frequency||'Monthly'),['Monthly','Quarterly','Other']],['durationMonths','Duration (months) *','number',d.durationMonths||rec.duration],['startDate','Start Date *','date',d.startDate]].forEach(([id,label,kind,value,opts])=>edit.append(modalField(id,label,kind,value||'',opts||[])));
  section.append(edit);
- const agreement=modalField('agreement','Agreement Type *','select',d.agreement||'Workout / Payment Plan Letter Agreement',['Workout / Payment Plan Letter Agreement','Delinquency Workout Plan','Forbearance Agreement']);section.append(agreement);
- const toggle=()=>{edit.classList.toggle('hidden',sel.value!=='modify')};sel.addEventListener('change',toggle);toggle();
+ const toggle=()=>{edit.classList.toggle('hidden',radios.querySelector('input:checked').value!=='modify')};radios.addEventListener('change',toggle);toggle();
  return section;
 }
 const ppConditionOptions=['Enhanced financial reporting','Reserve / distribution restrictions','Senior or public lender consent','Interim financial milestones','Other conditions'];
@@ -196,31 +198,21 @@ function openAction(a){
  if(a==='approve'||a==='conditional'){
   body.append(ppDecisionTerms());
   if(a==='conditional'){
-   const section=document.createElement('section');section.className='ppDecisionSection';
-   const heading=document.createElement('h3');heading.textContent='Conditions of Approval';section.append(heading);
-   const label=document.createElement('strong');label.textContent='Applicable Conditions *';section.append(label);
-   const checks=document.createElement('div');checks.className='ppDecisionChecks';
-   const conditionalFields={
-    'Enhanced financial reporting':['reporting','Financial Reporting Requirements'],
-    'Reserve / distribution restrictions':['reserveRestrictions','Reserve / Distribution Restrictions'],
-    'Senior or public lender consent':['lenderConsent','Other Lender Consent / Parity Requirements'],
-    'Interim financial milestones':['milestones','Interim Financial Milestones'],
-    'Other conditions':['additionalConditions','Additional Conditions / Milestones']
-   };
-   const detailFields=[];
+   const section=document.createElement('section');section.className='ppDecisionSection ppCompactConditions';
+   section.append(make('h3','','Conditions of Approval'));
+   const checks=make('div','ppDecisionChecks');
    ppConditionOptions.forEach(option=>{
     const l=document.createElement('label'),c=document.createElement('input');
     c.type='checkbox';c.value=option;c.className='ppConditionCheck';
     c.checked=Array.isArray(d.conditions)&&d.conditions.includes(option);
     l.append(c,document.createTextNode(option));checks.append(l);
-    const [id,title]=conditionalFields[option];
-    const field=modalField(id,title,'textarea',d[id]||'');
-    field.dataset.condition=option;
-    field.classList.toggle('hidden',!c.checked);
-    detailFields.push(field);
-    c.addEventListener('change',()=>field.classList.toggle('hidden',!c.checked));
    });
-   section.append(checks,...detailFields);body.append(section);
+   section.append(checks);
+   const details=modalField('conditionDetails','Condition Details *','textarea',d.conditionDetails||'');
+   details.id='ppConditionDetails';details.querySelector('textarea').placeholder='Specify requirements, deadlines, or restrictions for the selected conditions';
+   section.append(details);
+   const toggleDetails=()=>details.classList.toggle('hidden',!checks.querySelector('.ppConditionCheck:checked'));
+   checks.addEventListener('change',toggleDetails);toggleDetails();body.append(section);
   }
  }
  if(a==='restructure'){
@@ -229,9 +221,10 @@ function openAction(a){
  }
  if(a==='reject')body.append(ppModalSection('Denial & Follow-up',[['denialReason','Denial Reason *','select',d.denialReason||'', ['', 'Insufficient financial justification','Sufficient liquidity to cure delinquency','Unresolved compliance defaults','Disallowed operating expenses','Other']],['findings','Supporting Findings *','textarea',d.findings],['followup','Recommended Follow-up','select',d.followup||'Staff review of notice / cure requirements',['Staff review of notice / cure requirements','Request immediate payment','Refer to City Attorney / Collections','Other']],['noticeReference','Notice / Cure Reference (if issued)','text',d.noticeReference]]));
  if(['approve','conditional','restructure','reject'].includes(a)){
+  if(a==='approve'||a==='conditional')body.append(make('h3','ppNotesHeading','Decision Notes'));
   body.append(modalField('internalComments','Internal Comments (Staff Only)','textarea',d.internalComments||d.decisionComments||''));
   body.append(modalField('applicantExplanation','Applicant Notification / Explanation'+(['restructure','reject'].includes(a)?' *':''),'textarea',d.applicantExplanation||''));
-  const note=make('p','muted','The applicant-facing explanation is saved as a draft. It will not be issued until staff selects Issue Determination to Applicant.');body.append(note);
+  if(a!=='approve'&&a!=='conditional'){const note=make('p','muted','The applicant-facing explanation is saved as a draft until staff issues the determination.');body.append(note);}
  }
  if(a==='issue'){
   if(!d.outcome){alert('Record an authorized determination before issuing it.');return}
@@ -246,26 +239,29 @@ function openAction(a){
 }
 function submitAction(){
  const values={};if(action==='restructure'){values.related=$('modalBody').querySelector('#ppRelatedDisplay')?.textContent||'';if(values.related==='No related transaction linked')values.related='';} $('modalBody').querySelectorAll('[data-field]').forEach(e=>values[e.dataset.field]=e.value.trim());
- const required={return:['external'],submit:['recommendation','rationale'],approve:['termsChoice','agreement'],conditional:['termsChoice','agreement'],restructure:['referralReason','modifications'],reject:['denialReason','findings','applicantExplanation'],issue:['applicantExplanation']};
+ const required={return:['external'],submit:['recommendation','rationale'],approve:[],conditional:[],restructure:['referralReason','modifications'],reject:['denialReason','findings','applicantExplanation'],issue:['applicantExplanation']};
  if(action==='restructure'&&!values.applicantExplanation){alert('Please enter Applicant Notification / Explanation.');return}
  for(const k of required[action]||[]){if(!values[k]){alert('Please complete: '+($('modalBody').querySelector('[data-field="'+k+'"]')?.previousElementSibling?.textContent||k));return}}
  if(['approve','conditional'].includes(action)){
+  values.termsChoice=$('modalBody').querySelector('input[name=ppTermsChoice]:checked')?.value||'accept';
+  values.agreement='Workout / Payment Plan Letter Agreement';
   if(values.termsChoice==='modify'){
-   for(const k of ['installmentAmount','frequency','startDate','endDate'])if(!values[k]){alert('Complete the modified payment terms: '+k);return}
+   for(const k of ['installmentAmount','frequency','durationMonths','startDate'])if(!values[k]){alert('Complete the modified payment terms: '+k);return}
    if(!Number.isFinite(Number(values.installmentAmount))||Number(values.installmentAmount)<=0){alert('Enter a valid installment amount greater than zero.');return}
-   if(values.endDate<values.startDate){alert('Payment end date must be on or after the start date.');return}
+   if(!Number.isFinite(Number(values.durationMonths))||Number(values.durationMonths)<=0){alert('Enter a valid duration.');return}
+   values.endDate='';values.negotiated='Modified payment terms approved';
   }else{
    values.installmentAmount=rec.installment||'';values.frequency=rec.frequency||'';
-   values.startDate='';values.endDate='';values.deferralEnd='';values.negotiated='Accepted borrower proposed payment arrangement as submitted';
+   values.startDate='';values.endDate='';values.durationMonths=rec.duration||'';values.deferralEnd='';values.negotiated='Accepted borrower proposed payment arrangement as submitted';
   }
  }
  if(action==='conditional'){
   values.conditions=[...$('modalBody').querySelectorAll('.ppConditionCheck:checked')].map(e=>e.value);
   if(!values.conditions.length){alert('Select at least one condition of approval.');return}
-  for(const [condition,key] of [['Enhanced financial reporting','reporting'],['Reserve / distribution restrictions','reserveRestrictions'],['Senior or public lender consent','lenderConsent'],['Interim financial milestones','milestones'],['Other conditions','additionalConditions']]){
-   if(!values.conditions.includes(condition))values[key]='';
-   else if(!values[key]){alert('Enter details for: '+condition);return}
-  }
+  if(!values.conditionDetails){alert('Enter details for the selected conditions.');return}
+  // Retain the previous per-condition storage fields for compatibility with older saved determinations.
+  const conditionKeys={'Enhanced financial reporting':'reporting','Reserve / distribution restrictions':'reserveRestrictions','Senior or public lender consent':'lenderConsent','Interim financial milestones':'milestones','Other conditions':'additionalConditions'};
+  Object.entries(conditionKeys).forEach(([condition,key])=>{values[key]=values.conditions.includes(condition)?values.conditionDetails:''});
  }
  if(action==='issue'){staff.decision.applicantExplanation=values.applicantExplanation;staff.decision.issuedAt=new Date().toISOString();audit('Determination issued to applicant','Outcome: '+staff.decision.outcome+'; applicant explanation: '+values.applicantExplanation,'Workflow');modal.classList.remove('open');setTab('decision');return}
  const outcome={assign:'Assigned',return:'Returned for Information',submit:'Pending Supervisor Approval',approve:'Approved',conditional:'Approved with Conditions',restructure:'Referred for Loan Restructuring',reject:'Denied'}[action];
