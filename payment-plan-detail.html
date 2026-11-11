@@ -119,8 +119,7 @@ function renderDecision(){
    ['Approved Installment Amount',d.installmentAmount?'$'+d.installmentAmount:''],
    ['Payment Frequency',d.frequency],['Payment Start Date',d.startDate],
    ['Payment End Date',d.endDate],['Deferral End Date',d.deferralEnd],
-   ['Approved / Negotiated Terms',d.negotiated],['Agreement Type',d.agreement],
-   ['Agreement Execution Date',d.executionDate],['Next Payment Date',d.nextPayment]]);
+   ['Terms Decision',d.termsChoice==='accept'?'Accepted Borrower Proposed Terms':'Modified Terms'],['Approved / Negotiated Terms',d.negotiated],['Agreement Type',d.agreement]]);
   const notes=card('Determination Rationale / Internal Notes (Staff Only)',[
    ['Recommendation Rationale',d.rationale],['Internal Comments',d.internalComments||d.decisionComments],
    ['Agreement / Determination Document',d.agreementFile]]);
@@ -168,7 +167,24 @@ let activityFilter='All Activity';function renderActivity(){let filters=['All Ac
 function setTab(next){tab=next;editing=false;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));$('reviewLayout').classList.toggle('hidden',tab!=='details');for(const [k,id] of [['docs','docsPanel'],['decision','decisionPanel'],['activity','activityPanel']])$(id).classList.toggle('hidden',tab!==k);if(tab==='details')renderStep();if(tab==='docs')renderDocs();if(tab==='decision')renderDecision();if(tab==='activity')renderActivity()}
 const modal=$('modalBg');let action='';function modalField(id,label,kind='text',value='',options=[]){return inputField(id,label,value,kind,options)}
 function ppModalSection(title,fields){const section=document.createElement('section');section.className='ppDecisionSection';const h=document.createElement('h3');h.textContent=title;section.append(h);fields.forEach(([id,label,kind,value,opts])=>section.append(modalField(id,label,kind||'text',value??'',opts||[])));return section}
-function ppDecisionTerms(){const d=staff.decision;return ppModalSection('Payment Arrangement',[['installmentAmount','Installment Amount ($) *','number',d.installmentAmount],['frequency','Payment Frequency *','select',d.frequency||'Monthly',['Monthly','Quarterly','Other']],['startDate','Payment Start Date *','date',d.startDate],['endDate','Payment End Date *','date',d.endDate],['deferralEnd','Deferral End Date (if applicable)','date',d.deferralEnd],['negotiated','Approved / Negotiated Terms','textarea',d.negotiated],['agreement','Agreement Type *','select',d.agreement||'Workout / Payment Plan Letter Agreement',['Workout / Payment Plan Letter Agreement','Delinquency Workout Plan','Forbearance Agreement']],['executionDate','Agreement Execution Date (if executed)','date',d.executionDate],['nextPayment','Next Payment Date','date',d.nextPayment]])}
+function ppDecisionTerms(){
+ const d=staff.decision;
+ const section=document.createElement('section');section.className='ppDecisionSection';
+ section.append(make('h3','','Payment Arrangement'));
+ const proposal=make('div','');proposal.style.marginBottom='14px';
+ proposal.append(field('Borrower Proposed Arrangement',rec.arrangement),field('Proposed Installment Amount',rec.installment?'$'+rec.installment:''),field('Proposed Frequency',rec.frequency),field('Proposed Duration',rec.duration?rec.duration+' months':''));
+ section.append(proposal);
+ const choice=modalField('termsChoice','Payment Terms *','select',d.termsChoice||'accept',[]);
+ const sel=choice.querySelector('select');sel.replaceChildren();
+ [['accept','Accept Proposed Terms'],['modify','Modify Terms']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;sel.append(option)});
+ sel.value=d.termsChoice||'accept';section.append(choice);
+ const edit=make('div');edit.id='ppModifiedTerms';
+ [['installmentAmount','Installment Amount ($) *','number',d.termsChoice==='modify'?d.installmentAmount:rec.installment],['frequency','Payment Frequency *','select',d.termsChoice==='modify'?d.frequency:(rec.frequency||'Monthly'),['Monthly','Quarterly','Other']],['startDate','Payment Start Date *','date',d.startDate],['endDate','Payment End Date *','date',d.endDate],['deferralEnd','Deferral End Date (if applicable)','date',d.deferralEnd],['negotiated','Modified / Negotiated Terms','textarea',d.negotiated]].forEach(([id,label,kind,value,opts])=>edit.append(modalField(id,label,kind,value||'',opts||[])));
+ section.append(edit);
+ const agreement=modalField('agreement','Agreement Type *','select',d.agreement||'Workout / Payment Plan Letter Agreement',['Workout / Payment Plan Letter Agreement','Delinquency Workout Plan','Forbearance Agreement']);section.append(agreement);
+ const toggle=()=>{edit.classList.toggle('hidden',sel.value!=='modify')};sel.addEventListener('change',toggle);toggle();
+ return section;
+}
 const ppConditionOptions=['Enhanced financial reporting','Reserve / distribution restrictions','Senior or public lender consent','Interim financial milestones','Other conditions'];
 function openAction(a){
  action=a;$('actionMenu').classList.add('hidden');const d=staff.decision;
@@ -230,12 +246,18 @@ function openAction(a){
 }
 function submitAction(){
  const values={};if(action==='restructure'){values.related=$('modalBody').querySelector('#ppRelatedDisplay')?.textContent||'';if(values.related==='No related transaction linked')values.related='';} $('modalBody').querySelectorAll('[data-field]').forEach(e=>values[e.dataset.field]=e.value.trim());
- const required={return:['external'],submit:['recommendation','rationale'],approve:['installmentAmount','frequency','startDate','endDate','agreement'],conditional:['installmentAmount','frequency','startDate','endDate','agreement'],restructure:['referralReason','modifications'],reject:['denialReason','findings','applicantExplanation'],issue:['applicantExplanation']};
+ const required={return:['external'],submit:['recommendation','rationale'],approve:['termsChoice','agreement'],conditional:['termsChoice','agreement'],restructure:['referralReason','modifications'],reject:['denialReason','findings','applicantExplanation'],issue:['applicantExplanation']};
  if(action==='restructure'&&!values.applicantExplanation){alert('Please enter Applicant Notification / Explanation.');return}
  for(const k of required[action]||[]){if(!values[k]){alert('Please complete: '+($('modalBody').querySelector('[data-field="'+k+'"]')?.previousElementSibling?.textContent||k));return}}
  if(['approve','conditional'].includes(action)){
-  if(!Number.isFinite(Number(values.installmentAmount))||Number(values.installmentAmount)<=0){alert('Enter a valid installment amount greater than zero.');return}
-  if(values.endDate<values.startDate){alert('Payment end date must be on or after the start date.');return}
+  if(values.termsChoice==='modify'){
+   for(const k of ['installmentAmount','frequency','startDate','endDate'])if(!values[k]){alert('Complete the modified payment terms: '+k);return}
+   if(!Number.isFinite(Number(values.installmentAmount))||Number(values.installmentAmount)<=0){alert('Enter a valid installment amount greater than zero.');return}
+   if(values.endDate<values.startDate){alert('Payment end date must be on or after the start date.');return}
+  }else{
+   values.installmentAmount=rec.installment||'';values.frequency=rec.frequency||'';
+   values.startDate='';values.endDate='';values.deferralEnd='';values.negotiated='Accepted borrower proposed payment arrangement as submitted';
+  }
  }
  if(action==='conditional'){
   values.conditions=[...$('modalBody').querySelectorAll('.ppConditionCheck:checked')].map(e=>e.value);
