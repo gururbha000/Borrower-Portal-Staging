@@ -30,7 +30,7 @@
 </style></head><body>
 <nav class="nav"><a href="staff-dashboard.html">← Staff Dashboard</a><a href="borrower-portal.html">Borrower Dashboard</a></nav><div class="top">Analyst Requests Workspace</div><div class="wrap">
 <div class="summary"><div><div class="lbl">REQUEST ID</div><div class="val" id="requestId"></div></div><div><div class="lbl">REQUEST TYPE</div><div class="val">Payment Plan</div></div><div><div class="lbl">PROJECT NAME</div><div class="val" id="projectHeader"></div></div><div class="ppLoanSummary"><div><div class="lbl">LOAN #</div><div class="val" id="loanHeader"></div></div><span class="badge" id="statusBadge"></span></div></div>
-<div class="tabs"><button class="tab active" data-tab="details">Request Details</button><button class="tab" data-tab="docs">Documents</button><button class="tab" data-tab="decision">Determination</button><button class="tab" data-tab="activity">Activity Log</button><div class="actionbar"><button class="actionbtn" id="actionToggle">☰ Action Menu ▾</button><div class="actionmenu hidden" id="actionMenu"><button data-action="assign">Assign Reviewer</button><button data-action="return">Return to Borrower</button><button data-action="submit">Submit for Supervisor Approval</button><button data-action="approve">Approve (Supervisor)</button><button data-action="conditional">Approve with Conditions (Supervisor)</button><button data-action="restructure">Refer to Restructuring (Supervisor)</button><button data-action="reject">Deny (Supervisor)</button><button data-action="issue">Issue Determination to Applicant</button></div></div></div>
+<div class="tabs"><button class="tab active" data-tab="details">Request Details</button><button class="tab" data-tab="docs">Documents</button><button class="tab" data-tab="decision">Determination</button><button class="tab" data-tab="activity">Activity Log</button><div class="actionbar"><button class="actionbtn" id="actionToggle">☰ Action Menu ▾</button><div class="actionmenu hidden" id="actionMenu"><button data-action="assign">Assign Reviewer</button><button data-action="return">Return to Borrower</button><button data-action="submit">Submit for Supervisor Approval</button><button data-action="review">Review Recommendation (Supervisor)</button><button data-action="issue">Issue Determination to Applicant</button></div></div></div>
 <div id="reviewLayout" class="layout"><aside class="side"><h2>Review Steps</h2><button data-step="0" class="active">1. Request Information</button><button data-step="1">2. Project / Loan Info</button><button data-step="2">3. Payment Plan Details</button><button data-step="3">4. Submitted Documents</button><button data-step="4">5. Financial Review</button></aside><main class="main"><div class="edithead"><h2 id="stepTitle"></h2><button class="editbtn" id="editButton">Edit</button></div><div id="stepContent"></div><div class="footer"><button id="previous">Previous</button><button class="primary" id="next">Next →</button></div></main></div>
 <section class="panel hidden" id="docsPanel"><div class="ppDocHead"><div><h2>Documents</h2><p class="muted">Review submitted files and record document decisions. Sample previews do not contain actual file contents.</p></div><div class="ppDocControls"><button type="button" id="ppDownloadAll">Download All Available</button><button type="button" id="ppDownloadSelected" disabled>Download Selected (0)</button><button type="button" class="primary" id="ppAddDocument">+ Add Document</button></div></div><div id="documentList"></div><div id="documentReview" class="panel hidden"></div></section>
 <section class="panel hidden" id="decisionPanel"><h2>Determination Summary</h2><p class="muted">Read-only summary of the analyst recommendation and supervisor decision. Detailed history remains in Activity Log.</p><div id="decisionContent"></div></section>
@@ -120,11 +120,11 @@ function renderDecision(){
  const approvedDuration=d.durationMonths||rec.duration;
  const modified=d.termsChoice==='modify';
  const proposalRows=[['Proposed Arrangement',rec.arrangement],['Proposed Installment',rec.installment?'$'+rec.installment:''],['Proposed Frequency',rec.frequency],['Proposed Duration',rec.duration?rec.duration+' months':'']];
- const decisionRows=[['Final Outcome',outcome],['Analyst Recommendation',d.recommendation],['Supervisor',d.supervisor||'Designated Asset Management Supervisor'],['Decision Date',d.decidedAt]];
+ const decisionRows=[['Final Outcome',outcome],['Analyst Recommendation',d.recommendation],['Supervisor Decision',d.supervisorDecision],['Supervisor',d.supervisor||'Designated Asset Management Supervisor'],['Decision Date',d.decidedAt]];
  const arrangementRows=[['Invoice #',invoice],['Delinquent Amount',rec.amount?'$'+rec.amount:''],['Approved Payment',approvedAmount?'$'+approvedAmount+' · '+(approvedFrequency||'')+' · '+(approvedDuration?approvedDuration+' months':''):'—'],['Start Date',d.startDate],['Terms',modified?'Modified Terms':'Accepted Proposed Terms']];
  if(!hasDecision){
   host.append(grid(card('Decision',decisionRows),card('Borrower Proposed Payment Plan',proposalRows)));
-  host.append(make('p','ppDecisionHelp',d.recommendation?'Awaiting authorized supervisor decision.':'No final determination recorded. Submit a recommendation through the Action Menu.'));
+  host.append(make('p','ppDecisionHelp',d.supervisorDecision==='Return'?'Returned for analyst revision.':d.supervisorDecision==='Reject'?'Supervisor rejected the recommendation.':d.recommendation?'Awaiting authorized supervisor decision.':'No final determination recorded. Submit a recommendation through the Action Menu.'));
  }else if(isApproved){
   host.append(grid(card('Decision',decisionRows),card('Approved Payment Arrangement',arrangementRows)));
   if(modified){
@@ -148,20 +148,18 @@ function renderDecision(){
    ...(d.issuedAt?[['Issued On',new Date(d.issuedAt).toLocaleString()]]:[])]);
   host.append(grid(conditions,communication));
   const notes=card('Internal Review & Documentation (Staff Only)',[
-   ['Recommendation Rationale',d.rationale],['Internal Comments',d.internalComments||d.decisionComments],
+   ['Recommendation Rationale',d.rationale],['Internal Comments',d.internalComments||d.supervisorComments||d.decisionComments],
    ['Agreement / Determination Document',d.agreementFile]]);
   notes.classList.add('ppInternalNotes');host.append(notes);
  }else if(isRestructuring){
   const referral=card('Restructuring Referral',[
-   ['Referral Reason',d.referralReason],['Recommended Loan Modifications',d.modifications],
-   ['Related Loan Portfolio Transaction #',d.related],['Referral To',d.referralTo],
-   ['Next Steps',d.nextSteps]]);
+   ['Referral Reason',d.referralReason],['Related Loan Portfolio Transaction #',d.related]]);
   const notes=card('Determination Rationale / Internal Notes (Staff Only)',[
-   ['Recommendation Rationale',d.rationale],['Internal Comments',d.internalComments||d.decisionComments]]);
+   ['Recommendation Rationale',d.rationale],['Internal Comments',d.internalComments||d.supervisorComments||d.decisionComments]]);
   host.append(grid(referral,notes));
   const relatedControls=make('div','panel');relatedControls.append(make('h3','','Related Loan Portfolio Transaction'));
   const current=make('p','muted',d.related?'Linked transaction: '+d.related:'No Loan Portfolio Transaction linked yet');relatedControls.append(current);
-  const create=make('button','primary','Create Related Request');create.onclick=()=>{const url=new URL('loan-portfolio-transaction-form.html',location.href);url.searchParams.set('parentRequestId',rec.id);url.searchParams.set('transactionType','Loan Restructuring');location.href=url.toString()};
+  const create=make('button','primary','Create Related Workout / Restructuring Request');create.onclick=()=>{const url=new URL('loan-portfolio-transaction-form.html',location.href);url.searchParams.set('parentRequestId',rec.id);url.searchParams.set('transactionType','Loan Restructuring');location.href=url.toString()};
   const link=make('button','','Link Existing Request');link.style.marginLeft='8px';link.onclick=()=>{const id=prompt('Existing Loan Portfolio Transaction request number',d.related||'');if(id===null)return;const value=id.trim();if(!/^LT[-A-Za-z0-9]+$/i.test(value)){alert('Enter a valid LT- request number.');return}d.related=value;audit('Related Loan Portfolio Transaction linked',rec.id+' → '+value,'Workflow');renderDecision()};
   relatedControls.append(create,link);if(d.related){const view=make('a','','Open Related Request');view.href='lp-transaction-detail.html?requestId='+encodeURIComponent(d.related);view.style.marginLeft='12px';relatedControls.append(view)}host.append(relatedControls);
  }else if(isDenied){
@@ -169,7 +167,7 @@ function renderDecision(){
    ['Denial Reason',d.denialReason],['Supporting Findings',d.findings],
    ['Recommended Follow-up',d.followup],['Notice / Cure Reference',d.noticeReference]]),
    card('Determination Rationale / Internal Notes (Staff Only)',[
-    ['Recommendation Rationale',d.rationale],['Internal Comments',d.internalComments||d.decisionComments],
+    ['Recommendation Rationale',d.rationale],['Internal Comments',d.internalComments||d.supervisorComments||d.decisionComments],
     ['Determination Document',d.agreementFile]])));
  }
  if(hasDecision&&!isApproved){
@@ -206,42 +204,43 @@ function ppDecisionTerms(){
 const ppConditionOptions=['Enhanced financial reporting','Reserve / distribution restrictions','Senior or public lender consent','Interim financial milestones','Other conditions'];
 function openAction(a){
  action=a;$('actionMenu').classList.add('hidden');const d=staff.decision;
- const names={assign:'Assign Reviewer',return:'Return to Borrower',submit:'Submit for Supervisor Approval',approve:'Approve Payment Plan',conditional:'Approve with Conditions',restructure:'Refer to Loan Restructuring',reject:'Deny Payment Plan',issue:'Issue Determination to Applicant'};
+ const names={assign:'Assign Reviewer',return:'Return to Borrower',submit:'Submit for Supervisor Approval',review:'Review Recommendation',issue:'Issue Determination to Applicant'};
  $('modalTitle').textContent=names[a];const body=$('modalBody');body.replaceChildren();
  if(a==='assign')body.append(modalField('assignee','Assigned Reviewer','text',staff.assignee||''));
  if(a==='return')body.append(modalField('external','External Comment to Borrower *','textarea'));
- if(a==='submit')body.append(ppModalSection('Analyst Recommendation',[['recommendation','Recommended Outcome *','select',d.recommendation||'Approve',['Approve','Approve with Conditions','Refer to Restructuring','Deny']],['rationale','Recommendation Rationale *','textarea',d.rationale]]));
- if(a==='approve'||a==='conditional'){
-  body.append(ppDecisionTerms());
-  if(a==='conditional'){
-   const section=document.createElement('section');section.className='ppDecisionSection ppCompactConditions';
-   section.append(make('h3','','Conditions of Approval'));
-   const checks=make('div','ppDecisionChecks');
-   ppConditionOptions.forEach(option=>{
-    const l=document.createElement('label'),c=document.createElement('input');
-    c.type='checkbox';c.value=option;c.className='ppConditionCheck';
-    c.checked=Array.isArray(d.conditions)&&d.conditions.includes(option);
-    l.append(c,document.createTextNode(option));checks.append(l);
-   });
-   section.append(checks);
-   const other=modalField('additionalConditions','Specify Other Conditions *','textarea',d.additionalConditions||(Array.isArray(d.conditions)&&d.conditions.includes('Other conditions')?d.conditionDetails:'')||'');
-   other.id='ppOtherConditions';other.querySelector('textarea').placeholder='Describe the other condition';
-   section.append(other);
-   const toggleOther=()=>other.classList.toggle('hidden',![...checks.querySelectorAll('.ppConditionCheck:checked')].some(e=>e.value==='Other conditions'));
-   checks.addEventListener('change',toggleOther);toggleOther();body.append(section);
-  }
+ if(a==='submit'){
+  body.append(ppModalSection('Analyst Recommendation',[['recommendation','Recommended Outcome *','select',d.recommendation||'Approve',['Approve','Approve with Conditions','Refer to Loan Restructuring','Deny']],['rationale','Recommendation Rationale (Staff Only) *','textarea',d.rationale]]));
+  const referral=modalField('referralReason','Referral Reason *','textarea',d.referralReason||'');referral.id='ppAnalystReferral';body.append(referral);
+  const toggle=()=>referral.classList.toggle('hidden',body.querySelector('[data-field=recommendation]').value!=='Refer to Loan Restructuring');body.querySelector('[data-field=recommendation]').addEventListener('change',toggle);toggle();
  }
- if(a==='restructure'){
-  body.append(ppModalSection('Restructuring Referral',[['referralReason','Referral Reason *','textarea',d.referralReason],['modifications','Recommended Loan Modifications *','textarea',d.modifications],['referralTo','Referral To','select',d.referralTo||'Asset Management / Legal Review',['Asset Management / Legal Review','City Attorney','Loan Portfolio Management']],['nextSteps','Next Steps','textarea',d.nextSteps]]));
-  const related=make('section','ppDecisionSection');related.append(make('h3','','Related Loan Portfolio Transaction'));const info=make('p','muted','Link an existing transaction here, or create a related request from Determination after confirming the referral.');related.append(info);const link=make('div');link.id='ppRelatedDisplay';link.textContent=d.related||'No related transaction linked';related.append(link);const buttons=make('div');buttons.style.display='flex';buttons.style.gap='10px';buttons.style.marginTop='12px';const existing=make('button','','Link Existing Request');existing.type='button';existing.onclick=()=>{const id=prompt('Enter existing Loan Portfolio Transaction request number');if(!id)return;const normalized=id.trim();if(!/^LT[-A-Za-z0-9]+$/i.test(normalized)){alert('Enter a valid Loan Portfolio Transaction request number (LT-...).');return}link.textContent=normalized;related.dataset.related=normalized};buttons.append(existing);related.append(buttons);body.append(related);
+ if(a==='review'){
+  if(!d.recommendation||staff.status!=='Pending Supervisor Approval'){alert('Submit an analyst recommendation for supervisor review first.');return}
+  const section=document.createElement('section');section.className='ppDecisionSection';section.append(make('h3','','Analyst Recommendation'));
+  section.append(make('p','','Recommended Outcome: '+d.recommendation));section.append(make('p','','Rationale (Staff Only): '+(d.rationale||'—')));
+  if(/Restructur/i.test(d.recommendation))section.append(make('p','','Referral Reason: '+(d.referralReason||'—')));
+  body.append(section);
+  body.append(modalField('supervisorDecision','Supervisor Decision *','select','Approve',['Approve','Reject','Return']));
+  const outcomeFields=make('div');outcomeFields.id='ppSupervisorOutcome';body.append(outcomeFields);
+  const update=()=>{
+   outcomeFields.replaceChildren();const decision=body.querySelector('[data-field=supervisorDecision]').value;
+   if(decision==='Approve'){
+    if(d.recommendation==='Approve'||d.recommendation==='Approve with Conditions'){
+     outcomeFields.append(ppDecisionTerms());
+     if(d.recommendation==='Approve with Conditions'){
+      const section=document.createElement('section');section.className='ppDecisionSection ppCompactConditions';section.append(make('h3','','Conditions of Approval'));
+      const checks=make('div','ppDecisionChecks');ppConditionOptions.forEach(option=>{const label=make('label'),check=document.createElement('input');check.type='checkbox';check.value=option;check.className='ppConditionCheck';check.checked=Array.isArray(d.conditions)&&d.conditions.includes(option);label.append(check,document.createTextNode(option));checks.append(label)});section.append(checks);
+      const other=modalField('additionalConditions','Specify Other Conditions *','textarea',d.additionalConditions||'');other.id='ppOtherConditions';section.append(other);
+      const toggle=()=>other.classList.toggle('hidden',![...checks.querySelectorAll('.ppConditionCheck:checked')].some(e=>e.value==='Other conditions'));checks.addEventListener('change',toggle);toggle();outcomeFields.append(section);
+     }
+    }else if(d.recommendation==='Deny'){
+     outcomeFields.append(ppModalSection('Denial',[['denialReason','Denial Reason *','select',d.denialReason||'', ['', 'Insufficient financial justification','Sufficient liquidity to cure delinquency','Unresolved compliance defaults','Disallowed operating expenses','Other']],['findings','Supporting Findings','textarea',d.findings||'']]));
+    }else{outcomeFields.append(make('p','muted','Approval authorizes workout analysis. It does not approve loan restructuring.'))}
+   }
+   outcomeFields.append(modalField('internalComments','Internal Comments (Staff Only)','textarea',''));
+   if(decision==='Approve')outcomeFields.append(modalField('applicantExplanation','Applicant Notification / Explanation'+(['Deny','Refer to Loan Restructuring'].includes(d.recommendation)?' *':''),'textarea',d.applicantExplanation||''));
+  };body.querySelector('[data-field=supervisorDecision]').addEventListener('change',update);update();
  }
- if(a==='reject')body.append(ppModalSection('Denial & Follow-up',[['denialReason','Denial Reason *','select',d.denialReason||'', ['', 'Insufficient financial justification','Sufficient liquidity to cure delinquency','Unresolved compliance defaults','Disallowed operating expenses','Other']],['findings','Supporting Findings *','textarea',d.findings],['followup','Recommended Follow-up','select',d.followup||'Staff review of notice / cure requirements',['Staff review of notice / cure requirements','Request immediate payment','Refer to City Attorney / Collections','Other']],['noticeReference','Notice / Cure Reference (if issued)','text',d.noticeReference]]));
- if(['approve','conditional','restructure','reject'].includes(a)){
-  if(a==='approve'||a==='conditional')body.append(make('h3','ppNotesHeading','Decision Notes'));
-  body.append(modalField('internalComments','Internal Comments (Staff Only)','textarea',d.internalComments||d.decisionComments||''));
-  body.append(modalField('applicantExplanation','Applicant Notification / Explanation'+(['restructure','reject'].includes(a)?' *':''),'textarea',d.applicantExplanation||''));
-  if(a!=='approve'&&a!=='conditional'){const note=make('p','muted','The applicant-facing explanation is saved as a draft until staff issues the determination.');body.append(note);}
- }
+
  if(a==='issue'){
   if(!d.outcome){alert('Record an authorized determination before issuing it.');return}
   if(d.issuedAt){alert('The determination has already been marked as issued.');return}
@@ -250,46 +249,61 @@ function openAction(a){
   body.append(make('p','muted','This prototype records issuance only. It does not send an email or publish to the Borrower Portal.'));
  }
 
- $('modalSubmit').textContent=a==='assign'?'Save Assignment':a==='submit'?'Submit for Approval':a==='return'?'Return':a==='issue'?'Record Issuance':'Confirm';
+ $('modalSubmit').textContent=a==='assign'?'Save Assignment':a==='submit'?'Submit for Approval':a==='review'?'Confirm Decision':a==='return'?'Return':a==='issue'?'Record Issuance':'Confirm';
  modal.classList.add('open')
 }
 function submitAction(){
- const values={};if(action==='restructure'){values.related=$('modalBody').querySelector('#ppRelatedDisplay')?.textContent||'';if(values.related==='No related transaction linked')values.related='';} $('modalBody').querySelectorAll('[data-field]').forEach(e=>values[e.dataset.field]=e.value.trim());
- const required={return:['external'],submit:['recommendation','rationale'],approve:[],conditional:[],restructure:['referralReason','modifications'],reject:['denialReason','findings','applicantExplanation'],issue:['applicantExplanation']};
- if(action==='restructure'&&!values.applicantExplanation){alert('Please enter Applicant Notification / Explanation.');return}
- for(const k of required[action]||[]){if(!values[k]){alert('Please complete: '+($('modalBody').querySelector('[data-field="'+k+'"]')?.previousElementSibling?.textContent||k));return}}
- if(['approve','conditional'].includes(action)){
-  values.termsChoice=$('modalBody').querySelector('input[name=ppTermsChoice]:checked')?.value||'accept';
-  values.agreement='Workout / Payment Plan Letter Agreement';
-  if(values.termsChoice==='modify'){
-   for(const k of ['installmentAmount','frequency','durationMonths','startDate'])if(!values[k]){alert('Complete the modified payment terms: '+k);return}
-   if(!Number.isFinite(Number(values.installmentAmount))||Number(values.installmentAmount)<=0){alert('Enter a valid installment amount greater than zero.');return}
-   if(!Number.isFinite(Number(values.durationMonths))||Number(values.durationMonths)<=0){alert('Enter a valid duration.');return}
-   values.endDate='';values.negotiated='Modified payment terms approved';
+ const body=$('modalBody'),values={};body.querySelectorAll('[data-field]').forEach(e=>values[e.dataset.field]=e.value.trim());
+ const requireField=(key)=>{if(values[key])return true;alert('Please complete: '+(body.querySelector('[data-field="'+key+'"]')?.previousElementSibling?.textContent||key));return false};
+ if(action==='submit'){
+  if(!requireField('recommendation')||!requireField('rationale'))return;
+  if(values.recommendation==='Refer to Loan Restructuring'&&!requireField('referralReason'))return;
+  if(staff.decision.outcome){alert('A final determination already exists.');return}
+  staff.decision.recommendation=values.recommendation;staff.decision.rationale=values.rationale;staff.decision.supervisorDecision='';staff.decision.supervisorComments='';
+  staff.decision.referralReason=values.recommendation==='Refer to Loan Restructuring'?values.referralReason:'';
+  staff.decision.supervisor='Designated Asset Management Supervisor';staff.decision.submittedAt=new Date().toISOString().slice(0,10);
+  staff.status='Pending Supervisor Approval';audit('Submitted for supervisor approval',values.recommendation+'; '+values.rationale,'Workflow');
+ }else if(action==='review'){
+  const decision=values.supervisorDecision;if(!decision){alert('Select a supervisor decision.');return}
+  const d=staff.decision;
+  if(decision==='Return'||decision==='Reject'){
+   if(!requireField('internalComments'))return;
+   staff.status=decision==='Return'?'Returned for Analyst Revision':'Recommendation Rejected';
+   d.supervisorDecision=decision;d.supervisorComments=values.internalComments;
+   audit('Supervisor '+decision.toLowerCase()+' recommendation',values.internalComments,'Workflow');
   }else{
-   values.installmentAmount=rec.installment||'';values.frequency=rec.frequency||'';
-   values.startDate='';values.endDate='';values.durationMonths=rec.duration||'';values.deferralEnd='';values.negotiated='Accepted borrower proposed payment arrangement as submitted';
+   const recommendation=d.recommendation;
+   if(recommendation==='Approve'||recommendation==='Approve with Conditions'){
+    values.termsChoice=body.querySelector('input[name=ppTermsChoice]:checked')?.value||'accept';
+    if(values.termsChoice==='modify'){
+     for(const key of ['installmentAmount','frequency','durationMonths','startDate'])if(!requireField(key))return;
+     if(!(Number(values.installmentAmount)>0)||!(Number(values.durationMonths)>0)){alert('Enter valid payment amount and duration.');return}
+    }else{values.installmentAmount=rec.installment||'';values.frequency=rec.frequency||'';values.durationMonths=rec.duration||'';values.startDate=''}
+    values.agreement='Workout / Payment Plan Letter Agreement';
+    if(recommendation==='Approve with Conditions'){
+     values.conditions=[...body.querySelectorAll('.ppConditionCheck:checked')].map(e=>e.value);
+     if(!values.conditions.length){alert('Select at least one condition.');return}
+     if(values.conditions.includes('Other conditions')&&!requireField('additionalConditions'))return;
+    }else{values.conditions=[];values.additionalConditions=''}
+   }
+   if(recommendation==='Deny'&&!requireField('denialReason'))return;
+   if(['Deny','Refer to Loan Restructuring'].includes(recommendation)&&!requireField('applicantExplanation'))return;
+   const outcome=recommendation==='Refer to Loan Restructuring'?'Referred for Loan Restructuring':recommendation==='Approve'?'Approved':recommendation==='Approve with Conditions'?'Approved with Conditions':'Denied';
+   Object.assign(d,values,{outcome,supervisorDecision:'Approved',decidedAt:new Date().toISOString().slice(0,10),issuedAt:''});
+   staff.status=outcome;audit('Supervisor approved recommendation','Final outcome: '+outcome,'Workflow');
+   if(values.internalComments)audit('Internal decision notes',values.internalComments,'Staff Notes');
   }
+ }else if(action==='issue'){
+  if(!staff.decision.outcome){alert('Record an authorized determination first.');return}
+  if(!requireField('applicantExplanation'))return;
+  staff.decision.applicantExplanation=values.applicantExplanation;staff.decision.issuedAt=new Date().toISOString();
+  audit('Determination issued to applicant','Outcome: '+staff.decision.outcome,'Workflow');
+ }else if(action==='assign'){
+  staff.assignee=values.assignee||'Unassigned';audit('Reviewer assigned',staff.assignee,'Workflow');
+ }else if(action==='return'){
+  if(!requireField('external'))return;staff.status='Returned for Information';audit('Returned to borrower',values.external,'Workflow');
  }
- if(action==='conditional'){
-  values.conditions=[...$('modalBody').querySelectorAll('.ppConditionCheck:checked')].map(e=>e.value);
-  if(!values.conditions.length){alert('Select at least one condition of approval.');return}
-  if(values.conditions.includes('Other conditions')&&!values.additionalConditions){alert('Specify the other condition.');return}
-  values.conditionDetails='';
-  // Preserve historical per-condition fields only for legacy records; new decisions use selections and optional Other text.
-  ['reporting','reserveRestrictions','lenderConsent','milestones'].forEach(k=>values[k]='');
- }
- if(action==='issue'){staff.decision.applicantExplanation=values.applicantExplanation;staff.decision.issuedAt=new Date().toISOString();audit('Determination issued to applicant','Outcome: '+staff.decision.outcome+'; applicant explanation: '+values.applicantExplanation,'Workflow');modal.classList.remove('open');setTab('decision');return}
- const outcome={assign:'Assigned',return:'Returned for Information',submit:'Pending Supervisor Approval',approve:'Approved',conditional:'Approved with Conditions',restructure:'Referred for Loan Restructuring',reject:'Denied'}[action];
- if(action==='assign'){staff.assignee=values.assignee||'Unassigned'}
- else if(action==='return'){staff.status=outcome}
- else {Object.assign(staff.decision,values);staff.status=outcome;if(action==='submit'){staff.decision.supervisor='Designated Asset Management Supervisor';staff.decision.submittedAt=new Date().toISOString().slice(0,10)}}
- if(['approve','conditional','restructure','reject'].includes(action)){staff.decision.outcome=outcome;staff.decision.decidedAt=new Date().toISOString().slice(0,10);staff.decision.issuedAt=''}
- const actionLabels={assign:'Reviewer assigned',return:'Returned to borrower',submit:'Submitted for supervisor approval',approve:'Payment Plan approved',conditional:'Payment Plan approved with conditions',restructure:'Payment Plan referred for loan restructuring',reject:'Payment Plan denied'};
- const detail=action==='conditional'?('Conditions: '+(values.conditions||[]).join(', ')+'; '+(values.additionalConditions||'')):action==='restructure'?(values.referralReason||''):action==='reject'?(values.denialReason+'; '+values.findings):values.external||values.rationale||values.negotiated||values.assignee||'';
- audit(actionLabels[action],detail);
- if(values.internalComments){staff.activity.push({at:new Date().toISOString(),action:'Internal decision notes',details:values.internalComments,by:'LAHD Staff',type:'Staff Notes'});persist()}
- modal.classList.remove('open');renderHeader();setTab(['approve','conditional','restructure','reject'].includes(action)?'decision':tab)
+ modal.classList.remove('open');renderHeader();setTab(['submit','review','issue'].includes(action)?'decision':tab);
 }
 $('editButton').onclick=()=>{editing=!editing;assocDraft=editing?{loans:[...assocState.loans],invoice:assocState.invoice}:null;renderStep()};document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{step=Number(b.dataset.step);editing=false;setTab('details')});$('previous').onclick=()=>{step=Math.max(0,step-1);editing=false;renderStep()};$('next').onclick=()=>{if(step===4)location.href='staff-dashboard.html';else{step++;editing=false;renderStep()}};document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));$('actionToggle').onclick=()=>$('actionMenu').classList.toggle('hidden');document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>openAction(b.dataset.action));$('modalCancel').onclick=()=>modal.classList.remove('open');$('modalSubmit').onclick=submitAction;modal.onclick=e=>{if(e.target===modal)modal.classList.remove('open')};renderHeader();setTab('details');
 })();
