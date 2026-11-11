@@ -169,7 +169,7 @@ function openAction(a){
  $('modalTitle').textContent=names[a];const body=$('modalBody');body.replaceChildren();
  if(a==='assign')body.append(modalField('assignee','Assigned Reviewer','text',staff.assignee||''));
  if(a==='return')body.append(modalField('external','External Comment to Borrower *','textarea'));
- if(a==='submit')body.append(ppModalSection('Analyst Recommendation',[['recommendation','Recommended Outcome *','select',d.recommendation||'Approve',['Approve','Approve with Conditions','Refer to Restructuring','Deny']],['authority','Approving Authority','select',d.authority||'Asset Management Leadership',['Asset Management Leadership','Extended Management / Legal Review']],['rationale','Recommendation Rationale *','textarea',d.rationale],['supervisor','Submit To / Supervisor *','select',d.supervisor||'',['','Asset Management Supervisor (Demo)','Portfolio Management Supervisor (Demo)','Director of Asset Management (Demo)']]]));
+ if(a==='submit')body.append(ppModalSection('Analyst Recommendation',[['recommendation','Recommended Outcome *','select',d.recommendation||'Approve',['Approve','Approve with Conditions','Refer to Restructuring','Deny']],['rationale','Recommendation Rationale *','textarea',d.rationale],['supervisor','Submit To / Supervisor *','select',d.supervisor||'',['','Asset Management Supervisor (Demo)','Portfolio Management Supervisor (Demo)','Director of Asset Management (Demo)']]]));
  if(a==='approve'||a==='conditional'){
   body.append(ppDecisionTerms());
   if(a==='conditional'){
@@ -206,7 +206,7 @@ function openAction(a){
  }
  if(a==='reject')body.append(ppModalSection('Denial & Follow-up',[['denialReason','Denial Reason *','select',d.denialReason||'', ['', 'Insufficient financial justification','Sufficient liquidity to cure delinquency','Unresolved compliance defaults','Disallowed operating expenses','Other']],['findings','Supporting Findings *','textarea',d.findings],['followup','Recommended Follow-up','select',d.followup||'Staff review of notice / cure requirements',['Staff review of notice / cure requirements','Request immediate payment','Refer to City Attorney / Collections','Other']],['noticeReference','Notice / Cure Reference (if issued)','text',d.noticeReference]]));
  if(['approve','conditional','restructure','reject'].includes(a))body.append(modalField('decisionComments','Decision Comments','textarea',d.decisionComments||''));
- body.append(modalField('internal','Internal Comment','textarea'));
+ if(a!=='submit')body.append(modalField('internal','Internal Comment','textarea'));
  $('modalSubmit').textContent=a==='assign'?'Save Assignment':a==='submit'?'Submit for Approval':a==='return'?'Return':'Confirm';
  modal.classList.add('open')
 }
