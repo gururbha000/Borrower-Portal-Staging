@@ -94,7 +94,6 @@ function renderInvoiceAssociation(host){
   const outcome=modalField('recommendation','Recommended Outcome','select',d.recommendation||'Approve',['Approve','Approve with Conditions','Refer to Loan Restructuring','Deny']);summary.append(outcome);
   const conditionArea=make('div');summary.append(conditionArea);
   const showConditions=()=>{conditionArea.replaceChildren();if(outcome.querySelector('select').value==='Approve with Conditions')conditionArea.append(ppConditionPicker(d.analystConditions,d.analystOtherConditions))};outcome.querySelector('select').addEventListener('change',showConditions);showConditions();
-  const rationale=modalField('rationale','Staff Comments / Recommendation Rationale','textarea',d.rationale||'');summary.append(rationale);
   const buttons=make('div','ppAssocFooter');const cancel=make('button','','Cancel'),save=make('button','primary','Save Step 3');buttons.append(cancel,save);summary.append(buttons);cancel.onclick=()=>{editing=false;assocDraft=null;renderStep()};
   save.onclick=()=>{
    const updates={},comments={};for(const [k,o] of Object.entries(controls)){const v=o.input.value.trim();if(['analystInstallment','analystDuration'].includes(k)&&v&&!(Number(v)>0)){alert('Enter a positive value for '+o.label);return}if(v!==o.original&&!o.comment.value.trim()){alert('Enter a comment for the change to '+o.label);o.comment.focus();return}updates[k]=v;comments[k]=v!==o.original?o.comment.value.trim():''}
@@ -103,14 +102,13 @@ function renderInvoiceAssociation(host){
    const other=conditionArea.querySelector('[data-field=additionalConditions]')?.value.trim()||'';
    if(recommendation==='Approve with Conditions'&&!selected.length){alert('Select at least one recommended condition.');return}
    if(selected.includes('Other conditions')&&!other){alert('Specify the other condition.');return}
-   const changed=fields.filter(([k,,v])=>updates[k]!==String(v??''));Object.assign(d,updates,{termComments:comments,analystTermsChoice:changed.length?'modify':'accept',recommendation,analystConditions:recommendation==='Approve with Conditions'?selected:[],analystOtherConditions:recommendation==='Approve with Conditions'?other:'',rationale:rationale.querySelector('textarea').value.trim()});
+   const changed=fields.filter(([k,,v])=>updates[k]!==String(v??''));Object.assign(d,updates,{termComments:comments,analystTermsChoice:changed.length?'modify':'accept',recommendation,analystConditions:recommendation==='Approve with Conditions'?selected:[],analystOtherConditions:recommendation==='Approve with Conditions'?other:''});
    const old=assocState.invoice||'None',next=assocDraft.invoice||'';if(old!==next){assocState.invoice=next;assocState.invoiceValidated=false}
    audit('Step 3 staff review updated',changed.map(([k,label,v])=>label+': '+String(v??'—')+' → '+updates[k]+' ('+comments[k]+')').join('; ')||'Recommendation updated','Edits / Changes');editing=false;assocDraft=null;persist();renderStep()
   };
  }else{
   summary.append(field('Recommended Outcome',d.recommendation||'Not recorded'));
   if(d.recommendation==='Approve with Conditions')summary.append(field('Recommended Conditions',[...(d.analystConditions||[]),d.analystOtherConditions||''].filter(Boolean).join('; ')||'Not recorded'));
-  summary.append(field('Staff Comments / Rationale',d.rationale||'Not recorded'));
  }
  const invoice=assocPanel('AHIS Invoice Association',assocState.invoiceValidated);host.append(invoice);
  const current=()=>ahisInvoices.find(x=>x.invoice===(editing?assocDraft.invoice:assocState.invoice))||{invoice:editing?assocDraft.invoice:assocState.invoice,year:rec.year,caseNo:rec.rrcase};
@@ -272,7 +270,7 @@ function openAction(a){
   section.append(ppCompactSummary('Staff recommended payment plan',changed?d.analystInstallment:rec.installment,changed?d.analystFrequency:rec.frequency,changed?d.analystDuration:rec.duration,changed?d.analystStart:rec.startDate));
   if(changed)section.append(make('div','muted ppApprovalOriginal','Borrower proposed $'+(rec.installment||'—')+' · '+(rec.frequency||'Monthly')+' · '+(rec.duration||'—')+' months'));
   if(d.recommendation==='Approve with Conditions')section.append(make('p','','Recommended Conditions: '+[...(d.analystConditions||[]),d.analystOtherConditions||''].filter(Boolean).join('; ')));
-  section.append(make('div','ppApprovalRationale','Staff rationale and individual change comments are recorded in Step 3.'));
+  section.append(modalField('rationale','Analyst Comments / Rationale','textarea',d.rationale||''));
   body.append(section);
 
  }
@@ -285,12 +283,11 @@ function openAction(a){
    if(changed)section.append(make('p','muted','Changed from borrower proposal: $'+(rec.installment||'—')+' · '+(rec.frequency||'Monthly')+' · '+(rec.duration||'—')+' months'));
    if(d.recommendation==='Approve with Conditions')section.append(make('p','','Recommended Conditions: '+(d.analystConditions||[]).join(', ')+(d.analystOtherConditions?' — '+d.analystOtherConditions:'')));
   }
-  section.append(make('p','','Rationale (Staff Only): '+(d.rationale||'—')));
+  section.append(make('p','','Analyst Comments: '+(d.rationale||'—')));
   if(/Restructur/i.test(d.recommendation))section.append(make('p','','Referral Reason: '+(d.referralReason||'—')));
   if(d.recommendation==='Deny')section.append(make('p','','Denial Reason: '+(d.analystDenialReason||'—')));
   body.append(section);
   body.append(modalField('supervisorDecision','Supervisor Decision *','select','Approve',['Approve','Reject','Return']));
-  section.append(make('p','muted','To change payment terms, recommended outcome, or conditions, edit and save Step 3 before confirming.'));
   body.append(modalField('internalComments','Supervisor Comments (required for Return or Reject)','textarea',''));
 
  }
@@ -311,12 +308,12 @@ function submitAction(){
  const requireField=(key)=>{if(values[key])return true;alert('Please complete: '+(body.querySelector('[data-field="'+key+'"]')?.previousElementSibling?.textContent||key));return false};
  if(action==='submit'){
   const d=staff.decision;
-  if(!d.rationale){alert('Complete and save the staff recommendation rationale in Step 3 before submitting.');return}
+  if(!values.rationale){alert('Enter Analyst Comments / Rationale before submitting.');return}
   const recommendation=d.recommendation;
   if(!recommendation){alert('Save a recommended outcome in Step 3 first.');return}
   if(recommendation==='Approve with Conditions'&&!(d.analystConditions||[]).length){alert('Save recommended conditions in Step 3 first.');return}
   if(d.outcome){alert('A final determination already exists.');return}
-  d.supervisorDecision='';d.supervisorComments='';d.supervisor='Designated Asset Management Supervisor';d.submittedAt=new Date().toISOString().slice(0,10);
+  d.rationale=values.rationale;d.supervisorDecision='';d.supervisorComments='';d.supervisor='Designated Asset Management Supervisor';d.submittedAt=new Date().toISOString().slice(0,10);
   staff.status='Pending Supervisor Approval';
   audit('Submitted for supervisor approval',d.recommendation+(d.analystConditions.length?'; Conditions: '+d.analystConditions.join(', '):''),'Workflow');
  }else if(action==='review'){
