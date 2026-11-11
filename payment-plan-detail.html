@@ -79,7 +79,7 @@ function renderInvoiceAssociation(host){
  const d=staff.decision;
  const panel=assocPanel('Payment Plan Details — Staff Review',false);panel.querySelector('.ppAssocHeader span').remove();host.append(panel);
  const intro=make('div','ppSubmissionContext');intro.append(field('Circumstances',rec.circumstances||'—'),field('Requested Arrangement',rec.arrangement||'—'),field('Delinquent Amount',rec.amount?'$'+Number(rec.amount).toLocaleString():'—'),field('Deferral End',rec.deferralEnd||'—'));panel.append(intro);
- const fields=[['analystInstallment','Payment Amount',rec.installment,'number'],['analystFrequency','Frequency',rec.frequency,'select'],['analystDuration','Duration (months)',rec.duration,'number'],['analystStart','Start Date',rec.startDate,'date'],['analystTerms','Additional Terms',rec.terms,'textarea']];
+ const fields=[['analystInstallment','Payment Amount',rec.installment,'number'],['analystFrequency','Frequency',rec.frequency,'select'],['analystDuration','Duration (months)',rec.duration,'number'],['analystStart','Start Date',rec.startDate,'date']];
  const actual=(k,v)=>d[k]!==undefined&&d[k]!==''?String(d[k]):String(v??'');
  const table=make('table','ppCompareTable');const head=make('tr');['Payment Term','Borrower Proposed','Staff Recommended'].forEach(t=>head.append(make('th','',t)));table.append(head);panel.append(table);
  const controls={};
