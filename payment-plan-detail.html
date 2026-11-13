@@ -35,6 +35,27 @@
 .lahdDeterminationField textarea,.rraStaffField textarea,.staffField textarea,.field textarea{display:block;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;resize:vertical}
 .rraStaffModal,.modalBox,.modal-content,.staffModal,.supervisorReviewModal{max-height:calc(100vh - 40px);max-width:calc(100vw - 28px);box-sizing:border-box}
 .lahdDraftPreview{margin:12px 0}
+</style><style id="pp-final-modal-and-letter-ux">
+.modalbg .modal{width:min(820px,95vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;padding:0;border-radius:10px}
+.modalbg .modal #modalTitle{flex-shrink:0;margin:0;padding:21px 26px 18px;background:#f5f8fc;border-bottom:1px solid #dce5ef;font-size:22px}
+.modalbg .modal #modalBody{overflow-y:auto;min-height:0;padding:20px 26px 24px;scrollbar-gutter:stable}
+.modalbg .modal .modalfooter{flex-shrink:0;margin:0;padding:15px 26px;background:#fff;border-top:1px solid #dce5ef}
+.modalbg .modal #modalBody>.ppDecisionSection{margin:0 0 16px}
+.modalbg .modal .formfield,.modalbg .modal .ppSupervisorFields{min-width:0;max-width:100%;box-sizing:border-box}
+.modalbg .modal .formfield textarea{width:100%;max-width:100%;box-sizing:border-box;min-height:92px}
+.ppAnalystReference{margin:17px 0 0;padding:14px 16px;background:#f2f6fb;border:1px solid #d8e4ef;border-radius:7px}
+.ppAnalystReferenceTitle{font-weight:700;color:#24415e;font-size:14px}
+.ppAnalystReferenceCaption{font-size:12px;color:#607890;margin:10px 0 6px}
+.ppAnalystReferenceText{background:#fff;border:1px solid #d9e4ee;border-radius:5px;padding:11px 12px;white-space:pre-wrap;font-size:14px}
+.ppSupervisorFields{margin-top:18px;padding-top:5px}
+#lahdLetterCard{padding:0!important;overflow:hidden;border-radius:8px}
+#lahdLetterCard>h3{margin:0;padding:18px 22px 5px;background:#f1f6fb;color:#203d59;font-size:19px}
+#lahdLetterCard>.lahd-letter-row{padding:8px 22px 17px;background:#f1f6fb;border-bottom:1px solid #d9e5f0}
+#lahdLetterCard>.ppLetterSummaryLabel{display:block;margin:19px 22px 8px;font-size:14px;font-weight:700;color:#254461}
+#lahdLetterCard>.ppDraftSummary{display:block;width:calc(100% - 44px);margin:0 22px;min-height:100px;border:1px solid #b8cbdf;border-radius:6px;padding:12px;box-sizing:border-box;font:inherit}
+#lahdLetterCard>.muted{margin:7px 22px 0;font-size:12px}
+#lahdLetterCard>.lahd-letter-actions{padding:13px 22px 20px}
+@media(max-width:600px){.modalbg .modal #modalBody{padding:16px}.modalbg .modal #modalTitle,.modalbg .modal .modalfooter{padding-left:16px;padding-right:16px}}
 </style></head><body>
 <nav class="nav"><a href="staff-dashboard.html">← Staff Dashboard</a><a href="borrower-portal.html">Borrower Dashboard</a></nav><div class="top">Analyst Requests Workspace</div><div class="wrap">
 <div class="summary"><div><div class="lbl">REQUEST ID</div><div class="val" id="requestId"></div></div><div><div class="lbl">REQUEST TYPE</div><div class="val">Payment Plan</div></div><div><div class="lbl">PROJECT NAME</div><div class="val" id="projectHeader"></div></div><div class="ppLoanSummary"><div><div class="lbl">LOAN #</div><div class="val" id="loanHeader"></div></div><span class="badge" id="statusBadge"></span></div></div>
@@ -276,7 +297,7 @@ function openAction(a){
   const conditionArea=make('div');section.append(conditionArea);
   const draw=()=>{conditionArea.replaceChildren();if(outcome.querySelector('select').value==='Approve with Conditions')conditionArea.append(ppConditionPicker(d.analystConditions,d.analystOtherConditions))};
   outcome.querySelector('select').addEventListener('change',draw);draw();
-  section.append(modalField('rationale','Analyst Internal Comments / Rationale (Staff Only)','textarea',d.rationale||''));section.append(modalField('borrowerExplanation','External Comment (Borrower-Facing) *','textarea',d.applicantExplanation||'Your Payment Plan request has been reviewed. The proposed outcome and payment terms are described in this letter.'));
+  section.append(modalField('rationale','Analyst Internal Comments / Rationale (Staff Only)','textarea',d.rationale||''));
   body.append(section);
  }
  if(a==='review'){
@@ -288,12 +309,12 @@ function openAction(a){
    if(changed)section.append(make('p','muted','Changed from borrower proposal: $'+(rec.installment||'—')+' · '+(rec.frequency||'Monthly')+' · '+(rec.duration||'—')+' months'));
    if(d.recommendation==='Approve with Conditions')section.append(make('p','','Recommended Conditions: '+(d.analystConditions||[]).join(', ')+(d.analystOtherConditions?' — '+d.analystOtherConditions:'')));
   }
-  section.append(make('p','','Analyst Internal Comments (Staff Only): '+(d.rationale||'—')));
+  const ref=make('div','ppAnalystReference');ref.append(make('div','ppAnalystReferenceTitle','Analyst Recommendation  ·  Read only'));ref.append(make('div','ppAnalystReferenceCaption','Internal Comments / Rationale'));ref.append(make('div','ppAnalystReferenceText',d.rationale||'—'));section.append(ref);
   if(/Restructur/i.test(d.recommendation))section.append(make('p','','Referral Reason: '+(d.referralReason||'—')));
   if(d.recommendation==='Deny')section.append(make('p','','Denial Reason: '+(d.analystDenialReason||'—')));
   body.append(section);
   body.append(modalField('supervisorDecision','Supervisor Decision *','select','Approve',['Approve','Reject','Return']));
-  body.append(modalField('internalComments','Supervisor Internal Comments (Staff Only; required for Return or Reject)','textarea',d.supervisorComments||''));body.append(modalField('borrowerExplanation','External Comment (Borrower-Facing) *','textarea',d.applicantExplanation||''));
+  const reviewFields=make('section','ppSupervisorFields');reviewFields.append(modalField('internalComments','Supervisor Internal Comments (Staff Only; required for Return or Reject)','textarea',d.supervisorComments||''));reviewFields.append(modalField('borrowerExplanation','Determination Summary *','textarea',d.applicantExplanation||d.draftSummary||'LAHD has reviewed the Payment Plan request. The determination and applicable payment terms are described in this letter.'));body.append(reviewFields);
 
  }
 
@@ -306,14 +327,14 @@ function openAction(a){
  }
 
  $('modalSubmit').textContent=a==='assign'?'Save Assignment':a==='submit'?'Submit for Approval':a==='review'?'Confirm Decision':a==='return'?'Return':a==='issue'?'Record Issuance':'Confirm';
- modal.classList.add('open')
+ modal.classList.add('open');modal.querySelector('.modal')?.scrollTo(0,0)
 }
 function submitAction(){
  const body=$('modalBody'),values={};body.querySelectorAll('[data-field]').forEach(e=>values[e.dataset.field]=e.value.trim());
  const requireField=(key)=>{if(values[key])return true;alert('Please complete: '+(body.querySelector('[data-field="'+key+'"]')?.previousElementSibling?.textContent||key));return false};
  if(action==='submit'){
   const d=staff.decision;
-  if(!values.rationale){alert('Enter Analyst Comments / Rationale before submitting.');return}if(!values.borrowerExplanation){alert('Enter the borrower-facing External Comment.');return}
+  if(!values.rationale){alert('Enter Analyst Comments / Rationale before submitting.');return}
   const recommendation=values.recommendation;
   if(!recommendation){alert('Select a recommended outcome.');return}
   const selected=[...body.querySelectorAll('.ppConditionCheck:checked')].map(x=>x.value);
@@ -324,12 +345,12 @@ function submitAction(){
   d.recommendation=recommendation;
   d.analystConditions=recommendation==='Approve with Conditions'?selected:[];
   d.analystOtherConditions=recommendation==='Approve with Conditions'?other:'';
-  d.rationale=values.rationale;d.applicantExplanation=values.borrowerExplanation;localStorage.setItem('lahd-borrower-explanation:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo'),values.borrowerExplanation);d.supervisorDecision='';d.supervisorComments='';d.supervisor='Designated Asset Management Supervisor';d.submittedAt=new Date().toISOString().slice(0,10);
+  d.rationale=values.rationale;d.supervisorDecision='';d.supervisorComments='';d.supervisor='Designated Asset Management Supervisor';d.submittedAt=new Date().toISOString().slice(0,10);
   staff.status='Pending Supervisor Approval';
   audit('Submitted for supervisor approval',recommendation+(selected.length?'; Conditions: '+selected.join(', '):''),'Workflow');
  }else if(action==='review'){
-  const decision=values.supervisorDecision;if(!values.borrowerExplanation){alert('Confirm the final borrower-facing External Comment.');return}if(!decision){alert('Select a supervisor decision.');return}
-  const d=staff.decision;d.applicantExplanation=values.borrowerExplanation;localStorage.setItem('lahd-borrower-explanation:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo'),values.borrowerExplanation);
+  const decision=values.supervisorDecision;if(decision==='Approve'&&!values.borrowerExplanation){alert('Enter the Determination Summary.');return}if(!decision){alert('Select a supervisor decision.');return}
+  const d=staff.decision;if(decision==='Approve'){d.applicantExplanation=values.borrowerExplanation;localStorage.setItem('lahd-borrower-explanation:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo'),values.borrowerExplanation);}
   if(decision==='Return'||decision==='Reject'){
    if(!requireField('internalComments'))return;
    staff.status=decision==='Return'?'Returned for Analyst Revision':'Recommendation Rejected';
@@ -388,7 +409,7 @@ function finalize(){let d=ensureDraft();if(d.state==='Final')return;d.state='Fin
 function preview(){const d=read()||ensureDraft();const overlay=document.createElement('div');overlay.className='lahd-letter-preview-backdrop';overlay.innerHTML='<div class="lahd-letter-preview" role="dialog" aria-modal="true"><header><strong>Determination Letter Preview</strong><button class="lahd-letter-btn" data-close>Close</button></header><div class="lahd-letter-paper"></div><div class="lahd-letter-actions"><button class="lahd-letter-btn" data-print>Print / Save as PDF</button><button class="lahd-letter-btn" data-download>Download Letter</button></div></div>';overlay.querySelector('.lahd-letter-paper').textContent=letterText(d);overlay.querySelector('[data-close]').onclick=()=>overlay.remove();overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};overlay.querySelector('[data-download]').onclick=download;overlay.querySelector('[data-print]').onclick=()=>{const w=window.open('','_blank');if(!w){alert('Allow popups to print the letter.');return}w.document.write('<!doctype html><title>Determination Letter</title><style>body{font:15px/1.7 Georgia,serif;white-space:pre-wrap;padding:45px;max-width:800px;margin:auto}</style>');w.document.body.textContent=letterText(read()||d);w.document.close();w.focus();w.print()};document.body.append(overlay)}
 function download(){const d=read()||ensureDraft();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([letterText(d)],{type:'text/plain;charset=utf-8'}));a.download=`${config.type.toLowerCase().replace(/\s+/g,'-')}-${requestId()}-${d.state.toLowerCase()}-letter.txt`;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
 function button(text,fn,primary){const b=document.createElement('button');b.type='button';b.className='lahd-letter-btn'+(primary?' primary':'');b.textContent=text;b.onclick=fn;return b}
-function renderCard(){const host=document.querySelector(config.determination);if(!host)return;let card=$('lahdLetterCard');if(!card){card=document.createElement('section');card.id='lahdLetterCard';card.className='lahd-letter-card';host.append(card)}const d=read();card.replaceChildren();const h=document.createElement('h3');h.textContent='Determination Letter';card.append(h);const row=document.createElement('div');row.className='lahd-letter-row';const meta=document.createElement('div');const title=document.createElement('strong');title.textContent=label();meta.append(title);const desc=document.createElement('p');desc.className='muted';desc.textContent=d?(d.state==='Final'?'Finalized '+new Date(d.finalizedAt).toLocaleString():`Draft version ${d.version} · Generated ${new Date(d.generatedAt).toLocaleString()}`):'Draft letter will be generated when submitted for supervisor approval.';meta.append(desc);row.append(meta);if(d){const badge=document.createElement('span');badge.className='lahd-letter-badge';badge.textContent=d.state;row.append(badge)}card.append(row);if(d){const actions=document.createElement('div');actions.className='lahd-letter-actions';actions.append(button(d.state==='Final'?'View Letter':'Preview Draft',preview),button('Download',download));if(d.state==='Draft')actions.append(button('Regenerate Draft',()=>{if(confirm('Regenerate the draft letter from the current determination summary?')){generate(true);renderCard()}}));card.append(actions)}}
+function renderCard(){const host=document.querySelector(config.determination);if(!host)return;let card=$('lahdLetterCard');if(!card){card=document.createElement('section');card.id='lahdLetterCard';card.className='lahd-letter-card';host.append(card)}const d=read();card.replaceChildren();const h=document.createElement('h3');h.textContent='Determination Letter';card.append(h);const row=document.createElement('div');row.className='lahd-letter-row';const meta=document.createElement('div');const title=document.createElement('strong');title.textContent=label();meta.append(title);const desc=document.createElement('p');desc.className='muted';desc.textContent=d?(d.state==='Final'?'Finalized '+new Date(d.finalizedAt).toLocaleString():`Draft version ${d.version} · Generated ${new Date(d.generatedAt).toLocaleString()}`):'Draft letter will be generated when submitted for supervisor approval.';meta.append(desc);row.append(meta);if(d){const badge=document.createElement('span');badge.className='lahd-letter-badge';badge.textContent=d.state;row.append(badge)}card.append(row);if(d){const summaryLabel=document.createElement('label');summaryLabel.className='ppLetterSummaryLabel';summaryLabel.textContent=d.state==='Final'?'Final Determination Summary':'Draft Determination Summary';card.append(summaryLabel);const summary=document.createElement('textarea');summary.id='ppDraftSummary';summary.className='ppDraftSummary';summary.readOnly=d.state==='Final';summary.value=d.state==='Final'?(d.body||getSummary()):(getSummary()||d.body||'');summary.addEventListener('change',()=>{if(d.state==='Draft'&&summary.value.trim()){localStorage.setItem('lahd-borrower-explanation:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo'),summary.value.trim());d.body=summary.value.trim();save(d)}});card.append(summary);const hint=document.createElement('p');hint.className='muted';hint.textContent=d.state==='Final'?'Supervisor-approved determination summary.':'Analyst may revise the draft summary and regenerate the letter. Changes after submission require renewed supervisor review.';card.append(hint);const actions=document.createElement('div');actions.className='lahd-letter-actions';actions.append(button(d.state==='Final'?'View Letter':'Preview Letter',preview),button('Download',download));if(d.state==='Draft'){const saveDraft=()=>{const v=$('ppDraftSummary')?.value.trim();if(!v){alert('Enter a Draft Determination Summary.');return false;}localStorage.setItem('lahd-borrower-explanation:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo'),v);d.body=v;save(d);return true};actions.prepend(button('Save Draft Summary',()=>{if(saveDraft())renderCard()}));actions.append(button('Regenerate Draft',()=>{if(saveDraft()){generate(true);renderCard();preview()}} ,true))}card.append(actions)}}
 function renderBanner(){const tabs=document.querySelector('.tabs');if(!tabs)return;let banner=$('lahdApprovalBanner');if(!pending()){banner?.remove();return}if(banner?.dataset.ready==='yes')return;if(!banner){banner=document.createElement('div');banner.id='lahdApprovalBanner';banner.className='lahd-approval-banner';tabs.after(banner)}banner.dataset.ready='yes';banner.replaceChildren();const text=document.createElement('div');text.innerHTML='<strong>Pending Supervisor Approval</strong><span>Analyst recommendation and draft determination letter are ready for review.</span>';banner.append(text);banner.append(button('Review Approval Package',()=>{
   // Route to the page's existing supervisor action, never a separate approval path.
   const target=document.querySelector(config.reviewAction);
@@ -407,7 +428,7 @@ function update(){if(pending()&&!read())ensureDraft();const now=status();if(now!
 const observer=new MutationObserver(()=>{if(timer)return;timer=setTimeout(()=>{timer=null;update()},60)});observer.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class']});
 // Capture the approval submission before the original page closes its modal.
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const txt=safe(b.textContent);if(!/submit for approval|submit for supervisor approval|submit recommendation|confirm decision|approve|confirm/i.test(txt))return;const modal=document.querySelector(config.modal);if(!modal||(config.modalOpen==='hidden'?modal.classList.contains('hidden'):!modal.classList.contains(config.modalOpen)))return;const title=safe($(config.modalTitle)?.textContent);if(/submit for supervisor approval/i.test(title)){const body=safe(modal.textContent);window.__lahdPendingLetterBody=body.slice(0,2500)}},true);
-const origGenerate=generate;generate=function(force){const d=origGenerate(force);if(d?.state==='Draft'&&window.__lahdPendingLetterBody){d.body=window.__lahdPendingLetterBody;save(d);window.__lahdPendingLetterBody=null}return d};
+
 update();
 })();
 </script></body></html>
