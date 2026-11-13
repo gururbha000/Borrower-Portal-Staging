@@ -1651,6 +1651,22 @@ html body #staffWrap > .staffGrid > .reviewMain {min-width:0 !important;}
 .lahdDeterminationField textarea,.rraStaffField textarea,.staffField textarea,.field textarea{display:block;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;resize:vertical}
 .rraStaffModal,.modalBox,.modal-content,.staffModal,.supervisorReviewModal{max-height:calc(100vh - 40px);max-width:calc(100vw - 28px);box-sizing:border-box}
 .lahdDraftPreview{margin:12px 0}
+</style><style id="rw-determination-tab-and-supervisor-padding">
+#staffView .staffDeterminationWorkspace{margin:14px 0 20px}
+#staffDeterminationWorkspace #approvalLetterPanel{display:block!important;margin:0}
+#staffView.staff-details-mode #staffDeterminationWorkspace,
+#staffView.staff-activity-mode #staffDeterminationWorkspace,
+#staffView.review-doc-mode #staffDeterminationWorkspace{display:none!important}
+#staffView.staff-determination-mode #staffDeterminationWorkspace{display:block!important}
+#staffView.staff-determination-mode .staffGrid,
+#staffView.staff-determination-mode #staffActivityLogWorkspace,
+#staffView.staff-determination-mode #staffDocumentReviewWorkspace,
+#staffView.staff-determination-mode #relatedRequestInline{display:none!important}
+#supervisorApprovalPanel>.staffField:not(.supervisorComment){margin:0 20px 18px!important;padding:0!important}
+#supervisorApprovalPanel>.staffField textarea{display:block;width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+#supervisorApprovalPanel .supervisorComment{margin:0 20px 18px!important}
+#supervisorApprovalPanel .supervisorActions{padding:15px 20px!important}
+@media(max-width:650px){#supervisorApprovalPanel>.staffField:not(.supervisorComment),#supervisorApprovalPanel .supervisorComment{margin-left:14px!important;margin-right:14px!important}}
 </style></head>
 <body><nav class="v96-nav"><a href="index.html">Sign In</a><a href="borrower-portal.html">Borrower Dashboard</a><a href="staff-dashboard.html">Staff Dashboard</a><a href="loan-portfolio-transactions.html">Transactions</a><a href="reserve-withdrawal.html">Reserve Withdrawal</a></nav>
 <div class="onboard-shell active" id="onboarding">
@@ -2529,7 +2545,7 @@ syncInvoiceTotal();
 <div class="queueFoot"><span>Showing sample Loan Portfolio Unit requests</span><span>Rows per page: 10   ·   1–4</span></div>
 </div>
 <div class="staffBanner requestOnlyChrome"><div><small>REQUEST ID</small><strong>001250301</strong></div><div><small>REQUEST TYPE</small><strong>Reserve Withdrawal</strong></div><div><small>PROJECT NAME</small><strong>Peak Plaza Apts</strong></div><div><small>LOAN #</small><strong>23-130489-001</strong></div><span class="reviewStatus">● In Review</span><strong style="color:#1754a0">← Back</strong></div>
-<div class="staffTools requestOnlyChrome"><div><button class="active" onclick="closeStaffDocReview()" type="button">Request Details</button> <button id="staffDocumentsTabBtn" onclick="openStaffDocReview()" type="button">Documents (7)</button><button class="staffActivityTab" id="staffActivityTabBtn" onclick="showStaffActivityLog()" type="button">Activity Log</button></div><div class="actionMenuWrap">
+<div class="staffTools requestOnlyChrome"><div><button class="active" onclick="closeStaffDocReview()" type="button">Request Details</button> <button id="staffDocumentsTabBtn" onclick="openStaffDocReview()" type="button">Documents (7)</button><button class="staffActivityTab" id="staffDeterminationTabBtn" onclick="showStaffDetermination()" type="button">Determination</button><button class="staffActivityTab" id="staffActivityTabBtn" onclick="showStaffActivityLog()" type="button">Activity Log</button></div><div class="actionMenuWrap">
 <button class="relatedRequestControl" id="relatedRequestControl" onclick="goToRelatedRequests()" style="display:none" title="View related request" type="button">
 <span class="relatedControlIcon">↗</span><span>Related Request</span><span class="relatedControlCount">1</span>
 </button>
@@ -2551,36 +2567,6 @@ syncInvoiceTotal();
 <div class="auditLine"><time>09/25/2026<br/><small>10:18 AM</small></time><div><b>System</b>   Assigned · <strong>Workflow</strong><p>Request routed to Loan Portfolio Unit for staff review.</p></div></div>
 <div class="auditLine"><time>09/25/2026<br/><small>10:14 AM</small></time><div><b>System</b>   Submitted · <strong>Request</strong><p>Reserve Withdrawal request submitted by John Doe on behalf of Peak Plaza LLC.</p></div></div>
 <p class="auditNote">Audit entries are retained with the transaction record and cannot be edited or deleted through the staff review screen.</p></section></div>
-<div id="approvalLetterPanel">
-<div class="alpHead">
-<div><h3>Draft Approval Letter</h3><div style="font-size:13px;color:#60768d;margin-top:4px">Generated with the Analyst recommendation for supervisor review</div></div>
-<span class="alpBadge" id="approvalLetterStatus">Draft · Pending Supervisor Approval</span>
-</div>
-<div class="alpBody">
-<div class="alpGrid">
-<div><small>Template</small><strong>Reserve Withdrawal Approval Letter</strong></div>
-<div><small>Recommended Amount</small><strong>$76,500</strong></div>
-<div><small>Submitted By</small><strong>Tan B</strong></div>
-<div><small>Submitted On</small><strong>09/30/2026</strong></div>
-</div>
-<div class="staffField" id="rwDraftSummaryEditor" style="margin:14px 0">
-<label for="rwDraftDeterminationSummary">Draft Determination Summary</label>
-<textarea id="rwDraftDeterminationSummary" style="width:100%;box-sizing:border-box;min-height:90px;border:1px solid #b8c9dc;border-radius:5px;padding:10px;font:inherit" placeholder="Describe the proposed determination, recommended amount and applicable conditions."></textarea>
-<div class="staffHelp">Analyst may edit and regenerate the draft letter. Changes after submission require renewed supervisor review.</div>
-</div>
-<div class="alpActions">
-<button class="staffBtn" onclick="lahdPreviewDeterminationLetter()" type="button">Preview Letter</button>
-<button class="staffBtn staffBtnPrimary" onclick="generateApprovalLetter()" type="button">Regenerate Draft</button>
-<button class="staffBtn" id="finalizeLetterBtn" onclick="finalizeApprovalLetter()" style="display:none" type="button">Finalize Letter</button>
-</div>
-<div id="finalLetterRow" style="display:none;margin-top:16px;padding-top:15px;border-top:1px solid #e1e8f0">
-<strong>Reserve Withdrawal Approval Letter.pdf</strong>
-<span style="color:#687d93;margin-left:8px">Finalized 09/28/2026 by Tan B</span>
-<button class="staffBtn" style="margin-left:14px" type="button">View</button>
-<button class="staffBtn" type="button">Download</button>
-</div>
-</div>
-</div>
 <div class="supervisorApprovalOverlay" id="supervisorApprovalOverlay" onclick="if(event.target===this)closeSupervisorApprovalPackage()" style="display:none">
 <div class="supervisorApprovalPanel supervisorApprovalModal" id="supervisorApprovalPanel">
 <div class="supervisorPanelHead">
@@ -2634,6 +2620,37 @@ syncInvoiceTotal();
 <span>Submitted by Tan B · Recommended $76,500 of $78,500 requested</span>
 </div>
 <button class="staffBtn pendingSupervisorReviewBtn" onclick="openSupervisorApprovalPackage()" type="button">Review Approval Package →</button>
+</div>
+<div id="staffDeterminationWorkspace" class="staffDeterminationWorkspace" style="display:none"><div id="approvalLetterPanel">
+<div class="alpHead">
+<div><h3>Draft Approval Letter</h3><div style="font-size:13px;color:#60768d;margin-top:4px">Generated with the Analyst recommendation for supervisor review</div></div>
+<span class="alpBadge" id="approvalLetterStatus">Draft · Pending Supervisor Approval</span>
+</div>
+<div class="alpBody">
+<div class="alpGrid">
+<div><small>Template</small><strong>Reserve Withdrawal Approval Letter</strong></div>
+<div><small>Recommended Amount</small><strong>$76,500</strong></div>
+<div><small>Submitted By</small><strong>Tan B</strong></div>
+<div><small>Submitted On</small><strong>09/30/2026</strong></div>
+</div>
+<div class="staffField" id="rwDraftSummaryEditor" style="margin:14px 0">
+<label for="rwDraftDeterminationSummary">Draft Determination Summary</label>
+<textarea id="rwDraftDeterminationSummary" style="width:100%;box-sizing:border-box;min-height:90px;border:1px solid #b8c9dc;border-radius:5px;padding:10px;font:inherit" placeholder="Describe the proposed determination, recommended amount and applicable conditions."></textarea>
+<div class="staffHelp">Analyst may edit and regenerate the draft letter. Changes after submission require renewed supervisor review.</div>
+</div>
+<div class="alpActions">
+<button class="staffBtn" onclick="lahdPreviewDeterminationLetter()" type="button">Preview Letter</button>
+<button class="staffBtn staffBtnPrimary" onclick="generateApprovalLetter()" type="button">Regenerate Draft</button>
+<button class="staffBtn" id="finalizeLetterBtn" onclick="finalizeApprovalLetter()" style="display:none" type="button">Finalize Letter</button>
+</div>
+<div id="finalLetterRow" style="display:none;margin-top:16px;padding-top:15px;border-top:1px solid #e1e8f0">
+<strong>Reserve Withdrawal Approval Letter.pdf</strong>
+<span style="color:#687d93;margin-left:8px">Finalized 09/28/2026 by Tan B</span>
+<button class="staffBtn" style="margin-left:14px" type="button">View</button>
+<button class="staffBtn" type="button">Download</button>
+</div>
+</div>
+</div>
 </div>
 <div class="staffDocWorkspace" id="staffDocumentReviewWorkspace" style="display:none;">
 <section class="staffSimpleDocs">
@@ -2933,7 +2950,7 @@ function openStaffDocReview(){
   const a=document.getElementById("staffActivityLogWorkspace");
   if(!staff || !w) return;
   if(a) a.style.display="none";
-  staff.classList.remove("staff-activity-mode","staff-details-mode");
+  staff.classList.remove("staff-activity-mode","staff-details-mode","staff-determination-mode");
   staff.classList.add("review-doc-mode");
   w.style.display="block";
   setStaffToolActive("documents");
@@ -2944,7 +2961,7 @@ function closeStaffDocReview(){
   const staff=document.getElementById("staffView");
   const w=document.getElementById("staffDocumentReviewWorkspace");
   const a=document.getElementById("staffActivityLogWorkspace");
-  if(staff){staff.classList.remove("review-doc-mode","staff-activity-mode");staff.classList.add("staff-details-mode");}
+  if(staff){staff.classList.remove("review-doc-mode","staff-activity-mode","staff-determination-mode");staff.classList.add("staff-details-mode");}
   if(w) w.style.display="none";
   if(a) a.style.display="none";
   if(staff) staff.querySelectorAll('.staffGrid').forEach(function(x){x.style.display='';});
@@ -2999,13 +3016,25 @@ function setStaffToolActive(mode){
     if(mode==='details' && t==='request details') b.classList.add('active');
     if(mode==='documents' && (t.startsWith('review documents') || t.startsWith('documents'))) b.classList.add('active');
     if(mode==='activity' && t==='activity log') b.classList.add('active');
+    if(mode==='determination' && t==='determination') b.classList.add('active');
   });
+}
+function showStaffDetermination(){
+ const staff=document.getElementById('staffView');
+ if(!staff)return;
+ staff.classList.remove('review-doc-mode','staff-details-mode','staff-activity-mode');
+ staff.classList.add('staff-determination-mode');
+ document.getElementById('staffDocumentReviewWorkspace').style.display='none';
+ document.getElementById('staffActivityLogWorkspace').style.display='none';
+ const work=document.getElementById('staffDeterminationWorkspace');if(work)work.style.display='block';
+ staff.querySelectorAll('.staffGrid').forEach(x=>x.style.display='none');
+ setStaffToolActive('determination');
 }
 function showStaffActivityLog(){
   var staff=document.getElementById('staffView');
   var d=document.getElementById('staffDocumentReviewWorkspace');
   var a=document.getElementById('staffActivityLogWorkspace');
-  if(staff){staff.classList.remove('review-doc-mode','staff-details-mode');staff.classList.add('staff-activity-mode');}
+  if(staff){staff.classList.remove('review-doc-mode','staff-details-mode','staff-determination-mode');staff.classList.add('staff-activity-mode');}
   if(d)d.style.display='none';
   if(a)a.style.display='block';
   staff.querySelectorAll('.staffGrid').forEach(function(x){x.style.display='none';});
@@ -3244,7 +3273,7 @@ function submitStaffAction(){
 }
 function generateApprovalLetter(){
  if(!rwSaveDraftSummary())return;
- document.getElementById('finalizeLetterBtn').style.display='none';
+ document.getElementById('finalizeLetterBtn').style.display='inline-block';
  document.getElementById('approvalLetterStatus').textContent='Generated · Draft';
  alert('Draft approval letter regenerated for supervisor review.');
 }
