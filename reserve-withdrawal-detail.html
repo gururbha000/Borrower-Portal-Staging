@@ -2563,8 +2563,13 @@ syncInvoiceTotal();
 <div><small>Submitted By</small><strong>Tan B</strong></div>
 <div><small>Submitted On</small><strong>09/30/2026</strong></div>
 </div>
+<div class="staffField" id="rwDraftSummaryEditor" style="margin:14px 0">
+<label for="rwDraftDeterminationSummary">Draft Determination Summary</label>
+<textarea id="rwDraftDeterminationSummary" style="width:100%;box-sizing:border-box;min-height:90px;border:1px solid #b8c9dc;border-radius:5px;padding:10px;font:inherit" placeholder="Describe the proposed determination, recommended amount and applicable conditions."></textarea>
+<div class="staffHelp">Analyst may edit and regenerate the draft letter. Changes after submission require renewed supervisor review.</div>
+</div>
 <div class="alpActions">
-<button class="staffBtn" onclick="alert('Approval letter preview opened for this mock-up.')" type="button">Preview Letter</button>
+<button class="staffBtn" onclick="lahdPreviewDeterminationLetter()" type="button">Preview Letter</button>
 <button class="staffBtn staffBtnPrimary" onclick="generateApprovalLetter()" type="button">Regenerate Draft</button>
 <button class="staffBtn" id="finalizeLetterBtn" onclick="finalizeApprovalLetter()" style="display:none" type="button">Finalize Letter</button>
 </div>
@@ -2616,7 +2621,7 @@ syncInvoiceTotal();
 <button class="staffBtn" onclick="lahdPreviewDeterminationLetter()" type="button">Preview Draft</button>
 </div>
 <div class="staffField supervisorComment"><label>Supervisor Internal Comments (Staff Only)</label><textarea id="supervisorComment" placeholder="Enter supervisor review comments..."></textarea></div>
-<div class="lahdDeterminationField"><label for="lahdAnalystExplanationReview">Legacy explanation (hidden)</label><textarea id="lahdAnalystExplanationReview" readonly></textarea><small></small></div><div class="lahdDeterminationField"><label for="lahdSupervisorExplanation">External Comment (Borrower-Facing) *</label><textarea id="lahdSupervisorExplanation" ></textarea><small>Used in the final determination letter.</small></div><div class="lahdDraftPreview"><button type="button" onclick="lahdPreviewDeterminationLetter()">Preview Determination Letter</button></div><div class="supervisorActions">
+<div class="staffField"><label for="lahdSupervisorExplanation">Determination Summary *</label><textarea id="lahdSupervisorExplanation" placeholder="Summarize the decision, approved amount and any conditions."></textarea><div class="staffHelp">Included in the finalized approval letter and borrower-facing determination.</div></div><div class="supervisorActions">
 <button class="staffBtn staffBtnReturn" onclick="supervisorReturnToAnalyst()" type="button">Return to Analyst</button>
 <button class="staffBtn staffBtnApprove" onclick="supervisorApprove()" type="button">Approve</button>
 </div>
@@ -3186,7 +3191,7 @@ function saveStaffDoc(){let n=staffDocName.value.trim()||'Staff Supporting Docum
 <small>Review the available balance before submitting. If needed, create a related request to evaluate funding from another eligible reserve account.</small></div>
 </div>
 <div class="staffField"><label>Analyst Internal Comments / Rationale (Staff Only)</label><textarea id="internalComment" placeholder="Staff-only comment..."></textarea><div class="staffHelp">Visible to authorized LAHD staff only.</div></div>
-<div class="lahdDeterminationField"><label for="lahdAnalystExplanation">Legacy explanation (hidden)</label><textarea id="lahdAnalystExplanation" ></textarea><small>Used in the draft letter; not the same as the Return to Submitter comment.</small></div><div class="staffField" id="externalCommentField"><label id="externalCommentLabel">External Comment (Borrower-Facing)</label><textarea id="externalComment" placeholder="Comment visible to the submitter..."></textarea><div class="staffHelp">If entered, this comment is visible to the submitter in the Borrower Portal.</div></div>
+<div class="lahdDeterminationField" style="display:none"><label for="lahdAnalystExplanation">Legacy explanation (hidden)</label><textarea id="lahdAnalystExplanation" ></textarea><small>Used in the draft letter; not the same as the Return to Submitter comment.</small></div><div class="staffField" id="externalCommentField"><label id="externalCommentLabel">External Comment (Borrower-Facing)</label><textarea id="externalComment" placeholder="Comment visible to the submitter..."></textarea><div class="staffHelp">If entered, this comment is visible to the submitter in the Borrower Portal.</div></div>
 </div>
 <div class="staffModalFooter"><button class="staffBtn" onclick="closeStaffActionModal()" type="button">Cancel</button><button class="staffBtn reserveRelatedAction" id="reserveRelatedAction" onclick="closeStaffActionModal();openRelatedReserveModal()" style="display:none" type="button">Create Related Reserve Request</button><button class="staffBtn staffBtnPrimary" id="staffModalSubmit" onclick="submitStaffAction()" type="button">Assign</button></div>
 </div>
@@ -3223,7 +3228,8 @@ function submitStaffAction(){
  if(currentStaffAction==='submitApproval'&&!lahdSaveAnalystExplanation())return;
  closeStaffActionModal();
  if(currentStaffAction==='submitApproval'){
-   var p=document.getElementById('approvalLetterPanel'); if(p)p.style.display='none';
+   try{const k='lahd-comments-v1:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo');const d=JSON.parse(localStorage.getItem(k)||'{}');d.submittedAt=new Date().toISOString();localStorage.setItem(k,JSON.stringify(d));}catch(e){}
+   var p=document.getElementById('approvalLetterPanel'); if(p)p.style.display='block';
    var sp=document.getElementById('supervisorApprovalOverlay'); if(sp)sp.style.display='none';
    var banner=document.getElementById('pendingSupervisorBanner'); if(banner)banner.style.display='flex';
    var status=document.querySelector('.statusPill, .status-pill, .requestStatus');
@@ -3237,7 +3243,8 @@ function submitStaffAction(){
  }
 }
 function generateApprovalLetter(){
- document.getElementById('finalizeLetterBtn').style.display='inline-block';
+ if(!rwSaveDraftSummary())return;
+ document.getElementById('finalizeLetterBtn').style.display='none';
  document.getElementById('approvalLetterStatus').textContent='Generated · Draft';
  alert('Draft approval letter regenerated for supervisor review.');
 }
@@ -3247,6 +3254,7 @@ function finalizeApprovalLetter(){
 function openSupervisorApprovalPackage(){
  var o=document.getElementById('supervisorApprovalOverlay');
  if(o)o.style.display='flex';
+ if(window.lahdPrepareSupervisorExplanation)lahdPrepareSupervisorExplanation();
 }
 function closeSupervisorApprovalPackage(){
  var o=document.getElementById('supervisorApprovalOverlay');
@@ -4481,15 +4489,70 @@ window.v120OpenSubmittedRequest=function(d){
 <script id="reserve-audit-filters-working">(function(){function init(){var r=document.getElementById('staffActivityLogWorkspace');if(!r)return;var bs=[...r.querySelectorAll('.auditFilters button')],rs=[...r.querySelectorAll('.auditLine')],types=['Edits / Changes','Staff Notes','Documents','Workflow','Workflow'];bs.forEach(b=>b.addEventListener('click',()=>{var t=b.textContent.trim();bs.forEach(x=>x.classList.toggle('active',x===b));rs.forEach((x,i)=>x.style.display=t==='All Activity'||types[i]===t?'':'none')}));if(bs[0])bs[0].classList.add('active')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();</script><script id="lahd-standard-comments-behavior">
 (function(){
  const key='lahd-comments-v1:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo');
- function read(){try{return JSON.parse(localStorage.getItem(key)||'{}')}catch(e){return {}}}
- function save(p){localStorage.setItem(key,JSON.stringify({...read(),...p}))}
- function el(id){return document.getElementById(id)}
- function defaultExplanation(){return 'Your request has been reviewed. The determination and applicable terms are described in this letter.'}
- window.lahdPrepareAnalystExplanation=function(type){const box=el('lahdAnalystExplanation');if(!box)return;box.closest('.lahdDeterminationField').style.display='none';if(type==='submitApproval'){box.value=read().proposedExplanation||'';const ext=el('externalComment');if(ext&&!ext.value.trim())ext.value=read().proposedExplanation||'';}};
- window.lahdSaveAnalystExplanation=function(){const box=el('lahdAnalystExplanation'),value=el('externalComment')?.value.trim();if(!value){alert('Enter the borrower-facing External Comment.');return false}if(box)box.value=value;save({proposedExplanation:value,analystInternal:el('internalComment')?.value||'',finalExplanation:'',finalizedAt:''});return true};
- window.lahdPrepareSupervisorExplanation=function(){const data=read();if(el('lahdAnalystExplanationReview')){el('lahdAnalystExplanationReview').value=data.proposedExplanation||'';el('lahdAnalystExplanationReview').closest('.lahdDeterminationField').style.display='none';}if(el('lahdSupervisorExplanation'))el('lahdSupervisorExplanation').value=data.finalExplanation||data.proposedExplanation||defaultExplanation();if(el('supervisorComment'))el('supervisorComment').value=data.supervisorInternal||''};
+ const read=()=>{try{return JSON.parse(localStorage.getItem(key)||'{}')}catch(e){return {}}};
+ const save=p=>localStorage.setItem(key,JSON.stringify({...read(),...p}));
+ const el=id=>document.getElementById(id);
+ const defaultSummary=()=> 'LAHD has reviewed the Reserve Withdrawal request. The recommended withdrawal amount is $76,500, subject to available reserve funding and any applicable conditions.';
+ const draft=()=>el('rwDraftDeterminationSummary')?.value.trim()||read().proposedExplanation||defaultSummary();
+ window.lahdPrepareAnalystExplanation=function(type){
+   const legacy=el('lahdAnalystExplanation');
+   if(legacy?.closest('.lahdDeterminationField'))legacy.closest('.lahdDeterminationField').style.display='none';
+   // Submission remains internal-only. External Comment is reserved for borrower-facing actions such as Return.
+   if(type==='submitApproval'&&el('externalCommentField'))el('externalCommentField').style.display='none';
+ };
+ window.lahdSaveAnalystExplanation=function(){
+   save({analystInternal:el('internalComment')?.value||''});
+   return true;
+ };
+ window.lahdPrepareSupervisorExplanation=function(){
+   const d=read();
+   if(el('lahdAnalystExplanationReview')?.closest('.lahdDeterminationField'))el('lahdAnalystExplanationReview').closest('.lahdDeterminationField').style.display='none';
+   if(el('lahdSupervisorExplanation'))el('lahdSupervisorExplanation').value=d.finalExplanation||d.proposedExplanation||draft();
+   if(el('supervisorComment'))el('supervisorComment').value=d.supervisorInternal||'';
+ };
  window.lahdSaveSupervisorInternal=function(){save({supervisorInternal:el('supervisorComment')?.value||''})};
- window.lahdFinalizeExplanation=function(){const value=el('lahdSupervisorExplanation')?.value.trim();if(!value){alert('Confirm the borrower-facing External Comment before approving.');return false}save({finalExplanation:value,supervisorInternal:el('supervisorComment')?.value||'',finalizedAt:new Date().toISOString()});if(el('externalComment'))el('externalComment').value=value;return true};
- window.lahdPreviewDeterminationLetter=function(){const data=read(),value=el('lahdSupervisorExplanation')?.value.trim()||data.finalExplanation||data.proposedExplanation||defaultExplanation();const w=window.open('','_blank');if(!w){alert('Allow pop-ups to preview the letter.');return}const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));w.document.write('<!doctype html><html><head><title>LAHD Determination Letter Preview</title><style>body{font:15px/1.65 Arial;max-width:760px;margin:55px auto;padding:0 24px}h1{font-size:20px;color:#203c56}p{white-space:pre-wrap}</style></head><body><h1>LAHD Determination Letter — '+(data.finalizedAt?'Final':'Draft')+'</h1><p>'+esc(value)+'</p><button onclick="print()">Print / Save as PDF</button></body></html>');w.document.close()};
+ window.lahdFinalizeExplanation=function(){
+   const value=el('lahdSupervisorExplanation')?.value.trim();
+   if(!value){alert('Enter the Determination Summary before approving.');return false}
+   save({finalExplanation:value,supervisorInternal:el('supervisorComment')?.value||'',finalizedAt:new Date().toISOString()});
+   return true;
+ };
+ window.rwSaveDraftSummary=function(){
+   const value=el('rwDraftDeterminationSummary')?.value.trim();
+   if(!value){alert('Enter the Draft Determination Summary.');return false}
+   const d=read();
+   save({proposedExplanation:value,finalExplanation:'',finalizedAt:'',draftUpdatedAt:new Date().toISOString()});
+   if(d.submittedAt){
+     const banner=el('pendingSupervisorBanner');
+     if(banner){banner.style.display='flex';banner.querySelector('strong').textContent='Draft Revised — Supervisor Review Required';banner.querySelector('span').textContent='Analyst updated the determination summary. Supervisor must review the revised letter.'}
+   }
+   return true;
+ };
+ window.lahdPreviewDeterminationLetter=function(){
+   const d=read();
+   const overlay=el('supervisorApprovalOverlay');
+   const isSupervisor=overlay&&getComputedStyle(overlay).display!=='none';
+   const value=(isSupervisor?el('lahdSupervisorExplanation')?.value.trim():el('rwDraftDeterminationSummary')?.value.trim())||d.finalExplanation||d.proposedExplanation||defaultSummary();
+   const w=window.open('','_blank');
+   if(!w){alert('Allow pop-ups to preview the letter.');return}
+   const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+   const final=d.finalizedAt&&!isSupervisor;
+   w.document.write('<!doctype html><html><head><title>Reserve Withdrawal Approval Letter</title><style>body{font:15px/1.65 Arial;max-width:760px;margin:55px auto;padding:0 24px}h1{font-size:20px;color:#203c56}p{white-space:pre-wrap}</style></head><body><h1>Reserve Withdrawal Approval Letter — '+(final?'Final':'Draft')+'</h1><p>'+esc(value)+'</p><button onclick="print()">Print / Save as PDF</button></body></html>');
+   w.document.close();
+ };
+ function init(){
+   const d=read();
+   if(el('rwDraftDeterminationSummary'))el('rwDraftDeterminationSummary').value=d.proposedExplanation||defaultSummary();
+   if(el('approvalLetterPanel')){
+     const actions=el('approvalLetterPanel').querySelector('.alpActions');
+     if(actions&&!el('rwSaveDraftBtn')){
+       const btn=document.createElement('button');
+       btn.type='button';btn.id='rwSaveDraftBtn';btn.className='staffBtn';
+       btn.textContent='Save Draft Summary';btn.onclick=rwSaveDraftSummary;
+       actions.prepend(btn);
+     }
+   }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script></body></html>
