@@ -1646,7 +1646,7 @@ html body #staffWrap > .staffGrid > .reviewMain {min-width:0 !important;}
 #staffView.review-doc-mode #relatedRequestInline {display:none !important;}
 #staffView.review-doc-mode #staffDocumentReviewWorkspace {display:block !important;}
 </style>
-</head>
+<style id="lahd-comments-standard-css">.lahdDeterminationField{margin:13px 0;padding:0}.lahdDeterminationField label{display:block;font-size:12px;font-weight:700;color:#314c68;margin-bottom:6px}.lahdDeterminationField textarea{width:100%;min-height:78px;padding:10px;border:1px solid #afc0d1;border-radius:5px;font:13px Arial,sans-serif;box-sizing:border-box;resize:vertical}.lahdDeterminationField small{display:block;margin-top:5px;color:#63758b;font-size:11px}.lahdLetterExplanation{white-space:pre-wrap;line-height:1.5}.lahdDraftPreview{margin:10px 0;padding:12px;background:#f6f9fd;border:1px solid #d5e1ed;border-radius:6px}.lahdDraftPreview button{padding:8px 12px;border:1px solid #b6c9df;background:white;color:#174b7b;border-radius:5px;cursor:pointer;font-weight:600}</style></head>
 <body><nav class="v96-nav"><a href="index.html">Sign In</a><a href="borrower-portal.html">Borrower Dashboard</a><a href="staff-dashboard.html">Staff Dashboard</a><a href="loan-portfolio-transactions.html">Transactions</a><a href="reserve-withdrawal.html">Reserve Withdrawal</a></nav>
 <div class="onboard-shell active" id="onboarding">
 <header class="top"><div class="brand"><div class="logo"></div><div><h1>Borrower Portal</h1><p>Los Angeles Housing Department</p></div></div><div class="profile"><div><b>Riverview Housing LLC</b><span id="profileRole">Maria Hernandez · Primary User</span></div><div class="avatar" id="avatar">MH</div></div></header>
@@ -2608,10 +2608,10 @@ syncInvoiceTotal();
 </div>
 <div class="supervisorDraftRow supervisorDraftRowV74">
 <div><strong>Draft Approval Letter</strong><span>Reserve Withdrawal Approval Letter – Peak Plaza Apts.pdf</span></div>
-<button class="staffBtn" onclick="alert('Draft approval letter preview opened for this mock-up.')" type="button">Preview Draft</button>
+<button class="staffBtn" onclick="lahdPreviewDeterminationLetter()" type="button">Preview Draft</button>
 </div>
-<div class="staffField supervisorComment"><label>Supervisor Internal Comment</label><textarea id="supervisorComment" placeholder="Enter supervisor review comments..."></textarea></div>
-<div class="supervisorActions">
+<div class="staffField supervisorComment"><label>Supervisor Internal Comments (Staff Only)</label><textarea id="supervisorComment" placeholder="Enter supervisor review comments..."></textarea></div>
+<div class="lahdDeterminationField"><label for="lahdAnalystExplanationReview">Analyst Proposed Explanation (Read Only)</label><textarea id="lahdAnalystExplanationReview" readonly></textarea><small>This is the explanation submitted for supervisor review.</small></div><div class="lahdDeterminationField"><label for="lahdSupervisorExplanation">Final Determination Explanation (Borrower-Facing) *</label><textarea id="lahdSupervisorExplanation" ></textarea><small>Editable by the supervisor; this text is used in the final letter.</small></div><div class="lahdDraftPreview"><button type="button" onclick="lahdPreviewDeterminationLetter()">Preview Determination Letter</button></div><div class="supervisorActions">
 <button class="staffBtn staffBtnReturn" onclick="supervisorReturnToAnalyst()" type="button">Return to Analyst</button>
 <button class="staffBtn staffBtnApprove" onclick="supervisorApprove()" type="button">Approve</button>
 </div>
@@ -3180,8 +3180,8 @@ function saveStaffDoc(){let n=staffDocName.value.trim()||'Staff Supporting Docum
 <div><strong>Reserve balance warning: Recommended amount exceeds the available reserve balance by $6,500.</strong>
 <small>Review the available balance before submitting. If needed, create a related request to evaluate funding from another eligible reserve account.</small></div>
 </div>
-<div class="staffField"><label>Internal Comment</label><textarea id="internalComment" placeholder="Staff-only comment..."></textarea><div class="staffHelp">Visible to authorized LAHD staff only.</div></div>
-<div class="staffField" id="externalCommentField"><label id="externalCommentLabel">External Comment</label><textarea id="externalComment" placeholder="Comment visible to the submitter..."></textarea><div class="staffHelp">If entered, this comment is visible to the submitter in the Borrower Portal.</div></div>
+<div class="staffField"><label>Analyst Internal Comments / Rationale (Staff Only)</label><textarea id="internalComment" placeholder="Staff-only comment..."></textarea><div class="staffHelp">Visible to authorized LAHD staff only.</div></div>
+<div class="lahdDeterminationField"><label for="lahdAnalystExplanation">Proposed Determination Explanation (Borrower-Facing) *</label><textarea id="lahdAnalystExplanation" ></textarea><small>Used in the draft letter; not the same as the Return to Submitter comment.</small></div><div class="staffField" id="externalCommentField"><label id="externalCommentLabel">External Comment</label><textarea id="externalComment" placeholder="Comment visible to the submitter..."></textarea><div class="staffHelp">If entered, this comment is visible to the submitter in the Borrower Portal.</div></div>
 </div>
 <div class="staffModalFooter"><button class="staffBtn" onclick="closeStaffActionModal()" type="button">Cancel</button><button class="staffBtn reserveRelatedAction" id="reserveRelatedAction" onclick="closeStaffActionModal();openRelatedReserveModal()" style="display:none" type="button">Create Related Reserve Request</button><button class="staffBtn staffBtnPrimary" id="staffModalSubmit" onclick="submitStaffAction()" type="button">Assign</button></div>
 </div>
@@ -3209,12 +3209,13 @@ function openStaffActionModal(type){
  if(type==='return'){title.textContent='Return to Submitter';submit.textContent='Return to Submitter';submit.className='staffBtn staffBtnReturn';}
  if(type==='submitApproval'){title.textContent='Submit Reserve Withdrawal for Approval';submit.textContent='Submit for Approval';submit.className='staffBtn staffBtnPrimary';submit.disabled=false;submit.title='';}
  else {submit.disabled=false;submit.title='';}
- document.getElementById('staffActionModal').classList.add('open');
+ lahdPrepareAnalystExplanation(type);document.getElementById('staffActionModal').classList.add('open');
 }
 function closeStaffActionModal(){document.getElementById('staffActionModal').classList.remove('open');}
 function submitStaffAction(){
  if(currentStaffAction==='assign' && !document.getElementById('assignStaffSelect').value){alert('Please select staff to assign.');return;}
  if(currentStaffAction==='return' && !document.getElementById('externalComment').value.trim()){alert('External Comment is required when returning a request to the submitter.');return;}
+ if(currentStaffAction==='submitApproval'&&!lahdSaveAnalystExplanation())return;
  closeStaffActionModal();
  if(currentStaffAction==='submitApproval'){
    var p=document.getElementById('approvalLetterPanel'); if(p)p.style.display='none';
@@ -3246,7 +3247,7 @@ function closeSupervisorApprovalPackage(){
  var o=document.getElementById('supervisorApprovalOverlay');
  if(o)o.style.display='none';
 }
-function supervisorReturnToAnalyst(){
+function supervisorReturnToAnalyst(){lahdSaveSupervisorInternal();
  var b=document.getElementById('supervisorStatusBadge');
  if(b){b.textContent='Returned to Analyst';b.className='supervisorReturnedBadge';}
  var l=document.getElementById('approvalLetterStatus');
@@ -3256,7 +3257,7 @@ function supervisorReturnToAnalyst(){
  closeSupervisorApprovalPackage();
  alert('Request returned to Analyst for revision. Supervisor comments and workflow action are recorded in Activity Log.');
 }
-function supervisorApprove(){
+function supervisorApprove(){if(!lahdFinalizeExplanation())return;
  var b=document.getElementById('supervisorStatusBadge');
  if(b){b.textContent='Approved';b.className='supervisorApprovedBadge';}
  var l=document.getElementById('approvalLetterStatus');
@@ -4472,4 +4473,18 @@ window.v120OpenSubmittedRequest=function(d){
  install();new MutationObserver(()=>{if([...tbody.querySelectorAll('tr')].some(r=>r.cells[0]&&!r.cells[0].querySelector('.rwSelectDoc')))install()}).observe(tbody,{childList:true,subtree:true});
 })();
 </script>
-<script id="reserve-audit-filters-working">(function(){function init(){var r=document.getElementById('staffActivityLogWorkspace');if(!r)return;var bs=[...r.querySelectorAll('.auditFilters button')],rs=[...r.querySelectorAll('.auditLine')],types=['Edits / Changes','Staff Notes','Documents','Workflow','Workflow'];bs.forEach(b=>b.addEventListener('click',()=>{var t=b.textContent.trim();bs.forEach(x=>x.classList.toggle('active',x===b));rs.forEach((x,i)=>x.style.display=t==='All Activity'||types[i]===t?'':'none')}));if(bs[0])bs[0].classList.add('active')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();</script></body></html>
+<script id="reserve-audit-filters-working">(function(){function init(){var r=document.getElementById('staffActivityLogWorkspace');if(!r)return;var bs=[...r.querySelectorAll('.auditFilters button')],rs=[...r.querySelectorAll('.auditLine')],types=['Edits / Changes','Staff Notes','Documents','Workflow','Workflow'];bs.forEach(b=>b.addEventListener('click',()=>{var t=b.textContent.trim();bs.forEach(x=>x.classList.toggle('active',x===b));rs.forEach((x,i)=>x.style.display=t==='All Activity'||types[i]===t?'':'none')}));if(bs[0])bs[0].classList.add('active')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();</script><script id="lahd-standard-comments-behavior">
+(function(){
+ const key='lahd-comments-v1:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo');
+ function read(){try{return JSON.parse(localStorage.getItem(key)||'{}')}catch(e){return {}}}
+ function save(p){localStorage.setItem(key,JSON.stringify({...read(),...p}))}
+ function el(id){return document.getElementById(id)}
+ function defaultExplanation(){return 'Your request has been reviewed. The determination and applicable terms are described in this letter.'}
+ window.lahdPrepareAnalystExplanation=function(type){const box=el('lahdAnalystExplanation');if(!box)return;box.closest('.lahdDeterminationField').style.display=type==='submitApproval'?'block':'none';if(type==='submitApproval')box.value=read().proposedExplanation||defaultExplanation()};
+ window.lahdSaveAnalystExplanation=function(){const box=el('lahdAnalystExplanation'),value=box?.value.trim();if(!value){alert('Enter the proposed borrower-facing determination explanation.');return false}save({proposedExplanation:value,analystInternal:el('internalComment')?.value||'',finalExplanation:'',finalizedAt:''});return true};
+ window.lahdPrepareSupervisorExplanation=function(){const data=read();if(el('lahdAnalystExplanationReview'))el('lahdAnalystExplanationReview').value=data.proposedExplanation||'';if(el('lahdSupervisorExplanation'))el('lahdSupervisorExplanation').value=data.finalExplanation||data.proposedExplanation||defaultExplanation();if(el('supervisorComment'))el('supervisorComment').value=data.supervisorInternal||''};
+ window.lahdSaveSupervisorInternal=function(){save({supervisorInternal:el('supervisorComment')?.value||''})};
+ window.lahdFinalizeExplanation=function(){const value=el('lahdSupervisorExplanation')?.value.trim();if(!value){alert('Confirm the final borrower-facing determination explanation before approving.');return false}save({finalExplanation:value,supervisorInternal:el('supervisorComment')?.value||'',finalizedAt:new Date().toISOString()});return true};
+ window.lahdPreviewDeterminationLetter=function(){const data=read(),value=el('lahdSupervisorExplanation')?.value.trim()||data.finalExplanation||data.proposedExplanation||defaultExplanation();const w=window.open('','_blank');if(!w){alert('Allow pop-ups to preview the letter.');return}const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));w.document.write('<!doctype html><html><head><title>LAHD Determination Letter Preview</title><style>body{font:15px/1.65 Arial;max-width:760px;margin:55px auto;padding:0 24px}h1{font-size:20px;color:#203c56}p{white-space:pre-wrap}</style></head><body><h1>LAHD Determination Letter — '+(data.finalizedAt?'Final':'Draft')+'</h1><p>'+esc(value)+'</p><button onclick="print()">Print / Save as PDF</button></body></html>');w.document.close()};
+})();
+</script></body></html>

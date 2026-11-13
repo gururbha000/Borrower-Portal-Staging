@@ -30,34 +30,14 @@
 #decisionContent>.ppInternalNotes .kv{grid-template-columns:minmax(145px,23%) minmax(0,1fr);margin-bottom:9px}
 @media(max-width:900px){#decisionContent>.cards{grid-template-columns:1fr}#decisionContent .kv,#decisionContent>.ppComparison .kv,#decisionContent>.ppInternalNotes .kv{grid-template-columns:minmax(120px,38%) minmax(0,1fr)}}
 @media(max-width:560px){#decisionPanel{padding:18px 14px}#decisionContent>.cards .card{padding:17px}#decisionContent .kv,#decisionContent>.ppComparison .kv,#decisionContent>.ppInternalNotes .kv{grid-template-columns:1fr;gap:2px;margin-bottom:13px}}
-</style><style id="unified-staff-activity-style">
-/* Activity Log only: identical presentation across all three staff pages. */
-.staffAuditWorkspace{width:100%;min-width:0}.staffAuditWorkspace h2{font-size:23px;color:#20384f;margin:0 0 10px}.staffAuditIntro{font-size:13px;color:#61778d;margin:0 0 18px;line-height:1.5}.staffAuditFilters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}.staffAuditFilters button{font:600 13px Arial;color:#254666;background:#fff;border:1px solid #c8d7e7;border-radius:18px;padding:8px 13px;cursor:pointer}.staffAuditFilters button.active{background:#dcebf9;border-color:#2873bb;color:#174b78}.staffAuditEntry{display:grid;grid-template-columns:175px minmax(0,1fr);gap:20px;padding:18px 8px;border-bottom:1px solid #dce5ee;font-size:14px;line-height:1.5}.staffAuditDate{color:#64788c;font-size:12px;padding-top:3px}.staffAuditHeading{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.staffAuditAction{font-weight:700;color:#20384f}.staffAuditBadge{font-size:11px;font-weight:600;background:#e9f1f8;color:#254666;border-radius:12px;padding:3px 8px}.staffAuditActor{font-size:12px;color:#63788c;margin-top:5px}.staffAuditNote{margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere;color:#334e66}.staffAuditLabeledNote{border-left:3px solid #7e9db8;background:#f7fafd;padding:10px 13px}.staffAuditLabeledNote.external{border-left-color:#36836b}.staffAuditNoteLabel{font-size:11px;font-weight:700;text-transform:uppercase;color:#64798e;display:block;margin-bottom:5px}.staffAuditChanges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.staffAuditChange{background:#f6f9fc;border:1px solid #dfe7f0;border-radius:6px;padding:11px 13px;min-width:0;overflow-wrap:anywhere;white-space:pre-wrap}.staffAuditEmpty{color:#61778d;padding:16px 8px}.staffAuditPager{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:17px 0 0}.staffAuditPager button{background:#fff;border:1px solid #b9cde0;border-radius:5px;padding:9px 14px;color:#254666;cursor:pointer}.staffAuditPager button:disabled{opacity:.45;cursor:default}.staffAuditPager span{color:#61778d;font-size:12px}
-/* Full width activity workspace, without changing the other tabs. */
-body:has(#activityTab.active) .layout:has(#content){display:block}body:has(#activityTab.active) .layout:has(#content)>.side{display:none}body:has(#activityTab.active) .layout:has(#content)>.main{width:100%;min-width:0}body:has(#activityTab.active) #workflowStatus,body:has(#activityTab.active) .main>.footer{display:none!important}
-body:has(#activityView:not(.hidden)) .layout:has(#activityView){display:block}body:has(#activityView:not(.hidden)) .layout:has(#activityView)>.side{display:none}body:has(#activityView:not(.hidden)) .layout:has(#activityView)>div{width:100%}
-#activityPanel{width:100%;padding:24px 26px}
-@media(max-width:720px){.staffAuditEntry{grid-template-columns:1fr;gap:4px}.staffAuditChanges{grid-template-columns:1fr}}
-</style><script id="unified-staff-activity-renderer">
-(function(){'use strict';
-const filters=['All Activity','Staff Notes','Edits / Changes','Documents','Workflow'];
-function text(el,tag,value,cls){const n=document.createElement(tag);if(cls)n.className=cls;n.textContent=String(value??'');el.appendChild(n);return n;}
-function formatDate(raw){if(!raw)return '—';const d=new Date(raw);if(Number.isNaN(d.getTime()))return String(raw);return new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',timeZoneName:'short'}).format(d);}
-function category(e){if(filters.includes(e.type))return e.type;const action=String(e.action||'').toLowerCase();if(/document|file|upload|attachment/.test(action))return 'Documents';if(/edit|updated|associated|association|linked|saved|changed|correction/.test(action))return 'Edits / Changes';if(/note|comment/.test(action))return 'Staff Notes';return 'Workflow';}
-function changes(e){if(e.before!==undefined||e.after!==undefined)return {before:e.before??'—',after:e.after??'—'};const raw=String(e.comment||e.details||'');const m=raw.match(/^Previous:\s*([\s\S]*?);\s*(?:New|Updated):\s*([\s\S]*)$/i);return m?{before:m[1],after:m[2]}:null;}
-function render(host,events){if(!host)return;host.classList.add('staffAuditWorkspace');host.replaceChildren();const intro=text(host,'p','Chronological request history: workflow, staff notes, document uploads/reviews, edits, and loan/invoice associations.','staffAuditIntro');const filterBar=text(host,'div','','staffAuditFilters');const list=text(host,'div','','staffAuditList');const pager=text(host,'div','','staffAuditPager');let active='All Activity',page=0;const pageSize=12;
-function paint(){filterBar.replaceChildren();filters.forEach(f=>{const b=text(filterBar,'button',f,f===active?'active':'');b.type='button';b.onclick=()=>{active=f;page=0;paint()}});const visible=events.filter(e=>active==='All Activity'||category(e)===active);const pages=Math.max(1,Math.ceil(visible.length/pageSize));page=Math.min(page,pages-1);list.replaceChildren();pager.replaceChildren();if(!visible.length){text(list,'p','No activity in this category.','staffAuditEmpty');return}visible.slice(page*pageSize,(page+1)*pageSize).forEach(e=>{const row=text(list,'article','','staffAuditEntry');text(row,'div',formatDate(e.at||e.when),'staffAuditDate');const body=text(row,'div','','staffAuditBody');const head=text(body,'div','','staffAuditHeading');text(head,'strong',e.action||'Activity','staffAuditAction');text(head,'span',category(e),'staffAuditBadge');text(body,'div',e.by||'System','staffAuditActor');const diff=changes(e);if(diff){const grid=text(body,'div','','staffAuditChanges');[['Previous',diff.before],['Updated',diff.after]].forEach(([label,val])=>{const box=text(grid,'div','','staffAuditChange');text(box,'span',label,'staffAuditNoteLabel');text(box,'div',val)});}else if(e.comment)text(body,'div',e.comment,'staffAuditNote');if(e.details&&e.details!==e.comment&&!diff)text(body,'div',e.details,'staffAuditNote');if(e.internal){const n=text(body,'div','','staffAuditNote staffAuditLabeledNote');text(n,'span','Internal note','staffAuditNoteLabel');text(n,'div',e.internal)}if(e.external){const n=text(body,'div','','staffAuditNote staffAuditLabeledNote external');text(n,'span','Borrower-visible note','staffAuditNoteLabel');text(n,'div',e.external)}if(e.attachment)text(body,'div','Attachment: '+e.attachment,'staffAuditNote');});if(pages>1){const prev=text(pager,'button','Previous');prev.disabled=page===0;prev.onclick=()=>{page--;paint()};text(pager,'span','Page '+(page+1)+' of '+pages);const next=text(pager,'button','Next');next.disabled=page===pages-1;next.onclick=()=>{page++;paint()}}}
-paint();}
-window.staffAuditUI={render};
-})();
-</script></head><body>
+</style><style id="lahd-comments-standard-css">.lahdDeterminationField{margin:13px 0;padding:0}.lahdDeterminationField label{display:block;font-size:12px;font-weight:700;color:#314c68;margin-bottom:6px}.lahdDeterminationField textarea{width:100%;min-height:78px;padding:10px;border:1px solid #afc0d1;border-radius:5px;font:13px Arial,sans-serif;box-sizing:border-box;resize:vertical}.lahdDeterminationField small{display:block;margin-top:5px;color:#63758b;font-size:11px}.lahdLetterExplanation{white-space:pre-wrap;line-height:1.5}.lahdDraftPreview{margin:10px 0;padding:12px;background:#f6f9fd;border:1px solid #d5e1ed;border-radius:6px}.lahdDraftPreview button{padding:8px 12px;border:1px solid #b6c9df;background:white;color:#174b7b;border-radius:5px;cursor:pointer;font-weight:600}</style></head><body>
 <nav class="nav"><a href="staff-dashboard.html">← Staff Dashboard</a><a href="borrower-portal.html">Borrower Dashboard</a></nav><div class="top">Analyst Requests Workspace</div><div class="wrap">
 <div class="summary"><div><div class="lbl">REQUEST ID</div><div class="val" id="requestId"></div></div><div><div class="lbl">REQUEST TYPE</div><div class="val">Payment Plan</div></div><div><div class="lbl">PROJECT NAME</div><div class="val" id="projectHeader"></div></div><div class="ppLoanSummary"><div><div class="lbl">LOAN #</div><div class="val" id="loanHeader"></div></div><span class="badge" id="statusBadge"></span></div></div>
 <div class="tabs"><button class="tab active" data-tab="details">Request Details</button><button class="tab" data-tab="docs">Documents</button><button class="tab" data-tab="decision">Determination</button><button class="tab" data-tab="activity">Activity Log</button><div class="actionbar"><button class="actionbtn" id="actionToggle">☰ Action Menu ▾</button><div class="actionmenu hidden" id="actionMenu"><button data-action="assign">Assign Reviewer</button><button data-action="return">Return to Borrower</button><button data-action="submit">Submit for Supervisor Approval</button><button data-action="review">Review Recommendation (Supervisor)</button><button data-action="issue">Issue Determination to Applicant</button></div></div></div>
 <div id="reviewLayout" class="layout"><aside class="side"><h2>Review Steps</h2><button data-step="0" class="active">1. Request Information</button><button data-step="1">2. Project / Loan Info</button><button data-step="2">3. Payment Plan Details</button><button data-step="3">4. Submitted Documents</button></aside><main class="main"><div class="edithead"><h2 id="stepTitle"></h2><button class="editbtn" id="editButton">Edit</button></div><div id="stepContent"></div><div class="footer"><button id="previous">Previous</button><button class="primary" id="next">Next →</button></div></main></div>
 <section class="panel hidden" id="docsPanel"><div class="ppDocHead"><div><h2>Documents</h2><p class="muted">Review submitted files and record document decisions. Sample previews do not contain actual file contents.</p></div><div class="ppDocControls"><button type="button" id="ppDownloadAll">Download All Available</button><button type="button" id="ppDownloadSelected" disabled>Download Selected (0)</button><button type="button" class="primary" id="ppAddDocument">+ Add Document</button></div></div><div id="documentList"></div><div id="documentReview" class="panel hidden"></div></section>
 <section class="panel hidden" id="decisionPanel"><h2>Determination Summary</h2><p class="muted">Read-only summary of the analyst recommendation and supervisor decision. Detailed history remains in Activity Log.</p><div id="decisionContent"></div></section>
-<section class="panel hidden" id="activityPanel"><h2>Activity Log</h2><div id="activityContent"></div></section></div>
+<section class="panel hidden" id="activityPanel"><h2>Activity Log</h2><div class="filters" id="activityFilters"></div><div id="activityContent"></div></section></div>
 <div class="modalbg" id="modalBg"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><h2 id="modalTitle"></h2><div id="modalBody"></div><div class="modalfooter"><button id="modalCancel">Cancel</button><button class="primary" id="modalSubmit">Submit</button></div></div></div>
 <script>
 (function(){'use strict';
@@ -235,7 +215,7 @@ function renderDecision(){
   host.append(grid(comm));
  }
 }
-let activityFilter='All Activity';function renderActivity(){window.staffAuditUI.render($('activityContent'),staff.activity.slice().reverse())}
+let activityFilter='All Activity';function renderActivity(){let filters=['All Activity','Workflow','Staff Notes','Edits / Changes','Documents'];let bar=$('activityFilters');bar.replaceChildren();filters.forEach(f=>{let b=document.createElement('button');b.textContent=f;b.classList.toggle('active',activityFilter===f);b.onclick=()=>{activityFilter=f;renderActivity()};bar.append(b)});let host=$('activityContent');host.replaceChildren();let entries=staff.activity.filter(a=>activityFilter==='All Activity'||a.type===activityFilter).slice().reverse();if(!entries.length){host.textContent='No activity recorded in this category.';return}entries.forEach(a=>{let d=document.createElement('div');d.className='historyrow';let h=document.createElement('strong');h.textContent=a.action;let p=document.createElement('div');p.className='muted';p.textContent=new Date(a.at).toLocaleString()+' · '+a.by+' · '+a.type;let c=document.createElement('div');c.textContent=a.details||'';d.append(h,p,c);host.append(d)})}
 function setTab(next){tab=next;editing=false;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));$('reviewLayout').classList.toggle('hidden',tab!=='details');for(const [k,id] of [['docs','docsPanel'],['decision','decisionPanel'],['activity','activityPanel']])$(id).classList.toggle('hidden',tab!==k);if(tab==='details')renderStep();if(tab==='docs')renderDocs();if(tab==='decision')renderDecision();if(tab==='activity')renderActivity()}
 const modal=$('modalBg');let action='';function modalField(id,label,kind='text',value='',options=[]){return inputField(id,label,value,kind,options)}
 function ppModalSection(title,fields){const section=document.createElement('section');section.className='ppDecisionSection';const h=document.createElement('h3');h.textContent=title;section.append(h);fields.forEach(([id,label,kind,value,opts])=>section.append(modalField(id,label,kind||'text',value??'',opts||[])));return section}
@@ -291,7 +271,7 @@ function openAction(a){
   const conditionArea=make('div');section.append(conditionArea);
   const draw=()=>{conditionArea.replaceChildren();if(outcome.querySelector('select').value==='Approve with Conditions')conditionArea.append(ppConditionPicker(d.analystConditions,d.analystOtherConditions))};
   outcome.querySelector('select').addEventListener('change',draw);draw();
-  section.append(modalField('rationale','Analyst Comments / Rationale','textarea',d.rationale||''));
+  section.append(modalField('rationale','Analyst Internal Comments / Rationale (Staff Only)','textarea',d.rationale||''));section.append(modalField('borrowerExplanation','Proposed Determination Explanation (Borrower-Facing) *','textarea',d.applicantExplanation||'Your Payment Plan request has been reviewed. The proposed outcome and payment terms are described in this letter.'));
   body.append(section);
  }
  if(a==='review'){
@@ -303,12 +283,12 @@ function openAction(a){
    if(changed)section.append(make('p','muted','Changed from borrower proposal: $'+(rec.installment||'—')+' · '+(rec.frequency||'Monthly')+' · '+(rec.duration||'—')+' months'));
    if(d.recommendation==='Approve with Conditions')section.append(make('p','','Recommended Conditions: '+(d.analystConditions||[]).join(', ')+(d.analystOtherConditions?' — '+d.analystOtherConditions:'')));
   }
-  section.append(make('p','','Analyst Comments: '+(d.rationale||'—')));
+  section.append(make('p','','Analyst Internal Comments (Staff Only): '+(d.rationale||'—')));
   if(/Restructur/i.test(d.recommendation))section.append(make('p','','Referral Reason: '+(d.referralReason||'—')));
   if(d.recommendation==='Deny')section.append(make('p','','Denial Reason: '+(d.analystDenialReason||'—')));
   body.append(section);
   body.append(modalField('supervisorDecision','Supervisor Decision *','select','Approve',['Approve','Reject','Return']));
-  body.append(modalField('internalComments','Supervisor Comments (required for Return or Reject)','textarea',''));
+  body.append(modalField('internalComments','Supervisor Internal Comments (Staff Only; required for Return or Reject)','textarea',d.supervisorComments||''));body.append(modalField('borrowerExplanation','Final Determination Explanation (Borrower-Facing) *','textarea',d.applicantExplanation||''));
 
  }
 
@@ -316,7 +296,7 @@ function openAction(a){
   if(!d.outcome){alert('Record an authorized determination before issuing it.');return}
   if(d.issuedAt){alert('The determination has already been marked as issued.');return}
   body.append(make('p','','Issue the finalized '+d.outcome+' determination to the applicant?'));
-  body.append(modalField('applicantExplanation','Applicant Notification / Explanation *','textarea',d.applicantExplanation||''));
+  body.append(make('p','','Borrower-Facing Determination Explanation: '+(d.applicantExplanation||'—')));
   body.append(make('p','muted','This prototype records issuance only. It does not send an email or publish to the Borrower Portal.'));
  }
 
@@ -328,7 +308,7 @@ function submitAction(){
  const requireField=(key)=>{if(values[key])return true;alert('Please complete: '+(body.querySelector('[data-field="'+key+'"]')?.previousElementSibling?.textContent||key));return false};
  if(action==='submit'){
   const d=staff.decision;
-  if(!values.rationale){alert('Enter Analyst Comments / Rationale before submitting.');return}
+  if(!values.rationale){alert('Enter Analyst Comments / Rationale before submitting.');return}if(!values.borrowerExplanation){alert('Enter the borrower-facing determination explanation.');return}
   const recommendation=values.recommendation;
   if(!recommendation){alert('Select a recommended outcome.');return}
   const selected=[...body.querySelectorAll('.ppConditionCheck:checked')].map(x=>x.value);
@@ -339,12 +319,12 @@ function submitAction(){
   d.recommendation=recommendation;
   d.analystConditions=recommendation==='Approve with Conditions'?selected:[];
   d.analystOtherConditions=recommendation==='Approve with Conditions'?other:'';
-  d.rationale=values.rationale;d.supervisorDecision='';d.supervisorComments='';d.supervisor='Designated Asset Management Supervisor';d.submittedAt=new Date().toISOString().slice(0,10);
+  d.rationale=values.rationale;d.applicantExplanation=values.borrowerExplanation;localStorage.setItem('lahd-borrower-explanation:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo'),values.borrowerExplanation);d.supervisorDecision='';d.supervisorComments='';d.supervisor='Designated Asset Management Supervisor';d.submittedAt=new Date().toISOString().slice(0,10);
   staff.status='Pending Supervisor Approval';
   audit('Submitted for supervisor approval',recommendation+(selected.length?'; Conditions: '+selected.join(', '):''),'Workflow');
  }else if(action==='review'){
-  const decision=values.supervisorDecision;if(!decision){alert('Select a supervisor decision.');return}
-  const d=staff.decision;
+  const decision=values.supervisorDecision;if(!values.borrowerExplanation){alert('Confirm the final borrower-facing determination explanation.');return}if(!decision){alert('Select a supervisor decision.');return}
+  const d=staff.decision;d.applicantExplanation=values.borrowerExplanation;localStorage.setItem('lahd-borrower-explanation:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo'),values.borrowerExplanation);
   if(decision==='Return'||decision==='Reject'){
    if(!requireField('internalComments'))return;
    staff.status=decision==='Return'?'Returned for Analyst Revision':'Recommendation Rejected';
@@ -365,8 +345,8 @@ function submitAction(){
   }
  }else if(action==='issue'){
   if(!staff.decision.outcome){alert('Record an authorized determination first.');return}
-  if(!requireField('applicantExplanation'))return;
-  staff.decision.applicantExplanation=values.applicantExplanation;staff.decision.issuedAt=new Date().toISOString();
+  if(!staff.decision.applicantExplanation){alert('No finalized borrower-facing explanation is available.');return;}
+  staff.decision.issuedAt=new Date().toISOString();
   audit('Determination issued to applicant','Outcome: '+staff.decision.outcome,'Workflow');
  }else if(action==='assign'){
   staff.assignee=values.assignee||'Unassigned';audit('Reviewer assigned',staff.assignee,'Workflow');
@@ -393,7 +373,7 @@ const status=()=>safe($(config.status)?.textContent);
 const pending=()=>/supervisor review|pending supervisor approval|pending approval/i.test(status());
 const final=()=>/^(approved|rejected|denied|closed|approved with conditions)/i.test(status());
 const approved=()=>/^approved/i.test(status());
-const getSummary=()=>safe(document.querySelector(config.determination)?.textContent).slice(0,2800);
+const getSummary=()=>localStorage.getItem('lahd-borrower-explanation:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo'))||'The determination and applicable terms are described in the approved arrangement.';
 const label=()=>config.type==='Payment Plan'?'Payment Plan Determination':config.type==='RRA Dispute'?'RRA Dispute Determination':'Financial Hardship Determination';
 function letterText(d){const date=d.finalizedAt?new Date(d.finalizedAt).toLocaleDateString('en-US'):new Date(d.generatedAt).toLocaleDateString('en-US');return `LOS ANGELES HOUSING DEPARTMENT\n${label()} — ${d.state==='Final'?'FINAL':'DRAFT FOR SUPERVISOR REVIEW'}\n\nDate: ${date}\nRequest: ${requestId()}\nRequest Type: ${config.type}\n\nSubject: ${label()}\n\n${d.body||'The determination and associated terms are subject to supervisor review.'}\n\n${d.state==='Final'?'Decision: '+(d.decision||'Approved')+'\nFinalized: '+new Date(d.finalizedAt).toLocaleString('en-US'):'DRAFT — NOT FOR BORROWER DISTRIBUTION'}\n\nLAHD Asset Management`}
 function ensureDraft(){let d=read();if(!d){d={state:'Draft',generatedAt:new Date().toISOString(),body:getSummary(),decision:'',version:1};save(d);audit('Draft determination letter generated')}return d}
