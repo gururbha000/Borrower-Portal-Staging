@@ -30,7 +30,12 @@
 #decisionContent>.ppInternalNotes .kv{grid-template-columns:minmax(145px,23%) minmax(0,1fr);margin-bottom:9px}
 @media(max-width:900px){#decisionContent>.cards{grid-template-columns:1fr}#decisionContent .kv,#decisionContent>.ppComparison .kv,#decisionContent>.ppInternalNotes .kv{grid-template-columns:minmax(120px,38%) minmax(0,1fr)}}
 @media(max-width:560px){#decisionPanel{padding:18px 14px}#decisionContent>.cards .card{padding:17px}#decisionContent .kv,#decisionContent>.ppComparison .kv,#decisionContent>.ppInternalNotes .kv{grid-template-columns:1fr;gap:2px;margin-bottom:13px}}
-</style><style id="lahd-comments-standard-css">.lahdDeterminationField{margin:13px 0;padding:0}.lahdDeterminationField label{display:block;font-size:12px;font-weight:700;color:#314c68;margin-bottom:6px}.lahdDeterminationField textarea{width:100%;min-height:78px;padding:10px;border:1px solid #afc0d1;border-radius:5px;font:13px Arial,sans-serif;box-sizing:border-box;resize:vertical}.lahdDeterminationField small{display:block;margin-top:5px;color:#63758b;font-size:11px}.lahdLetterExplanation{white-space:pre-wrap;line-height:1.5}.lahdDraftPreview{margin:10px 0;padding:12px;background:#f6f9fd;border:1px solid #d5e1ed;border-radius:6px}.lahdDraftPreview button{padding:8px 12px;border:1px solid #b6c9df;background:white;color:#174b7b;border-radius:5px;cursor:pointer;font-weight:600}</style></head><body>
+</style><style id="lahd-comments-standard-css">.lahdDeterminationField{margin:13px 0;padding:0}.lahdDeterminationField label{display:block;font-size:12px;font-weight:700;color:#314c68;margin-bottom:6px}.lahdDeterminationField textarea{width:100%;min-height:78px;padding:10px;border:1px solid #afc0d1;border-radius:5px;font:13px Arial,sans-serif;box-sizing:border-box;resize:vertical}.lahdDeterminationField small{display:block;margin-top:5px;color:#63758b;font-size:11px}.lahdLetterExplanation{white-space:pre-wrap;line-height:1.5}.lahdDraftPreview{margin:10px 0;padding:12px;background:#f6f9fd;border:1px solid #d5e1ed;border-radius:6px}.lahdDraftPreview button{padding:8px 12px;border:1px solid #b6c9df;background:white;color:#174b7b;border-radius:5px;cursor:pointer;font-weight:600}</style><style id="lahd-modal-layout-final">
+.lahdDeterminationField,.rraStaffField,.staffField,.field{min-width:0;max-width:100%;box-sizing:border-box}
+.lahdDeterminationField textarea,.rraStaffField textarea,.staffField textarea,.field textarea{display:block;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;resize:vertical}
+.rraStaffModal,.modalBox,.modal-content,.staffModal,.supervisorReviewModal{max-height:calc(100vh - 40px);max-width:calc(100vw - 28px);box-sizing:border-box}
+.lahdDraftPreview{margin:12px 0}
+</style></head><body>
 <nav class="nav"><a href="staff-dashboard.html">← Staff Dashboard</a><a href="borrower-portal.html">Borrower Dashboard</a></nav><div class="top">Analyst Requests Workspace</div><div class="wrap">
 <div class="summary"><div><div class="lbl">REQUEST ID</div><div class="val" id="requestId"></div></div><div><div class="lbl">REQUEST TYPE</div><div class="val">Payment Plan</div></div><div><div class="lbl">PROJECT NAME</div><div class="val" id="projectHeader"></div></div><div class="ppLoanSummary"><div><div class="lbl">LOAN #</div><div class="val" id="loanHeader"></div></div><span class="badge" id="statusBadge"></span></div></div>
 <div class="tabs"><button class="tab active" data-tab="details">Request Details</button><button class="tab" data-tab="docs">Documents</button><button class="tab" data-tab="decision">Determination</button><button class="tab" data-tab="activity">Activity Log</button><div class="actionbar"><button class="actionbtn" id="actionToggle">☰ Action Menu ▾</button><div class="actionmenu hidden" id="actionMenu"><button data-action="assign">Assign Reviewer</button><button data-action="return">Return to Borrower</button><button data-action="submit">Submit for Supervisor Approval</button><button data-action="review">Review Recommendation (Supervisor)</button><button data-action="issue">Issue Determination to Applicant</button></div></div></div>
@@ -271,7 +276,7 @@ function openAction(a){
   const conditionArea=make('div');section.append(conditionArea);
   const draw=()=>{conditionArea.replaceChildren();if(outcome.querySelector('select').value==='Approve with Conditions')conditionArea.append(ppConditionPicker(d.analystConditions,d.analystOtherConditions))};
   outcome.querySelector('select').addEventListener('change',draw);draw();
-  section.append(modalField('rationale','Analyst Internal Comments / Rationale (Staff Only)','textarea',d.rationale||''));section.append(modalField('borrowerExplanation','Proposed Determination Explanation (Borrower-Facing) *','textarea',d.applicantExplanation||'Your Payment Plan request has been reviewed. The proposed outcome and payment terms are described in this letter.'));
+  section.append(modalField('rationale','Analyst Internal Comments / Rationale (Staff Only)','textarea',d.rationale||''));section.append(modalField('borrowerExplanation','External Comment (Borrower-Facing) *','textarea',d.applicantExplanation||'Your Payment Plan request has been reviewed. The proposed outcome and payment terms are described in this letter.'));
   body.append(section);
  }
  if(a==='review'){
@@ -288,7 +293,7 @@ function openAction(a){
   if(d.recommendation==='Deny')section.append(make('p','','Denial Reason: '+(d.analystDenialReason||'—')));
   body.append(section);
   body.append(modalField('supervisorDecision','Supervisor Decision *','select','Approve',['Approve','Reject','Return']));
-  body.append(modalField('internalComments','Supervisor Internal Comments (Staff Only; required for Return or Reject)','textarea',d.supervisorComments||''));body.append(modalField('borrowerExplanation','Final Determination Explanation (Borrower-Facing) *','textarea',d.applicantExplanation||''));
+  body.append(modalField('internalComments','Supervisor Internal Comments (Staff Only; required for Return or Reject)','textarea',d.supervisorComments||''));body.append(modalField('borrowerExplanation','External Comment (Borrower-Facing) *','textarea',d.applicantExplanation||''));
 
  }
 
@@ -296,7 +301,7 @@ function openAction(a){
   if(!d.outcome){alert('Record an authorized determination before issuing it.');return}
   if(d.issuedAt){alert('The determination has already been marked as issued.');return}
   body.append(make('p','','Issue the finalized '+d.outcome+' determination to the applicant?'));
-  body.append(make('p','','Borrower-Facing Determination Explanation: '+(d.applicantExplanation||'—')));
+  body.append(make('p','','External Comment (Borrower-Facing): '+(d.applicantExplanation||'—')));
   body.append(make('p','muted','This prototype records issuance only. It does not send an email or publish to the Borrower Portal.'));
  }
 
@@ -308,7 +313,7 @@ function submitAction(){
  const requireField=(key)=>{if(values[key])return true;alert('Please complete: '+(body.querySelector('[data-field="'+key+'"]')?.previousElementSibling?.textContent||key));return false};
  if(action==='submit'){
   const d=staff.decision;
-  if(!values.rationale){alert('Enter Analyst Comments / Rationale before submitting.');return}if(!values.borrowerExplanation){alert('Enter the borrower-facing determination explanation.');return}
+  if(!values.rationale){alert('Enter Analyst Comments / Rationale before submitting.');return}if(!values.borrowerExplanation){alert('Enter the borrower-facing External Comment.');return}
   const recommendation=values.recommendation;
   if(!recommendation){alert('Select a recommended outcome.');return}
   const selected=[...body.querySelectorAll('.ppConditionCheck:checked')].map(x=>x.value);
@@ -323,7 +328,7 @@ function submitAction(){
   staff.status='Pending Supervisor Approval';
   audit('Submitted for supervisor approval',recommendation+(selected.length?'; Conditions: '+selected.join(', '):''),'Workflow');
  }else if(action==='review'){
-  const decision=values.supervisorDecision;if(!values.borrowerExplanation){alert('Confirm the final borrower-facing determination explanation.');return}if(!decision){alert('Select a supervisor decision.');return}
+  const decision=values.supervisorDecision;if(!values.borrowerExplanation){alert('Confirm the final borrower-facing External Comment.');return}if(!decision){alert('Select a supervisor decision.');return}
   const d=staff.decision;d.applicantExplanation=values.borrowerExplanation;localStorage.setItem('lahd-borrower-explanation:'+location.pathname+':'+(new URLSearchParams(location.search).get('requestId')||'demo'),values.borrowerExplanation);
   if(decision==='Return'||decision==='Reject'){
    if(!requireField('internalComments'))return;
