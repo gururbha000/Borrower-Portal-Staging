@@ -1626,7 +1626,27 @@ html body #staffWrap > .staffGrid > .reviewMain {min-width:0 !important;}
 #staffActivityLogWorkspace .histHead h3,#staffActivityLogWorkspace .histHead p{display:none}
 #staffActivityLogWorkspace .activityWorkspaceHead{border-bottom:0}
 @media(max-width:700px){#activityView .audit-entry,.rraAuditEntry,#staffActivityLogWorkspace .auditLine{grid-template-columns:1fr!important}}
-</style></head>
+</style>
+<style id="reserve-staff-tab-visibility-fix">
+/* Staff detail tabs are mutually exclusive. The details grid has a display:grid
+   rule in the base stylesheet; override it explicitly for the activity tab. */
+#staffView.staff-activity-mode .staffGrid,
+#staffView.staff-activity-mode #staffDocumentReviewWorkspace,
+#staffView.staff-activity-mode #approvalLetterPanel,
+#staffView.staff-activity-mode #relatedRequestInline {display:none !important;}
+#staffView.staff-activity-mode #staffActivityLogWorkspace {display:block !important;}
+#staffView.staff-activity-mode .staffActivityLogWorkspace {padding-top:0 !important;}
+#staffView.staff-activity-mode .histSec {padding-top:0;}
+#staffView.staff-activity-mode .histHead {padding:8px 0 0;min-height:0;}
+#staffView.staff-details-mode #staffActivityLogWorkspace,
+#staffView.staff-details-mode #staffDocumentReviewWorkspace,
+#staffView.review-doc-mode #staffActivityLogWorkspace {display:none !important;}
+#staffView.review-doc-mode .staffGrid,
+#staffView.review-doc-mode #approvalLetterPanel,
+#staffView.review-doc-mode #relatedRequestInline {display:none !important;}
+#staffView.review-doc-mode #staffDocumentReviewWorkspace {display:block !important;}
+</style>
+</head>
 <body><nav class="v96-nav"><a href="index.html">Sign In</a><a href="borrower-portal.html">Borrower Dashboard</a><a href="staff-dashboard.html">Staff Dashboard</a><a href="loan-portfolio-transactions.html">Transactions</a><a href="reserve-withdrawal.html">Reserve Withdrawal</a></nav>
 <div class="onboard-shell active" id="onboarding">
 <header class="top"><div class="brand"><div class="logo"></div><div><h1>Borrower Portal</h1><p>Los Angeles Housing Department</p></div></div><div class="profile"><div><b>Riverview Housing LLC</b><span id="profileRole">Maria Hernandez · Primary User</span></div><div class="avatar" id="avatar">MH</div></div></header>
@@ -2903,6 +2923,7 @@ function openStaffDocReview(){
   const a=document.getElementById("staffActivityLogWorkspace");
   if(!staff || !w) return;
   if(a) a.style.display="none";
+  staff.classList.remove("staff-activity-mode","staff-details-mode");
   staff.classList.add("review-doc-mode");
   w.style.display="block";
   setStaffToolActive("documents");
@@ -2913,7 +2934,7 @@ function closeStaffDocReview(){
   const staff=document.getElementById("staffView");
   const w=document.getElementById("staffDocumentReviewWorkspace");
   const a=document.getElementById("staffActivityLogWorkspace");
-  if(staff) staff.classList.remove("review-doc-mode");
+  if(staff){staff.classList.remove("review-doc-mode","staff-activity-mode");staff.classList.add("staff-details-mode");}
   if(w) w.style.display="none";
   if(a) a.style.display="none";
   if(staff) staff.querySelectorAll('.staffGrid').forEach(function(x){x.style.display='';});
@@ -2966,7 +2987,7 @@ function setStaffToolActive(mode){
     var t=(b.textContent||'').trim().toLowerCase();
     b.classList.remove('active');
     if(mode==='details' && t==='request details') b.classList.add('active');
-    if(mode==='documents' && t.startsWith('review documents')) b.classList.add('active');
+    if(mode==='documents' && (t.startsWith('review documents') || t.startsWith('documents'))) b.classList.add('active');
     if(mode==='activity' && t==='activity log') b.classList.add('active');
   });
 }
@@ -2974,7 +2995,7 @@ function showStaffActivityLog(){
   var staff=document.getElementById('staffView');
   var d=document.getElementById('staffDocumentReviewWorkspace');
   var a=document.getElementById('staffActivityLogWorkspace');
-  if(staff) staff.classList.remove('review-doc-mode');
+  if(staff){staff.classList.remove('review-doc-mode','staff-details-mode');staff.classList.add('staff-activity-mode');}
   if(d)d.style.display='none';
   if(a)a.style.display='block';
   staff.querySelectorAll('.staffGrid').forEach(function(x){x.style.display='none';});
