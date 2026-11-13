@@ -1617,6 +1617,15 @@ html body #staffWrap > .staffGrid > .reviewMain {min-width:0 !important;}
  html body #staffWrap > .staffBanner.requestOnlyChrome{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
  html body #staffWrap > .staffGrid{grid-template-columns:1fr !important}
 }
+</style><style id="activity-log-standardization">
+#activityPanel .filters,#activityView .audit-filters,.rraAuditFilters,#staffActivityLogWorkspace .auditFilters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:18px 0 22px}
+#activityPanel .filters button,#activityView .audit-filters button,.rraAuditFilters button,#staffActivityLogWorkspace .auditFilters button{border:1px solid #c4d6e9;background:#fff;color:#264967;border-radius:999px;padding:8px 13px;font:600 12px Arial,sans-serif;cursor:pointer}
+#activityPanel .filters button.active,#activityView .audit-filters button.active,.rraAuditFilters button.active,#staffActivityLogWorkspace .auditFilters button.active{background:#e3effb;border-color:#2b75bd;color:#164f83}
+#activityPanel .historyrow,#activityView .audit-entry,.rraAuditEntry,#staffActivityLogWorkspace .auditLine{border-bottom:1px solid #dce5ef;padding:17px 8px;background:#fff}
+#activityPanel .historyrow strong,#activityView .audit-title,.rraAuditAction,#staffActivityLogWorkspace .auditLine b{color:#203c56;font-weight:700}
+#staffActivityLogWorkspace .histHead h3,#staffActivityLogWorkspace .histHead p{display:none}
+#staffActivityLogWorkspace .activityWorkspaceHead{border-bottom:0}
+@media(max-width:700px){#activityView .audit-entry,.rraAuditEntry,#staffActivityLogWorkspace .auditLine{grid-template-columns:1fr!important}}
 </style></head>
 <body><nav class="v96-nav"><a href="index.html">Sign In</a><a href="borrower-portal.html">Borrower Dashboard</a><a href="staff-dashboard.html">Staff Dashboard</a><a href="loan-portfolio-transactions.html">Transactions</a><a href="reserve-withdrawal.html">Reserve Withdrawal</a></nav>
 <div class="onboard-shell active" id="onboarding">
@@ -4442,4 +4451,4 @@ window.v120OpenSubmittedRequest=function(d){
  install();new MutationObserver(()=>{if([...tbody.querySelectorAll('tr')].some(r=>r.cells[0]&&!r.cells[0].querySelector('.rwSelectDoc')))install()}).observe(tbody,{childList:true,subtree:true});
 })();
 </script>
-</body></html>
+<script id="reserve-audit-filters-working">(function(){function init(){var r=document.getElementById('staffActivityLogWorkspace');if(!r)return;var bs=[...r.querySelectorAll('.auditFilters button')],rs=[...r.querySelectorAll('.auditLine')],types=['Edits / Changes','Staff Notes','Documents','Workflow','Workflow'];bs.forEach(b=>b.addEventListener('click',()=>{var t=b.textContent.trim();bs.forEach(x=>x.classList.toggle('active',x===b));rs.forEach((x,i)=>x.style.display=t==='All Activity'||types[i]===t?'':'none')}));if(bs[0])bs[0].classList.add('active')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();</script></body></html>
